@@ -8,7 +8,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -34,7 +38,12 @@ import com.itantra.transport.PairedDevice
 import com.itantra.transport.ThrottleWrapper
 import com.itantra.ui.ItantraTheme
 import com.itantra.ui.PttScreen
+import com.itantra.ui.BottomNav
+import com.itantra.ui.Destination
+import com.itantra.ui.DevicesScreen
 import com.itantra.ui.HomeScreen
+import com.itantra.ui.MessagesScreen
+import com.itantra.ui.SettingsScreen
 import com.itantra.ui.TransportChoice
 import kotlinx.coroutines.launch
 
@@ -71,6 +80,9 @@ class MainActivity : ComponentActivity() {
      */
     private var technicalView by mutableStateOf(false)
 
+    /** Which of the design's four destinations is showing. */
+    private var destination by mutableStateOf(Destination.HOME)
+
     /** Urgency for the next transmission. Lifted here so Home and the technical view agree. */
     private var urgency by mutableStateOf(MessageIntent.ROUTINE)
 
@@ -98,84 +110,138 @@ class MainActivity : ComponentActivity() {
             ItantraTheme {
                 Surface {
                     val state by session.ui.collectAsState()
-                    if (!technicalView) {
-                        HomeScreen(
-                            state = state,
-                            packs = packs,
-                            micGranted = micGranted,
-                            urgency = urgency,
-                            onUrgency = { urgency = it },
-                            onSelectLanguage = { pack ->
-                                app.appScope.launch { session.selectLanguage(pack) }
+                    val messages by session.messages.collectAsState()
+
+                    Column(Modifier.fillMaxSize()) {
+                        Box(Modifier.weight(1f)) {
+                            when {
+                                // The technical view is a full-screen detour rather than a
+                                // tab: it is scaffolding for the submission's numbers, and
+                                // it deliberately does not share the product's chrome.
+                                technicalView -> PttScreen(
+                                    state = state,
+                                    transportChoice = transportChoice,
+                                    pairedDevices = pairedDevices,
+                                    bluetoothReady = bluetoothReady,
+                                    micGranted = micGranted,
+                                    onChooseTransport = ::chooseTransport,
+                                    onRequestPermission = {
+                                        permissionLauncher.launch(
+                                            BluetoothDevices.requiredPermissions()
+                                        )
+                                    },
+                                    onRequestMic = {
+                                        permissionLauncher.launch(
+                                            arrayOf(Manifest.permission.RECORD_AUDIO)
+                                        )
+                                    },
+                                    packs = packs,
+                                    onSelectLanguage = { pack ->
+                                        app.appScope.launch { session.selectLanguage(pack) }
+                                    },
+                                    onChooseBearer = { bps ->
+                                        bearerBps = bps
+                                        rebuildTransport()
+                                    },
+                                    recordCount = state.sentCount,
+                                    measurementSummary = session.summary(),
+                                    onExportCsv = ::exportCsv,
+                                    selfTestResult = selfTestResult,
+                                    onSelfTest = {
+                                        app.appScope.launch {
+                                            selfTestResult = "Running self-test…"
+                                            selfTestResult = session.runSelfTest(
+                                                "flood water is rising near the school send boats"
+                                            )
+                                        }
+                                    },
+                                    onSetMode = { m ->
+                                        app.appScope.launch {
+                                            session.setMode(
+                                                m,
+                                                state.selectedLangId ?: LanguageId.UNSPECIFIED,
+                                                MessageIntent.ROUTINE,
+                                            )
+                                        }
+                                    },
+                                    onTalkStart = { session.startTalking() },
+                                    onTransmit = { text, langId, intent ->
+                                        app.appScope.launch {
+                                            session.stopTalkingAndTransmit(langId, intent, text)
+                                        }
+                                    },
+                                )
+
+                                destination == Destination.HOME -> HomeScreen(
+                                    state = state,
+                                    packs = packs,
+                                    micGranted = micGranted,
+                                    urgency = urgency,
+                                    onUrgency = { urgency = it },
+                                    onSelectLanguage = { pack ->
+                                        app.appScope.launch { session.selectLanguage(pack) }
+                                    },
+                                    onRequestMic = {
+                                        permissionLauncher.launch(
+                                            arrayOf(Manifest.permission.RECORD_AUDIO)
+                                        )
+                                    },
+                                    onTalkStart = { session.startTalking() },
+                                    onTalkEnd = { langId, intent ->
+                                        app.appScope.launch {
+                                            session.stopTalkingAndTransmit(langId, intent, "")
+                                        }
+                                    },
+                                    onReplay = { session.replayLast() },
+                                )
+
+                                destination == Destination.MESSAGES -> MessagesScreen(
+                                    messages = messages,
+                                    packs = packs,
+                                    onReplay = { session.speak(it) },
+                                )
+
+                                destination == Destination.DEVICES -> DevicesScreen(
+                                    state = state,
+                                    pairedDevices = pairedDevices,
+                                    bluetoothReady = bluetoothReady,
+                                    selected = transportChoice,
+                                    onChoose = ::chooseTransport,
+                                    onRequestPermission = {
+                                        permissionLauncher.launch(
+                                            BluetoothDevices.requiredPermissions()
+                                        )
+                                    },
+                                )
+
+                                else -> SettingsScreen(
+                                    state = state,
+                                    packs = packs,
+                                    bearerBps = bearerBps,
+                                    onSelectLanguage = { pack ->
+                                        app.appScope.launch { session.selectLanguage(pack) }
+                                    },
+                                    onChooseBearer = { bps ->
+                                        bearerBps = bps
+                                        rebuildTransport()
+                                    },
+                                    onOpenTechnical = { technicalView = true },
+                                )
+                            }
+                        }
+
+                        // Always visible, including over the technical view — otherwise
+                        // that view has no way out, which is how the gear going away left
+                        // it unreachable in the first place.
+                        BottomNav(
+                            current = destination,
+                            onSelect = {
+                                destination = it
+                                technicalView = false
                             },
-                            onRequestMic = {
-                                permissionLauncher.launch(arrayOf(Manifest.permission.RECORD_AUDIO))
-                            },
-                            onTalkStart = { session.startTalking() },
-                            onTalkEnd = { langId, intent ->
-                                app.appScope.launch {
-                                    session.stopTalkingAndTransmit(langId, intent, "")
-                                }
-                            },
-                            onReplay = { session.replayLast() },
+                            messageCount = messages.size,
                         )
-                        return@Surface
                     }
-                    PttScreen(
-                        state = state,
-                        transportChoice = transportChoice,
-                        pairedDevices = pairedDevices,
-                        bluetoothReady = bluetoothReady,
-                        micGranted = micGranted,
-                        onChooseTransport = ::chooseTransport,
-                        onRequestPermission = {
-                            permissionLauncher.launch(BluetoothDevices.requiredPermissions())
-                        },
-                        onRequestMic = {
-                            permissionLauncher.launch(arrayOf(Manifest.permission.RECORD_AUDIO))
-                        },
-                        packs = packs,
-                        onSelectLanguage = { pack ->
-                            // Application scope: swapping models takes seconds and must
-                            // not be abandoned if the screen turns off mid-load.
-                            app.appScope.launch { session.selectLanguage(pack) }
-                        },
-                        onChooseBearer = { bps ->
-                            bearerBps = bps
-                            rebuildTransport()
-                        },
-                        recordCount = state.sentCount,
-                        measurementSummary = session.summary(),
-                        onExportCsv = ::exportCsv,
-                        selfTestResult = selfTestResult,
-                        onSelfTest = {
-                            app.appScope.launch {
-                                selfTestResult = "Running self-test…"
-                                selfTestResult = session.runSelfTest(
-                                    "flood water is rising near the school send boats"
-                                )
-                            }
-                        },
-                        onSetMode = { m ->
-                            app.appScope.launch {
-                                session.setMode(
-                                    m,
-                                    state.selectedLangId ?: LanguageId.UNSPECIFIED,
-                                    MessageIntent.ROUTINE,
-                                )
-                            }
-                        },
-                        onTalkStart = { session.startTalking() },
-                        onTransmit = { text, langId, intent ->
-                            // Transmission runs on the application scope: releasing the
-                            // button must finish sending even if the screen goes off.
-                            app.appScope.launch {
-                                // The text field is only a fallback for when no model is
-                                // loaded; normally the recogniser supplies the words.
-                                session.stopTalkingAndTransmit(langId, intent, text)
-                            }
-                        },
-                    )
                 }
             }
         }

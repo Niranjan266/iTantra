@@ -17,6 +17,15 @@ import com.k2fsa.sherpa.onnx.OfflineTtsVitsModelConfig
  * working untouched. That was the point of putting an interface there.
  *
  * Model files come from a [LanguagePack] — no filename or language name appears here.
+ *
+ * Every method that touches the native session is [Synchronized]. Synthesis runs on one
+ * dispatcher while [release] can be called from another — switching language does exactly
+ * that — and cancelling a coroutine does not stop a call already inside the native layer.
+ * Two threads reaching one session is not an exception in Kotlin: the process aborts with
+ * `pthread_mutex_lock called on a destroyed mutex` somewhere inside onnxruntime.
+ *
+ * The same fix was applied to the recognisers earlier and this class was missed, which is
+ * how it was found — by the process dying on a Tamil self-test.
  */
 class SherpaTtsEngine(
     private val pack: LanguagePack,
@@ -43,6 +52,7 @@ class SherpaTtsEngine(
     val sampleRate: Int get() = tts?.sampleRate() ?: 0
 
     /** Slow. Call off the main thread. */
+    @Synchronized
     fun load(): Boolean {
         if (tts != null) return true
 
@@ -97,6 +107,7 @@ class SherpaTtsEngine(
         }
     }
 
+    @Synchronized
     override fun render(packet: Packet): ShortArray {
         val engine = tts ?: return ShortArray(0)
         // Resolve a phrase reference to its sentence. Without this the speaker says
@@ -130,6 +141,7 @@ class SherpaTtsEngine(
      *
      * @param onChunk return false to abandon synthesis early.
      */
+    @Synchronized
     fun renderStreaming(packet: Packet, onChunk: (ShortArray) -> Boolean): Boolean {
         val engine = tts ?: return false
         val model = pack.tts ?: return false
@@ -171,6 +183,7 @@ class SherpaTtsEngine(
         return base * ratio
     }
 
+    @Synchronized
     fun release() {
         runCatching { tts?.release() }
         tts = null

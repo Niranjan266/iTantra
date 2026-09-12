@@ -14,6 +14,7 @@ object AsrEngines {
 
     fun create(pack: LanguagePack): AsrEngine? = when (pack.asr?.type) {
         null -> null
+        LanguagePack.AsrModel.TYPE_NEMO_CTC -> NemoCtcAsrEngine(pack)
         LanguagePack.AsrModel.TYPE_WHISPER -> WhisperAsrEngine(pack)
         else -> SherpaAsrEngine(pack)
     }
@@ -21,12 +22,14 @@ object AsrEngines {
     /** Loading is the slow part, so the caller decides which thread it happens on. */
     fun load(engine: AsrEngine?): Boolean = when (engine) {
         null -> false
+        is NemoCtcAsrEngine -> engine.load()
         is WhisperAsrEngine -> engine.load()
         is SherpaAsrEngine -> engine.load()
         else -> engine.load()
     }
 
     fun lastError(engine: AsrEngine?): String? = when (engine) {
+        is NemoCtcAsrEngine -> engine.lastError
         is WhisperAsrEngine -> engine.lastError
         is SherpaAsrEngine -> engine.lastError
         else -> null

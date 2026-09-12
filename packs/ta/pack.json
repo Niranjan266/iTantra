@@ -3,11 +3,9 @@
   "code": "ta",
   "name": "தமிழ்",
   "asr": {
-    "type": "whisper",
-    "encoder": "asr/encoder.onnx",
-    "decoder": "asr/decoder.onnx",
-    "tokens": "asr/tokens.txt",
-    "language": "ta",
+    "type": "nemo_ctc",
+    "model": "asr-nemo/model.int8.onnx",
+    "tokens": "asr-nemo/tokens.txt",
     "sampleRate": 16000,
     "featureDim": 80
   },

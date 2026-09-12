@@ -8,7 +8,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,6 +32,7 @@ import com.itantra.transport.RepeatSender
 import com.itantra.transport.LoopbackTransport
 import com.itantra.transport.PairedDevice
 import com.itantra.transport.ThrottleWrapper
+import com.itantra.ui.ItantraTheme
 import com.itantra.ui.PttScreen
 import com.itantra.ui.SimpleScreen
 import com.itantra.ui.TransportChoice
@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity() {
         refreshPermissions()
 
         setContent {
-            MaterialTheme {
+            ItantraTheme {
                 Surface {
                     val state by session.ui.collectAsState()
                     if (!technicalView) {

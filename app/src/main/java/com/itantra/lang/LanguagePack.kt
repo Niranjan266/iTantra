@@ -51,23 +51,54 @@ data class LanguagePack(
          * the engine is chosen from this string, never from the language code.
          */
         val type: String,
-        val encoder: File,
-        val decoder: File,
-        /** Transducer models only. Whisper has no joiner. */
+        /**
+         * Split-graph families only (transducer, Whisper). Null for a single-graph model.
+         *
+         * Nullable because recogniser families genuinely differ in shape, and forcing one
+         * shape on all of them is how a pack stops loading: these were once required, so a
+         * NeMo pack failed to parse and the language silently disappeared from the picker
+         * with no error anywhere.
+         */
+        val encoder: File?,
+        val decoder: File?,
+        /** Transducer models only. Whisper and NeMo CTC have no joiner. */
         val joiner: File?,
+        /** Single-graph families ([TYPE_NEMO_CTC]). Null for the split-graph ones. */
+        val model: File?,
         val tokens: File,
         val sampleRate: Int,
         val featureDim: Int,
         /** Whisper only: which language to decode. Empty means "let it guess". */
         val language: String?,
     ) {
+        /**
+         * Whether the files this family actually needs are all present.
+         *
+         * Family-aware on purpose: a transducer without a joiner is broken, while a NeMo
+         * CTC model without one is normal. One shared rule would either reject good packs
+         * or accept broken ones.
+         */
         val isComplete: Boolean
-            get() = encoder.isFile && decoder.isFile && tokens.isFile &&
-                (joiner?.isFile ?: (type != TYPE_TRANSDUCER))
+            get() = tokens.isFile && when (type) {
+                TYPE_NEMO_CTC -> model?.isFile == true
+                TYPE_TRANSDUCER ->
+                    encoder?.isFile == true && decoder?.isFile == true && joiner?.isFile == true
+                else -> encoder?.isFile == true && decoder?.isFile == true
+            }
 
         companion object {
             const val TYPE_TRANSDUCER = "zipformer"
             const val TYPE_WHISPER = "whisper"
+
+            /**
+             * AI4Bharat IndicConformer and friends: one CTC graph, one vocabulary.
+             *
+             * Worth having as its own family rather than bent into the Whisper path — it
+             * is a far better recogniser for Indian languages than multilingual Whisper.
+             * On the Tamil self-test sentence Whisper heard "விளம் வியருகிறது ப"; this
+             * family transcribes it exactly.
+             */
+            const val TYPE_NEMO_CTC = "nemo_ctc"
         }
     }
 
@@ -117,9 +148,15 @@ data class LanguagePack(
                 val asr = json.optJSONObject("asr")?.let { a ->
                     AsrModel(
                         type = a.optString("type", AsrModel.TYPE_TRANSDUCER),
-                        encoder = File(dir, a.getString("encoder")),
-                        decoder = File(dir, a.getString("decoder")),
+                        // All optional: which of these a pack supplies depends on its
+                        // recogniser family, and isComplete checks the right ones.
+                        encoder = a.optString("encoder").takeIf { it.isNotEmpty() }
+                            ?.let { File(dir, it) },
+                        decoder = a.optString("decoder").takeIf { it.isNotEmpty() }
+                            ?.let { File(dir, it) },
                         joiner = a.optString("joiner").takeIf { it.isNotEmpty() }
+                            ?.let { File(dir, it) },
+                        model = a.optString("model").takeIf { it.isNotEmpty() }
                             ?.let { File(dir, it) },
                         tokens = File(dir, a.getString("tokens")),
                         sampleRate = a.optInt("sampleRate", 16_000),

@@ -8,6 +8,26 @@ A speaker talks; a listener hears a voice. Neither sees text. What actually cros
 ~75-byte encoded packet instead of a ~7,500-byte compressed voice note — roughly 60× smaller, which
 is the difference between a message that arrives and one that does not.
 
+## Download
+
+**[Latest release — install the APK](https://github.com/Niranjan266/iTantra/releases/latest)**
+
+Take `iTantra-v0.1.0-arm64-v8a.apk` unless that refuses to install, in which case take the
+universal build. Works immediately on install: no account, no setup, no network. Android
+will warn about installing outside the Play Store — these are debug-signed builds.
+
+The APK is a **release asset, not a file in this repository**. 99.5 MB in git would be
+cloned by everyone for ever; the Tamil recogniser at 124.6 MB could not be committed at
+all, being past GitHub's 100 MB per-file limit. Nothing binary is tracked here — it is all
+reproducible, which is what keeps a clone a few hundred kilobytes.
+
+```bash
+git clone https://github.com/Niranjan266/iTantra.git
+cd iTantra
+powershell -ExecutionPolicy Bypass -File tools/fetch-models.ps1   # once, ~190 MB
+./gradlew testDebugUnitTest assembleDebug
+```
+
 ## Documents
 
 | Document | What it covers |

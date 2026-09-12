@@ -16,6 +16,7 @@ import com.itantra.codec.Packet
 import com.itantra.codec.PacketCodec
 import com.itantra.codec.PhraseCodebook
 import com.itantra.codec.Symbols
+import com.itantra.codec.Translator
 import com.itantra.telemetry.LatencyTracker
 import com.itantra.telemetry.Percentiles
 import com.itantra.telemetry.TransmissionRecord
@@ -79,6 +80,16 @@ class SessionController(
 
     var currentPack: LanguagePack? = null
         private set
+
+    /**
+     * Every installed pack, so a received message can also be shown in the **sender's**
+     * language beside the listener's.
+     *
+     * Only ever used to look up the sender's wording for display. The translation itself
+     * needs nothing but the listener's own codebook, because a phrase id is an index and
+     * not words — see [Translator].
+     */
+    var installedPacks: List<LanguagePack> = emptyList()
 
     /** Random per app run. Tells the far end when the talker changed. */
     private val sessionId: Int = Random.nextInt(0, 256)
@@ -594,10 +605,20 @@ class SessionController(
      * [PhraseCodebook.fingerprint] exists and why the lists are append-only: the whole
      * scheme rests on both ends holding the identical file.
      */
-    private fun textOf(packet: Packet): String {
-        val book = currentPack?.phrases ?: PhraseCodebook.EMPTY
-        return book.resolve(packet) { id -> "[phrase $id — not in this device's codebook]" }
-    }
+    /**
+     * Work out what a received message says in the listener's language.
+     *
+     * This is where cross-language delivery happens, and it costs nothing: the packet
+     * already carried an index into a list both ends agree on, so a Tamil speaker's words
+     * come out of a Telugu phone in Telugu with no translation model and no extra bytes.
+     * See [Translator] for the invariant that makes it safe.
+     */
+    private fun deliveryOf(packet: Packet): Translator.Delivery = Translator.deliver(
+        packet = packet,
+        listener = currentPack?.phrases ?: PhraseCodebook.EMPTY,
+        listenerLangId = currentPack?.id ?: LanguageId.UNSPECIFIED,
+        speaker = installedPacks.firstOrNull { it.id == packet.langId }?.phrases,
+    )
 
     /**
      * Encode a message and put it on the wire.
@@ -791,9 +812,14 @@ class SessionController(
                     )
                 }
 
+                // Resolved once, outside the update block: _ui.update retries on
+                // contention, and this does file-backed codebook lookups.
+                val delivery = deliveryOf(packet)
+
                 _ui.update { it.copy(
                     lastReceivedPacket = packet,
-                    lastReceivedText = textOf(packet),
+                    lastReceivedText = delivery.translated,
+                    lastDelivery = delivery,
                     lastReceivedBytes = frame.size,
                     receivedCount = it.receivedCount + 1,
                     lastLatencyMs = latency,
@@ -933,6 +959,13 @@ data class SessionUiState(
     val lastSentBytes: Int = 0,
     val lastReceivedPacket: Packet? = null,
     val lastReceivedText: String = "",
+    /**
+     * How the last message was obtained — translated, verbatim, or unresolved.
+     *
+     * The screen reads this rather than guessing. Showing "translated" over a message that
+     * merely arrived as plain text would be a lie the user cannot check.
+     */
+    val lastDelivery: Translator.Delivery? = null,
     val lastReceivedBytes: Int = 0,
     val sentCount: Int = 0,
     val receivedCount: Int = 0,

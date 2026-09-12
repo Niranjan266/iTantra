@@ -50,36 +50,63 @@ powershell -ExecutionPolicy Bypass -File tools/fetch-models.ps1   # once, ~190 M
 | 7 — narrow-link proof | ✅ built and unit-tested; **needs on-device run** |
 | 8 — measurement | ✅ WER, prosody, percentiles, CSV export — all unit-tested |
 
-**199 unit tests, 0 failures.**
+**226 unit tests, 0 failures.**
 
 ### Languages
 
 | Language | ASR | TTS | Ships as |
 |---|---|---|---|
 | English | streaming Zipformer 20M (int8) | Piper VITS (int8) | bundled in the APK, 61 MB |
-| தமிழ் Tamil | Whisper base (int8, multilingual) | MMS VITS, converted + quantised here | drop-in pack, 190 MB |
+| தமிழ் Tamil | **IndicConformer CTC (int8)**, Apache-2.0 | MMS VITS, converted + quantised here | drop-in pack, ~226 MB |
 
-Tamil had to be built rather than downloaded. There is **no ready-made Tamil voice in any
-open catalogue** — checked, not assumed:
+#### Tamil recognition: the model matters more than the pipeline
 
-| Catalogue | Entries | Tamil |
+Tamil first ran on multilingual Whisper, because it was the only thing that had Tamil at
+all. It is bad at it. Both figures below are the **same audio file** — our own synthesised
+self-test sentence — through the same wrapper:
+
+| Recogniser | Heard | WER |
+|---|---|---|
+| Whisper base, multilingual | `விளம் வியருகிறது ப` | ~100% |
+| **AI4Bharat IndicConformer** | `வெள்ளம் உயர்கிறது படகுகளை அனுப்புங்கள்` | **0%** |
+
+Exact transcription against near-total failure. A model trained on one language beats one
+trained on ninety-nine — unsurprising, and worth having measured rather than assumed.
+
+Two side benefits. It is **Apache-2.0**, so this half of the Tamil pipeline carries no
+non-commercial restriction (the MMS voice still does). And its 66 KB vocabulary is
+**shared across all ten AI4Bharat Indic languages**, so the next Indic language costs only
+its own model file.
+
+It needed a third recogniser family in the app — one CTC graph rather than an
+encoder/decoder/joiner split. That is a data change, as intended: the pack declares
+`"type": "nemo_ctc"` and the factory picks the engine. Nothing in Kotlin names Tamil.
+
+#### Tamil voice: still no ready-made model anywhere
+
+The recogniser was findable. The **voice was not**, and that part still had to be built.
+Checked, not assumed:
+
+| Catalogue | Entries | Tamil voice |
 |---|---|---|
 | Piper voices (`rhasspy/piper-voices`) | 56 languages | ✗ (has `hi`, `ml`, `te`, `mr`, `bn`, `ur`) |
 | sherpa-onnx TTS release assets | 643 | ✗ |
 | MMS→ONNX conversions (`csukuangfj/vits-mms-*`) | 8 languages | ✗ |
 
-AI4Bharat publish Tamil only as a NeMo checkpoint, and the community ONNX conversions of
-that family cover eight Indian languages but not Tamil. So:
+So the voice is converted here from `facebook/mms-tts-tam` by `tools/export-mms-tts.py`,
+then quantised from 109 MB to 36.8 MB.
 
-- **ASR** uses Whisper, which is multilingual and includes Tamil. It is *not* streaming,
-  so for Tamil there are no live partial results and latency is higher. That is reported
-  in the app rather than hidden.
-- **TTS** is converted here from `facebook/mms-tts-tam` by `tools/export-mms-tts.py`,
-  then quantised from 109 MB to 36.8 MB.
+**A correction worth recording.** An earlier version of this file claimed the community
+ONNX conversions of the IndicConformer family "cover eight Indian languages but not
+Tamil", and Tamil recognition ran on Whisper for that reason. That was **wrong** — a
+converted Tamil IndicConformer does exist, under Apache-2.0, and switching to it took
+Tamil from roughly 100% word error to 0% on the test sentence. The claim was stated with
+more confidence than the search behind it justified, and a whole language ran on the wrong
+model because of it.
 
 **Licence note:** MMS-TTS is CC-BY-NC 4.0 — non-commercial use only. Fine for a
-competition entry; it must be stated, and a commercial deployment would need a
-different Tamil voice.
+competition entry; it must be stated, and a commercial deployment would need a different
+Tamil voice. The recogniser is Apache-2.0 and carries no such restriction.
 
 #### One line of text, four wasted build cycles
 
@@ -212,8 +239,9 @@ special case.
 | Suite | Tests | Covers |
 |---|---|---|
 | `PhraseCodebookTest` | 28 | phrase compression, and that speech and screen agree |
+| `FloodRelayTest` | 24 | mesh relay, hop limit, duplicate suppression, repetition |
 | `PacketCodecTest` | 23 | the frozen ITP-1 byte layout |
-| `LanguagePackTest` | 17 | reading a pack, and refusing a malformed one |
+| `LanguagePackTest` | 20 | reading a pack of any recogniser family, refusing a malformed one |
 | `ProsodyExtractorTest` | 17 | pitch, rate and energy in three bytes |
 | `WordErrorRateTest` | 17 | WER with error attribution, NFC-normalised |
 | `VadGateTest` | 17 | speech detection and endpointing |
@@ -224,7 +252,7 @@ special case.
 | `ToneTest` | 10 | placeholder audio rendering |
 | `AlertRulesTest` | 9 | what each urgency level may override |
 | `CrcTest` | 5 | checksums, against published check values |
-| **Total** | **199** | 0 failures |
+| **Total** | **226** | 0 failures |
 
 ### Gate 2 — passed on two paired handsets (12 Sep 2026)
 

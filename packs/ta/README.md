@@ -1,7 +1,7 @@
 # Tamil language pack — the parts that are source
 
-The model files are **not** here and are not in git: `asr/decoder.onnx` alone is 124.6 MB,
-which exceeds GitHub's 100 MB hard limit per file, and the pack totals 190 MB. They are
+The model files are **not** here and are not in git: `asr-nemo/model.int8.onnx` alone is
+188.4 MB, which exceeds GitHub's 100 MB hard limit per file, and the pack totals ~226 MB. They are
 reproducible, so committing them would trade a fast clone for nothing.
 
 What *is* here is everything a human wrote, which is not reproducible:
@@ -14,8 +14,15 @@ What *is* here is everything a human wrote, which is not reproducible:
 ## Rebuilding the full pack
 
 ```bash
-# 1. Fetch / convert the models into build/packs/ta/
-powershell -ExecutionPolicy Bypass -File tools/fetch-models.ps1
+# 1a. Recogniser — AI4Bharat IndicConformer, Apache-2.0, already ONNX for sherpa.
+#     tokens.txt is SHARED across all ten Indic languages, so a second Indic language
+#     needs only its own model.int8.onnx.
+B=https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/main
+mkdir -p build/packs/ta/asr-nemo
+curl -L "$B/ta/model.int8.onnx" -o build/packs/ta/asr-nemo/model.int8.onnx   # 188 MB
+curl -L "$B/tokens.txt"         -o build/packs/ta/asr-nemo/tokens.txt        # 66 KB
+
+# 1b. Voice — no ready-made Tamil voice exists, so it is converted here.
 python tools/export-mms-tts.py --lang tam --out build/packs/ta/tts
 
 # 2. Copy these source files over the top

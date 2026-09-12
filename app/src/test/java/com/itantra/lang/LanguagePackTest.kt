@@ -83,7 +83,7 @@ class LanguagePackTest {
         val dir = writePack(temp.newFolder("ta"), validJson)
         val pack = LanguagePack.load(dir)!!
         // Absolute paths matter: these are handed straight to the native runtime.
-        assertTrue(pack.asr!!.encoder.absolutePath.startsWith(dir.absolutePath))
+        assertTrue(pack.asr!!.encoder!!.absolutePath.startsWith(dir.absolutePath))
         assertTrue(pack.tts!!.model.isFile)
     }
 
@@ -228,5 +228,58 @@ class LanguagePackTest {
         File(dir, "asr/encoder.onnx").writeBytes(ByteArray(2 * 1024 * 1024))
         val pack = LanguagePack.load(dir)!!
         assertTrue("was ${pack.sizeMb} MB", pack.sizeMb >= 2.0)
+    }
+
+    // --- recogniser families have different shapes -------------------------------------
+
+    @Test
+    fun `a single-graph nemo pack loads without encoder or decoder`() {
+        // These fields were once required, so a NeMo pack failed to parse and the
+        // language vanished from the picker with no error reported anywhere.
+        val dir = temp.newFolder("nemo")
+        File(dir, "model.int8.onnx").writeText("x")
+        File(dir, "tokens.txt").writeText("<unk> 0")
+        writePack(dir, """
+            {
+              "id": 6, "code": "ta", "name": "Tamil",
+              "asr": { "type": "nemo_ctc", "model": "model.int8.onnx", "tokens": "tokens.txt" }
+            }
+        """.trimIndent())
+
+        val pack = LanguagePack.load(dir)!!
+        assertEquals(LanguagePack.AsrModel.TYPE_NEMO_CTC, pack.asr!!.type)
+        assertTrue("a single-graph pack is complete without encoder/decoder", pack.asr!!.isComplete)
+        assertTrue(pack.isUsable)
+    }
+
+    @Test
+    fun `a nemo pack with no model file is incomplete`() {
+        val dir = temp.newFolder("nemo-broken")
+        File(dir, "tokens.txt").writeText("<unk> 0")
+        writePack(dir, """
+            {
+              "id": 6, "code": "ta", "name": "Tamil",
+              "asr": { "type": "nemo_ctc", "tokens": "tokens.txt" }
+            }
+        """.trimIndent())
+        assertTrue(LanguagePack.load(dir)?.asr?.isComplete != true)
+    }
+
+    @Test
+    fun `a transducer is incomplete without its joiner`() {
+        // Family-aware completeness: the joiner is required here and meaningless for
+        // nemo_ctc, so one shared rule would be wrong for one of them.
+        val dir = temp.newFolder("transducer")
+        File(dir, "e.onnx").writeText("x")
+        File(dir, "d.onnx").writeText("x")
+        File(dir, "tokens.txt").writeText("a 0")
+        writePack(dir, """
+            {
+              "id": 0, "code": "en", "name": "English",
+              "asr": { "type": "zipformer", "encoder": "e.onnx",
+                       "decoder": "d.onnx", "tokens": "tokens.txt" }
+            }
+        """.trimIndent())
+        assertTrue(LanguagePack.load(dir)?.asr?.isComplete != true)
     }
 }

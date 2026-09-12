@@ -86,6 +86,17 @@ class WhisperAsrEngine(
             return false
         }
 
+        val encoder = model.encoder
+        val decoder = model.decoder
+        if (encoder == null || decoder == null) {
+            lastError = "Pack '${pack.code}' declares Whisper but supplies no " +
+                listOfNotNull(
+                    "encoder".takeIf { encoder == null },
+                    "decoder".takeIf { decoder == null },
+                ).joinToString(" and ")
+            return false
+        }
+
         return runCatching {
             val config = OfflineRecognizerConfig(
                 featConfig = FeatureConfig(
@@ -94,8 +105,8 @@ class WhisperAsrEngine(
                 ),
                 modelConfig = OfflineModelConfig(
                     whisper = OfflineWhisperModelConfig(
-                        encoder = model.encoder.absolutePath,
-                        decoder = model.decoder.absolutePath,
+                        encoder = encoder.absolutePath,
+                        decoder = decoder.absolutePath,
                         // The pack says which language to decode. Left empty, Whisper
                         // guesses — and a wrong guess on a short utterance produces
                         // confident nonsense in another language.

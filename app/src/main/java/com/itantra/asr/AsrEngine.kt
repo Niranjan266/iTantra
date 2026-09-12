@@ -118,11 +118,18 @@ class SherpaAsrEngine(
             lastError = "Language pack '${pack.code}' has no usable recognition model"
             return false
         }
-        // A transducer without a joiner cannot be built. Say so, rather than failing
-        // later with a native error that names no cause.
+        // A transducer needs all three graphs. Say which one is missing, rather than
+        // failing later with a native error that names no cause.
+        val encoder = model.encoder
+        val decoder = model.decoder
         val joiner = model.joiner
-        if (joiner == null) {
-            lastError = "Pack '${pack.code}' declares a transducer but supplies no joiner"
+        if (encoder == null || decoder == null || joiner == null) {
+            val missing = listOfNotNull(
+                "encoder".takeIf { encoder == null },
+                "decoder".takeIf { decoder == null },
+                "joiner".takeIf { joiner == null },
+            ).joinToString(", ")
+            lastError = "Pack '${pack.code}' declares a transducer but supplies no $missing"
             return false
         }
 
@@ -134,8 +141,8 @@ class SherpaAsrEngine(
                 ),
                 modelConfig = OnlineModelConfig(
                     transducer = OnlineTransducerModelConfig(
-                        encoder = model.encoder.absolutePath,
-                        decoder = model.decoder.absolutePath,
+                        encoder = encoder.absolutePath,
+                        decoder = decoder.absolutePath,
                         joiner = joiner.absolutePath,
                     ),
                     tokens = model.tokens.absolutePath,

@@ -156,10 +156,20 @@ class SessionController(
      * @param pack null to run with no speech models at all.
      */
     suspend fun selectLanguage(pack: LanguagePack?): Boolean {
-        // Release first: two sets of models loaded at once would roughly double peak
-        // memory on a device that has little to spare.
-        asr?.release()
-        (renderer as? SherpaTtsEngine)?.release()
+        // Hand the old engines aside and release them only once the new ones exist.
+        //
+        // This used to release first, to keep peak memory down — two model sets loaded at
+        // once is a real cost on a cheap phone. But releasing every session first means
+        // that for a moment the process holds none, and onnxruntime keeps state shared
+        // between sessions: the next inference then aborted the process with
+        // `pthread_mutex_lock called on a destroyed mutex`, inside onnxruntime, on the
+        // first *use* of the newly loaded model rather than at load. Selecting Tamil
+        // after English and running the self-test killed the app every time.
+        //
+        // Keeping one session alive across the swap costs memory briefly and is worth it:
+        // the alternative is a crash with no Java exception to catch.
+        val previousAsr = asr
+        val previousRenderer = renderer as? SherpaTtsEngine
 
         currentPack = pack
         asr = pack?.let { AsrEngines.create(it) }
@@ -175,13 +185,26 @@ class SessionController(
         ) }
 
         if (pack == null) {
+            // Nothing will be loaded, so there is no new session to keep alive and the
+            // old ones have to go now or they never will.
+            previousAsr?.release()
+            previousRenderer?.release()
             _ui.update { it.copy(
                 engineError = "No language pack installed",
                 rendererName = renderer.name,
             ) }
             return false
         }
-        return loadEngines()
+
+        val loaded = loadEngines()
+
+        // Release the old engines only now, with the new ones already loaded, so the
+        // process never holds zero onnxruntime sessions. Both engines are @Synchronized,
+        // so this cannot overlap an inference still finishing on another dispatcher.
+        previousAsr?.release()
+        previousRenderer?.release()
+
+        return loaded
     }
 
     /**

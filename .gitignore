@@ -1,0 +1,25 @@
+*.iml
+.gradle/
+/local.properties
+.idea/
+.DS_Store
+build/
+.kotlin/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Large binaries are not committed. They are reproducible from published releases —
+# run tools/fetch-models.ps1 after cloning. Keeping them out of git is what makes the
+# repository clonable in seconds instead of minutes.
+*.onnx
+*.tflite
+app/libs/*.aar
+app/src/main/assets/languages/*/asr/
+app/src/main/assets/languages/*/tts/
+
+# The pack descriptors ARE committed — they are the contract that says which files a
+# pack must contain, and the fetch script fills in the rest.
+!app/src/main/assets/languages/manifest.json
+!app/src/main/assets/languages/*/pack.json

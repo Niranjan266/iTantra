@@ -15,7 +15,6 @@ import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.ParcelUuid
 import android.util.Log
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +29,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.util.UUID
 
 /**
  * Connectionless one-to-many bearer: the message travels inside a BLE advertisement.
@@ -98,17 +96,24 @@ class BleMeshTransport(
         private const val TAG = "iTantra.Ble"
 
         /**
-         * Our service UUID — the only thing that distinguishes our beacons from the shop
-         * tags, fitness bands and headphones that fill any urban BLE scan.
+         * Our beacons are identified by **manufacturer-specific data**, not a service UUID.
          *
-         * A 16-bit short UUID, not a random 128-bit one, and that choice costs 12 bytes of
-         * the 24-byte budget if got wrong: a 128-bit UUID in the advertisement leaves too
-         * little room for the packet. The value sits in the range reserved for
-         * non-registered use.
+         * The first attempt used a 16-bit service UUID, chosen for size: a random 128-bit
+         * UUID eats 16 of the 31 advertisement bytes and leaves too little for a packet.
+         * But every 16-bit UUID belongs to the Bluetooth SIG registry, and the one picked —
+         * `0xFD6F` — is **Google/Apple Exposure Notification**, which Android treats as
+         * privileged. The sender built a correct 16-byte packet, handed it to the radio
+         * without error, and the second phone heard nothing.
+         *
+         * Manufacturer data has no registry to collide with and exactly the same four
+         * bytes of overhead (length + type + two-byte company id), so the usable payload
+         * is unchanged at [MeshFrame.BLE_LEGACY_CAPACITY].
+         *
+         * `0xFFFF` is the company id the Bluetooth SIG reserves for internal and test use,
+         * which is the honest choice here: this project has no assigned id, and borrowing
+         * a real manufacturer's would be squatting on someone else's namespace.
          */
-        val SERVICE_UUID: UUID = UUID.fromString("0000fd6f-0000-1000-8000-00805f9b34fb")
-
-        private val SERVICE_PARCEL = ParcelUuid(SERVICE_UUID)
+        const val COMPANY_ID = 0xFFFF
 
         /** Permissions this transport needs, by OS version. */
         fun requiredPermissions(): Array<String> =
@@ -177,7 +182,7 @@ class BleMeshTransport(
 
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
-            val data = result?.scanRecord?.getServiceData(SERVICE_PARCEL) ?: return
+            val data = result?.scanRecord?.getManufacturerSpecificData(COMPANY_ID) ?: return
             scanHits++
             // Emitted without validation: FloodRelay checks MAGIC and the header CRC, and
             // duplicating that here would put the wire format in two places.
@@ -218,7 +223,14 @@ class BleMeshTransport(
         _state.value = TransportState.Connecting
         val started = runCatching {
             scanner?.startScan(
-                listOf(ScanFilter.Builder().setServiceUuid(SERVICE_PARCEL).build()),
+                // Match any payload from our company id. Empty mask = "do not compare
+                // the bytes", so every one of our beacons matches while shop tags and
+                // headphones do not.
+                listOf(
+                    ScanFilter.Builder()
+                        .setManufacturerData(COMPANY_ID, ByteArray(0), ByteArray(0))
+                        .build()
+                ),
                 ScanSettings.Builder()
                     // Low latency: a distress message should be heard as soon as it is
                     // sent, and this transport is only used while the app is in front of
@@ -285,12 +297,18 @@ class BleMeshTransport(
                 // eat the budget for no benefit.
                 .setIncludeDeviceName(false)
                 .setIncludeTxPowerLevel(false)
-                .addServiceData(SERVICE_PARCEL, frame)
+                .addManufacturerData(COMPANY_ID, frame)
                 .build()
 
             var ok = false
             val callback = object : AdvertiseCallback() {
-                override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) { ok = true }
+                override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
+                    ok = true
+                    // Logged because its ABSENCE was the whole difficulty: a sender that
+                    // reported success while nothing reached the air looked like a
+                    // receiver fault for far longer than it should have.
+                    Log.i(TAG, "advertising ${frame.size} B for ${advertiseWindowMs}ms")
+                }
                 override fun onStartFailure(errorCode: Int) {
                     advertiseFailures++
                     Log.e(TAG, "advertise failed: $errorCode")

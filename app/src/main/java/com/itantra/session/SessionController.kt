@@ -1,5 +1,7 @@
 package com.itantra.session
 
+import android.util.Log
+
 import com.itantra.alert.AlertPolicy
 import com.itantra.asr.AsrEngine
 import com.itantra.asr.AsrEngines
@@ -114,6 +116,8 @@ class SessionController(
     val ui: StateFlow<SessionUiState> = _ui.asStateFlow()
 
     private val records = mutableListOf<TransmissionRecord>()
+
+    private val TAG = "iTantra.Session"
 
     /**
      * Recent messages, newest first, for the Messages screen.
@@ -417,6 +421,17 @@ class SessionController(
 
         val score = WordErrorRate.score(reference, heard)
         val rtf = if (audioMs > 0) recogMs / audioMs else 0.0
+
+        // Logged as well as returned, so the figures can be read over adb without a
+        // screenshot — which matters when the phone is in use and the screen is not
+        // mine to photograph.
+        Log.i(
+            TAG,
+            "self-test ${currentPack?.code}: wer=${"%.1f".format(score.wer * 100)}% " +
+                "synth=${synthMs.toInt()}ms audio=${audioMs.toInt()}ms " +
+                "recognise=${recogMs.toInt()}ms rtf=${"%.2f".format(rtf)} " +
+                "threads=${currentPack?.tts?.numThreads}",
+        )
 
         buildString {
             appendLine("said:  \"$reference\"")

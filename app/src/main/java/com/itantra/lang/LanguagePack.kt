@@ -116,6 +116,19 @@ data class LanguagePack(
         val dataDir: File?,
         val speakerId: Int,
         val speed: Float,
+        /**
+         * Inference threads for synthesis.
+         *
+         * Declared by the pack because the right number depends on the model, not on the
+         * app: a small Piper voice saturates at two, while the Tamil VITS graph is heavy
+         * enough to keep four or more busy.
+         *
+         * This field existed in `pack.json` for weeks and was **never read** — TtsModel
+         * had no such property, so the engine silently used its own default of 2 on an
+         * eight-core phone. Tamil synthesis took 12.2 s to produce 2.8 s of audio, and the
+         * declared setting that should have fixed it did nothing.
+         */
+        val numThreads: Int,
     ) {
         val isComplete: Boolean
             get() = model.isFile && tokens.isFile &&
@@ -173,6 +186,12 @@ data class LanguagePack(
                             ?.let { File(dir, it) },
                         speakerId = t.optInt("speakerId", 0),
                         speed = t.optDouble("speed", 1.0).toFloat(),
+                        // Default 2 to match the old hardcoded behaviour, so a pack that
+                        // says nothing behaves exactly as before. Clamped: a pack asking
+                        // for more threads than the phone has cores makes it slower, not
+                        // faster, through contention.
+                        numThreads = t.optInt("numThreads", 2)
+                            .coerceIn(1, Runtime.getRuntime().availableProcessors()),
                     )
                 }
 

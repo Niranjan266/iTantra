@@ -34,7 +34,7 @@ import com.itantra.transport.PairedDevice
 import com.itantra.transport.ThrottleWrapper
 import com.itantra.ui.ItantraTheme
 import com.itantra.ui.PttScreen
-import com.itantra.ui.SimpleScreen
+import com.itantra.ui.HomeScreen
 import com.itantra.ui.TransportChoice
 import kotlinx.coroutines.launch
 
@@ -71,6 +71,9 @@ class MainActivity : ComponentActivity() {
      */
     private var technicalView by mutableStateOf(false)
 
+    /** Urgency for the next transmission. Lifted here so Home and the technical view agree. */
+    private var urgency by mutableStateOf(MessageIntent.ROUTINE)
+
     /** Simulated bearer rate, or null for an unthrottled link (PRD F-52). */
     private var bearerBps by mutableStateOf<Int?>(null)
 
@@ -96,10 +99,12 @@ class MainActivity : ComponentActivity() {
                 Surface {
                     val state by session.ui.collectAsState()
                     if (!technicalView) {
-                        SimpleScreen(
+                        HomeScreen(
                             state = state,
                             packs = packs,
                             micGranted = micGranted,
+                            urgency = urgency,
+                            onUrgency = { urgency = it },
                             onSelectLanguage = { pack ->
                                 app.appScope.launch { session.selectLanguage(pack) }
                             },
@@ -113,7 +118,6 @@ class MainActivity : ComponentActivity() {
                                 }
                             },
                             onReplay = { session.replayLast() },
-                            onOpenTechnical = { technicalView = true },
                         )
                         return@Surface
                     }
@@ -263,6 +267,9 @@ class MainActivity : ComponentActivity() {
         // the background appears without a reinstall (PRD section 10.5).
         packs.clear()
         packs.addAll(app.refreshPacks())
+        // The session needs every pack, not just the selected one, so a received message
+        // can also be shown in the sender's language.
+        session.installedPacks = packs.toList()
     }
 
     /**

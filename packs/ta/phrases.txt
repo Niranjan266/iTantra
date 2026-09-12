@@ -1,64 +1,171 @@
 # iTantra phrase codebook — தமிழ் (Tamil)
 #
-# ⚠ DRAFT — NEEDS REVIEW BY A TAMIL SPEAKER BEFORE IT IS USED IN THE FIELD.
+# THIS FILE IS A PARALLEL CORPUS. Line N here must mean exactly what line N of
+# the English file means. A phrase id is the only thing that crosses the link, so
+# id 33 sent from a Tamil phone and rendered on a Telugu phone IS the translation —
+# which works only while every language agrees on what 33 means.
 #
-# Two reasons this is not ready to freeze, and both matter:
+# A line containing just "-" means NOT TRANSLATED YET. It still holds its id. Do
+# not delete those lines: removing one shifts every id after it, and a shifted id
+# does not fail — it decodes to a real but different sentence.
 #
-#  1. These translations have not been checked by a native speaker. A wrong phrase in a
-#     distress codebook is worse than a missing one, because the receiver hears a
-#     confident sentence that nobody sent.
+# ⚠ DRAFT — the wordings below need review by a Tamil speaker before this is frozen.
+# A wrong phrase in a distress codebook is worse than a missing one, so anything
+# uncertain should be set back to "-" rather than guessed at.
 #
-#  2. A phrase only compresses if the text the RECOGNISER produces matches the text here.
-#     Whisper's Tamil output has its own spelling and spacing habits, so some of these
-#     will never match until they are tuned against what the model actually returns. The
-#     way to find out is to speak each one and read the recognised text off the screen.
-#
-# Deliberately short — 32 phrases, the ones that matter most in the first minutes of a
-# flood. A list that can actually be reviewed beats a long one that cannot.
-#
-# THE LINE ORDER IS A WIRE CONTRACT once both devices hold this file: a phrase's position
-# is the number that travels on the link. APPEND ONLY after that point — never reorder,
-# never delete. Until review is done, this file is free to change, but both phones must
-# then be updated together.
-#
-# Blank lines and lines starting with # are ignored and do not consume an id.
+# Generated to mirror the English file; the English text is kept as a comment on
+# each line's own group header so a reviewer can see what each slot must say.
 
-# --- 0-7  net discipline ---------------------------------------------------------------
-செய்தி கிடைத்தது
-மீண்டும் சொல்லுங்கள்
-காத்திருங்கள்
-ஆம்
-இல்லை
-உங்கள் இடத்தைச் சொல்லுங்கள்
-நீங்கள் யார்
-செய்தி முடிந்தது
-
-# --- 8-15  distress --------------------------------------------------------------------
-உடனே உதவி தேவை
-இது அவசர நிலை
-நாங்கள் சிக்கிக்கொண்டோம்
-நாங்கள் பாதுகாப்பாக இருக்கிறோம்
-எங்கள் இடத்திற்கு உதவி அனுப்புங்கள்
-நாங்கள் மேட்டுப் பகுதிக்குச் செல்கிறோம்
-இந்த வழியாக வர வேண்டாம்
-நிலை மோசமாகி வருகிறது
-
-# --- 16-23  water and rescue -----------------------------------------------------------
-வெள்ளம் உயர்கிறது
-வெள்ளம் உயர்கிறது படகுகளை அனுப்புங்கள்
-படகுகளை அனுப்புங்கள்
-ஆறு கரை உடைந்துவிட்டது
-சாலை தண்ணீரில் மூழ்கிவிட்டது
-பாலம் தண்ணீரில் உள்ளது
-மீட்புக் குழுவை அனுப்புங்கள்
-கயிறு தேவை
-
-# --- 24-31  people, medical, supplies --------------------------------------------------
-இங்கு அனைவரும் பாதுகாப்பாக உள்ளனர்
-சிலர் காணவில்லை
-ஒரு குழந்தை காணவில்லை
-மருத்துவர் தேவை
-மருந்து தேவை
-குடிநீர் தேவை
-உணவு தேவை
-மின்சாரம் இல்லை
+# --- 0-15  net discipline -------------------------------------------------------------
+செய்தி கிடைத்தது   # 0: message received
+மீண்டும் சொல்லுங்கள்   # 1: message not understood, repeat
+காத்திருங்கள்   # 2: standing by
+-                       # 3: wait, out
+-                       # 4: nothing to report
+ஆம்   # 5: yes
+இல்லை   # 6: no
+-                       # 7: unknown
+-                       # 8: confirmed
+-                       # 9: cancel that
+உங்கள் இடத்தைச் சொல்லுங்கள்   # 10: report your position
+-                       # 11: report your status
+நீங்கள் யார்   # 12: who is calling
+-                       # 13: speak slower
+செய்தி முடிந்தது   # 14: end of message
+-                       # 15: acknowledged, no action needed
+# --- 16-31  distress ------------------------------------------------------------------
+உடனே உதவி தேவை   # 16: we need help immediately
+இது அவசர நிலை   # 17: this is an emergency
+நாங்கள் சிக்கிக்கொண்டோம்   # 18: we are trapped and cannot move
+நாங்கள் பாதுகாப்பாக இருக்கிறோம்   # 19: we are safe for now
+எங்கள் இடத்திற்கு உதவி அனுப்புங்கள்   # 20: send help to our position
+-                       # 21: we cannot reach safety on foot
+-                       # 22: there is no one here
+-                       # 23: we have lost contact with the others
+இந்த வழியாக வர வேண்டாம்   # 24: do not come this way, it is not safe
+நாங்கள் மேட்டுப் பகுதிக்குச் செல்கிறோம்   # 25: we are moving to higher ground
+-                       # 26: we will stay where we are
+-                       # 27: our phone battery is almost finished
+-                       # 28: we can hear you but cannot reply
+-                       # 29: sending one last message
+-                       # 30: all clear here
+நிலை மோசமாகி வருகிறது   # 31: situation is getting worse
+# --- 32-47  water and flooding --------------------------------------------------------
+வெள்ளம் உயர்கிறது   # 32: flood water is rising
+வெள்ளம் உயர்கிறது படகுகளை அனுப்புங்கள்   # 33: flood water is rising near the school, send boats
+ஆறு கரை உடைந்துவிட்டது   # 34: the river has broken its bank
+-                       # 35: the water is above the waist
+-                       # 36: the water is still rising
+-                       # 37: the water is going down
+பாலம் தண்ணீரில் உள்ளது   # 38: the bridge is under water
+சாலை தண்ணீரில் மூழ்கிவிட்டது   # 39: the road is under water
+-                       # 40: the dam has opened its gates
+-                       # 41: heavy rain has not stopped
+-                       # 42: the well water is not safe to drink
+-                       # 43: we have no clean drinking water
+-                       # 44: the borewell is flooded
+-                       # 45: the drain is blocked and water is backing up
+-                       # 46: the field is completely submerged
+-                       # 47: high tide is expected tonight
+# --- 48-63  people --------------------------------------------------------------------
+இங்கு அனைவரும் பாதுகாப்பாக உள்ளனர்   # 48: everyone here is safe
+சிலர் காணவில்லை   # 49: some people are missing
+ஒரு குழந்தை காணவில்லை   # 50: a child is missing
+-                       # 51: an elderly person needs help
+-                       # 52: a pregnant woman needs a hospital
+-                       # 53: someone is badly injured
+-                       # 54: someone has drowned
+-                       # 55: we are ten people
+-                       # 56: we are more than fifty people
+-                       # 57: we have children with us
+-                       # 58: we have elderly people with us
+-                       # 59: we have a disabled person with us
+-                       # 60: people are gathering at the temple
+-                       # 61: people are gathering at the school
+-                       # 62: people are gathering at the panchayat office
+-                       # 63: everyone has been moved out
+# --- 64-79  medical ------------------------------------------------------------------
+மருத்துவர் தேவை   # 64: we need a doctor
+மருந்து தேவை   # 65: we need medicine
+-                       # 66: we need insulin
+-                       # 67: we need snake bite treatment
+-                       # 68: we need drinking water and food
+-                       # 69: there is fever spreading here
+-                       # 70: there is diarrhoea spreading here
+-                       # 71: someone needs dialysis
+-                       # 72: someone needs oxygen
+-                       # 73: we need bandages and antiseptic
+-                       # 74: bring a stretcher
+-                       # 75: the health centre is closed
+-                       # 76: the health centre is flooded
+-                       # 77: an ambulance cannot reach us
+-                       # 78: we have first aid here
+-                       # 79: no medical help needed
+# --- 80-95  rescue and transport ------------------------------------------------------
+படகுகளை அனுப்புங்கள்   # 80: send boats
+-                       # 81: send a helicopter
+மீட்புக் குழுவை அனுப்புங்கள்   # 82: send a rescue team
+-                       # 83: send a vehicle
+கயிறு தேவை   # 84: we need rope
+-                       # 85: we need life jackets
+-                       # 86: we need a ladder
+-                       # 87: the boat is full, send another
+-                       # 88: the boat has arrived
+-                       # 89: the rescue team has arrived
+-                       # 90: we can walk to the main road
+-                       # 91: we cannot cross the water
+-                       # 92: a tractor can reach us
+-                       # 93: the path is passable on foot
+-                       # 94: the path is blocked by a fallen tree
+-                       # 95: we do not need rescue
+# --- 96-111  infrastructure -----------------------------------------------------------
+மின்சாரம் இல்லை   # 96: there is no electricity
+-                       # 97: there is no mobile network
+-                       # 98: the transformer is damaged
+-                       # 99: a live wire has fallen, keep away
+-                       # 100: the road is washed away
+-                       # 101: the culvert has collapsed
+-                       # 102: a building has collapsed
+-                       # 103: the school building is damaged
+-                       # 104: the roof has blown off
+-                       # 105: there is a landslide on the road
+-                       # 106: the railway line is under water
+-                       # 107: the pump is not working
+-                       # 108: we have a generator
+-                       # 109: we have no fuel
+-                       # 110: we have fuel for one day
+-                       # 111: the water supply has stopped
+# --- 112-127  supplies and shelter ----------------------------------------------------
+உணவு தேவை   # 112: we need food
+குடிநீர் தேவை   # 113: we need drinking water
+-                       # 114: we need blankets
+-                       # 115: we need tarpaulin or tents
+-                       # 116: we need baby food
+-                       # 117: we need animal feed
+-                       # 118: we have food for one day
+-                       # 119: we have food for three days
+-                       # 120: we have enough supplies
+-                       # 121: the shelter is full
+-                       # 122: the shelter has space
+-                       # 123: we are in a temporary shelter
+-                       # 124: cattle need to be moved
+-                       # 125: cattle have been lost
+-                       # 126: crops are destroyed
+-                       # 127: the granary is flooded
+# --- 128-143  coordination ------------------------------------------------------------
+-                       # 128: relay this message onward
+-                       # 129: this message is for the district office
+-                       # 130: this message is for the police
+-                       # 131: this message is for the fire service
+-                       # 132: this message is for the hospital
+-                       # 133: we are relaying for another village
+-                       # 134: pass this to anyone with a network signal
+-                       # 135: we will call again in one hour
+-                       # 136: we will call again at first light
+-                       # 137: change to the next channel
+-                       # 138: stay on this channel
+-                       # 139: keep this line clear for emergencies
+-                       # 140: how many people can you take
+-                       # 141: we can take ten more people
+-                       # 142: we cannot take any more people
+-                       # 143: send a written list of names

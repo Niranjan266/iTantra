@@ -1,138 +1,200 @@
 package com.itantra.ui
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * The app's colour and type.
+ * The Stitch design system, transcribed exactly.
  *
- * ## Why this is not the dynamic Material You palette
+ * Every colour below is copied from the project's own token map
+ * (`iTantra UI/UX Design System`, 47 tokens) rather than eyeballed from a screenshot, so
+ * the app and the design cannot drift apart by a shade.
  *
- * Android 12+ can derive a scheme from the user's wallpaper, and for most apps that is the
- * right default. Not here. The colours in this app **carry meaning** — one band means
- * ready, one button means emergency — and a palette derived from a photograph of someone's
- * cat will happily render the emergency control in mint green. Meaningful colour cannot be
- * delegated to a wallpaper.
+ * ## Light only, deliberately
  *
- * ## The urgency colours, and why they are not only colours
+ * The design specifies a single light scheme and no dark counterpart. Rather than invent
+ * one — a derived dark palette would be a guess, and the urgency colours below carry
+ * meaning that a guess could quietly break — the app pins the light scheme regardless of
+ * the system setting. It also suits the use: a bright screen is easier to read outdoors,
+ * which is where this gets used.
  *
- * Routine, warning and emergency are the one place in this app where colour does real
- * work, so they are chosen to survive the common forms of colour blindness — the blue and
- * amber stay distinguishable under deuteranopia and protanopia, where a red/green pair
- * collapses. Even so, **colour is never the only signal**: each level also has its own
- * silhouette ([ItantraIcons]) and its own size on screen. Someone who sees no colour at all
- * can still tell them apart.
+ * ## Where the design's own palette is not enough
  *
- * Contrast is held at 4.5:1 or better against its background for text, and the status band
- * pairs white on deliberately dark fills rather than the lighter tints Material would pick.
+ * Stitch gives one `error` red. This app needs **three** distinguishable urgency levels,
+ * and the design's screens show them as blue / amber / red. So [UrgencyWarning] is added
+ * here, chosen to stay separable from the other two under the common forms of colour
+ * blindness — and, as elsewhere, colour is never the only signal: each level also has its
+ * own Material Symbol and its own size on screen.
  */
 
-// --- brand ---------------------------------------------------------------------------
+// --- Stitch tokens, verbatim -----------------------------------------------------------
 
-/** Deep indigo. Calm, and not a colour any status uses, so it never competes. */
-private val Indigo = Color(0xFF3730A3)
-private val IndigoLight = Color(0xFF6366F1)
-private val IndigoDark = Color(0xFF1E1B4B)
+private val Primary = Color(0xFF0051B6)
+private val OnPrimary = Color(0xFFFFFFFF)
+private val PrimaryContainer = Color(0xFF1769E0)
+private val OnPrimaryContainer = Color(0xFFF0F2FF)
+private val PrimaryFixed = Color(0xFFD9E2FF)
+private val PrimaryFixedDim = Color(0xFFAFC6FF)
+private val OnPrimaryFixed = Color(0xFF001A43)
+private val OnPrimaryFixedVariant = Color(0xFF004398)
 
-// --- status, all meaning-bearing ------------------------------------------------------
+private val Secondary = Color(0xFF005BBF)
+private val OnSecondary = Color(0xFFFFFFFF)
+private val SecondaryContainer = Color(0xFF5694FE)
+private val OnSecondaryContainer = Color(0xFF002D64)
+private val SecondaryFixed = Color(0xFFD7E2FF)
 
-/** Ready. Dark enough for white text at 4.5:1. */
-val StatusReady = Color(0xFF15803D)
-val StatusReadyDark = Color(0xFF14532D)
+private val Tertiary = Color(0xFF00633C)
+private val OnTertiary = Color(0xFFFFFFFF)
+private val TertiaryContainer = Color(0xFF007F4E)
+private val OnTertiaryContainer = Color(0xFFCAFFDB)
+private val TertiaryFixed = Color(0xFF81FAB6)
 
-/** Working. Grey, so "not yet" never looks like "wrong". */
-val StatusBusy = Color(0xFF475569)
-val StatusBusyDark = Color(0xFF334155)
+private val ErrorRed = Color(0xFFBA1A1A)
+private val OnError = Color(0xFFFFFFFF)
+private val ErrorContainer = Color(0xFFFFDAD6)
+private val OnErrorContainer = Color(0xFF93000A)
 
-/** Not usable. */
-val StatusError = Color(0xFFB91C1C)
-val StatusErrorDark = Color(0xFF7F1D1D)
+private val Background = Color(0xFFF9F9FF)
+private val OnBackground = Color(0xFF121B2E)
+private val SurfaceVariant = Color(0xFFD9E2FC)
+private val OnSurfaceVariant = Color(0xFF424754)
+private val Outline = Color(0xFF727785)
+private val OutlineVariant = Color(0xFFC2C6D6)
+private val InverseSurface = Color(0xFF273044)
+private val InverseOnSurface = Color(0xFFEDF0FF)
+private val InversePrimary = Color(0xFFAFC6FF)
 
-/** Speaking — a received message is playing. Distinct from all three above. */
-val StatusSpeaking = Color(0xFF0E7490)
+/** The five surface-container steps. Depth in this design comes from these, not shadows. */
+val SurfaceLowest = Color(0xFFFFFFFF)
+val SurfaceLow = Color(0xFFF1F3FF)
+val SurfaceContainer = Color(0xFFE9EDFF)
+val SurfaceHigh = Color(0xFFE1E8FF)
+val SurfaceHighest = Color(0xFFD9E2FC)
+val SurfaceDim = Color(0xFFD1DAF4)
 
-// --- urgency --------------------------------------------------------------------------
+// --- exported meaning-bearing colours --------------------------------------------------
 
-/** Routine. Blue: unmistakably "not an alarm". */
-val UrgencyRoutine = Color(0xFF1D4ED8)
+/** Ready / connected / "offline ready". The design's green. */
+val StatusReady = TertiaryContainer
+val StatusReadyContainer = OnTertiaryContainer
+val OnStatusReady = Color(0xFF002111)
 
-/** Warning. Amber rather than yellow, which cannot hold contrast against white. */
+/** Routine urgency. */
+val UrgencyRoutine = Primary
+
+/**
+ * Warning urgency — **not** from the Stitch token map, which has no amber.
+ *
+ * Added because three urgency levels need three separable colours and the design's screens
+ * show an amber middle step. Chosen to hold 4.5:1 on white and to stay distinct from both
+ * the blue and the red under deuteranopia and protanopia.
+ */
 val UrgencyWarning = Color(0xFFB45309)
 
-/** Emergency. */
-val UrgencyEmergency = Color(0xFFB91C1C)
+/** Emergency urgency. The design's error red. */
+val UrgencyEmergency = ErrorRed
 
-private val LightScheme = lightColorScheme(
-    primary = Indigo,
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFFE0E7FF),
-    onPrimaryContainer = IndigoDark,
-    secondary = Color(0xFF475569),
-    onSecondary = Color.White,
-    background = Color(0xFFF8FAFC),
-    onBackground = Color(0xFF0F172A),
-    surface = Color.White,
-    onSurface = Color(0xFF0F172A),
-    surfaceVariant = Color(0xFFEEF2F7),
-    onSurfaceVariant = Color(0xFF44506A),
-    outline = Color(0xFF94A3B8),
-    error = StatusError,
-    onError = Color.White,
-)
-
-private val DarkScheme = darkColorScheme(
-    primary = IndigoLight,
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFF312E81),
-    onPrimaryContainer = Color(0xFFE0E7FF),
-    secondary = Color(0xFF94A3B8),
-    onSecondary = Color(0xFF0F172A),
-    background = Color(0xFF0B1020),
-    onBackground = Color(0xFFE8EDF7),
-    surface = Color(0xFF151B2E),
-    onSurface = Color(0xFFE8EDF7),
-    surfaceVariant = Color(0xFF1E2842),
-    onSurfaceVariant = Color(0xFFB6C2D9),
-    outline = Color(0xFF475569),
-    error = Color(0xFFF87171),
-    onError = Color(0xFF450A0A),
+val StitchScheme = lightColorScheme(
+    primary = Primary,
+    onPrimary = OnPrimary,
+    primaryContainer = PrimaryContainer,
+    onPrimaryContainer = OnPrimaryContainer,
+    inversePrimary = InversePrimary,
+    secondary = Secondary,
+    onSecondary = OnSecondary,
+    secondaryContainer = SecondaryContainer,
+    onSecondaryContainer = OnSecondaryContainer,
+    tertiary = Tertiary,
+    onTertiary = OnTertiary,
+    tertiaryContainer = TertiaryContainer,
+    onTertiaryContainer = OnTertiaryContainer,
+    background = Background,
+    onBackground = OnBackground,
+    surface = Background,
+    onSurface = OnBackground,
+    surfaceVariant = SurfaceVariant,
+    onSurfaceVariant = OnSurfaceVariant,
+    surfaceContainerLowest = SurfaceLowest,
+    surfaceContainerLow = SurfaceLow,
+    surfaceContainer = SurfaceContainer,
+    surfaceContainerHigh = SurfaceHigh,
+    surfaceContainerHighest = SurfaceHighest,
+    surfaceDim = SurfaceDim,
+    surfaceBright = Background,
+    outline = Outline,
+    outlineVariant = OutlineVariant,
+    inverseSurface = InverseSurface,
+    inverseOnSurface = InverseOnSurface,
+    error = ErrorRed,
+    onError = OnError,
+    errorContainer = ErrorContainer,
+    onErrorContainer = OnErrorContainer,
 )
 
 /**
- * Type scale.
+ * Inter, bundled rather than fetched.
  *
- * Larger than Material's defaults throughout, and heavier. The intended reader may be
- * holding the phone at arm's length in bad light, in the rain, in a hurry — and may read
- * slowly or not at all, which makes every word on screen expensive. Nothing is below 14 sp.
+ * The design specifies Inter from Google Fonts. This app declares **no INTERNET
+ * permission**, so a web font is not merely slow here — it is impossible. The variable
+ * font ships in assets (856 KB) and every weight comes from the one file.
  */
-private val ItantraTypography = Typography(
-    displayLarge = TextStyle(fontSize = 44.sp, lineHeight = 50.sp, fontWeight = FontWeight.Black),
-    headlineLarge = TextStyle(fontSize = 32.sp, lineHeight = 38.sp, fontWeight = FontWeight.Bold),
-    headlineMedium = TextStyle(fontSize = 26.sp, lineHeight = 32.sp, fontWeight = FontWeight.Bold),
-    titleLarge = TextStyle(fontSize = 22.sp, lineHeight = 28.sp, fontWeight = FontWeight.Bold),
-    titleMedium = TextStyle(fontSize = 18.sp, lineHeight = 24.sp, fontWeight = FontWeight.SemiBold),
-    bodyLarge = TextStyle(fontSize = 18.sp, lineHeight = 26.sp),
-    bodyMedium = TextStyle(fontSize = 16.sp, lineHeight = 22.sp),
-    labelLarge = TextStyle(fontSize = 16.sp, lineHeight = 20.sp, fontWeight = FontWeight.SemiBold),
-    labelMedium = TextStyle(fontSize = 14.sp, lineHeight = 18.sp, fontWeight = FontWeight.Medium),
+/**
+ * Inter, from a bundled variable font.
+ *
+ * The design specifies Inter from Google Fonts. This app declares **no INTERNET
+ * permission**, so a web font is not merely slow here — it is impossible. One 856 KB
+ * variable file in assets supplies every weight.
+ *
+ * Composable-scoped because reading an asset needs a Context, and [remember] so the
+ * typeface is parsed once rather than on every recomposition.
+ */
+@Composable
+private fun rememberInter(): FontFamily {
+    val assets = LocalContext.current.assets
+    return remember {
+        fun w(weight: Int) = Font(
+            path = "fonts/inter_variable.ttf",
+            assetManager = assets,
+            weight = FontWeight(weight),
+            variationSettings = FontVariation.Settings(FontVariation.weight(weight)),
+        )
+        FontFamily(w(400), w(500), w(600), w(700))
+    }
+}
+
+private fun interTypography(family: FontFamily) = Typography(
+    displayLarge = TextStyle(fontFamily = family, fontSize = 40.sp, lineHeight = 46.sp, fontWeight = FontWeight.Bold),
+    headlineLarge = TextStyle(fontFamily = family, fontSize = 30.sp, lineHeight = 36.sp, fontWeight = FontWeight.Bold),
+    headlineMedium = TextStyle(fontFamily = family, fontSize = 26.sp, lineHeight = 32.sp, fontWeight = FontWeight.Bold),
+    headlineSmall = TextStyle(fontFamily = family, fontSize = 22.sp, lineHeight = 28.sp, fontWeight = FontWeight.Bold),
+    titleLarge = TextStyle(fontFamily = family, fontSize = 20.sp, lineHeight = 26.sp, fontWeight = FontWeight.Bold),
+    titleMedium = TextStyle(fontFamily = family, fontSize = 17.sp, lineHeight = 23.sp, fontWeight = FontWeight.SemiBold),
+    titleSmall = TextStyle(fontFamily = family, fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.SemiBold),
+    bodyLarge = TextStyle(fontFamily = family, fontSize = 16.sp, lineHeight = 24.sp),
+    bodyMedium = TextStyle(fontFamily = family, fontSize = 14.sp, lineHeight = 20.sp),
+    bodySmall = TextStyle(fontFamily = family, fontSize = 12.sp, lineHeight = 16.sp),
+    labelLarge = TextStyle(fontFamily = family, fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.SemiBold),
+    labelMedium = TextStyle(fontFamily = family, fontSize = 13.sp, lineHeight = 17.sp, fontWeight = FontWeight.Medium),
+    labelSmall = TextStyle(fontFamily = family, fontSize = 11.sp, lineHeight = 15.sp, fontWeight = FontWeight.Medium),
 )
 
 @Composable
-fun ItantraTheme(
-    dark: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit,
-) {
+fun ItantraTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = if (dark) DarkScheme else LightScheme,
-        typography = ItantraTypography,
+        colorScheme = StitchScheme,
+        typography = interTypography(rememberInter()),
         content = content,
     )
 }

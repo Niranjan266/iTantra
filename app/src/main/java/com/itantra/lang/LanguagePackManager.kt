@@ -36,7 +36,23 @@ class LanguagePackManager(context: Context) {
         private const val MANIFEST = "manifest.json"
 
         /** Bump to force a re-copy after the bundled models change. */
-        private const val BUNDLED_VERSION = 1
+        /**
+         * Bump this whenever anything under `assets/languages/` changes.
+         *
+         * The stamp filename embeds the number, so a new value means the old stamp is not
+         * found and the pack is copied out again. **Forgetting to bump it is silent**: the
+         * app keeps running on the previously extracted copy and the new file simply is
+         * not there.
+         *
+         * That is not hypothetical. Adding `phrases.txt` to the bundled English pack
+         * shipped correctly inside the APK and never reached the device, because the copy
+         * had completed weeks earlier under v1. The English codebook — 144 phrases — read
+         * as empty, so compression and cross-language delivery were both quietly inert
+         * while the screen cheerfully said "none yet".
+         *
+         * v2: added `phrases.txt` (the phrase codebook).
+         */
+        private const val BUNDLED_VERSION = 2
         private const val STAMP = ".installed_v$BUNDLED_VERSION"
     }
 

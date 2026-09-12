@@ -54,6 +54,21 @@ class PhraseCodebook private constructor(
         const val PACK_FILE = "phrases.txt"
 
         /**
+         * A line meaning "this phrase has no translation in this language yet".
+         *
+         * It **consumes an id** and is never matched or spoken. That is the whole point:
+         * the codebooks are a parallel corpus, so line N must mean the same thing in every
+         * language, and a language that is missing one phrase must still hold its slot.
+         * Omitting the line instead would shift every id after it — and a shifted id does
+         * not fail, it decodes to a real but different sentence.
+         *
+         * That is not hypothetical. The first Tamil codebook was written independently of
+         * the English one: they agreed for three ids and then diverged, so id 3 meant
+         * "wait, out" to an English sender and "yes" to a Tamil receiver.
+         */
+        const val UNTRANSLATED = "-"
+
+        /**
          * 4096 entries, because the id is carried in 12 bits.
          *
          * Chosen over 8 bits (256 — too few for useful coverage) and over 16 bits
@@ -85,10 +100,29 @@ class PhraseCodebook private constructor(
         /** Build from raw lines, applying the same comment and blank-line rules. */
         fun of(lines: List<String>): PhraseCodebook {
             val kept = lines
-                .map { it.trimEnd('\r').trim() }
-                .filter { it.isNotEmpty() && !it.startsWith("#") }
+                .map { stripComment(it) }
+                .filter { it.isNotEmpty() }
                 .take(MAX_ENTRIES)
             return PhraseCodebook(kept)
+        }
+
+        /**
+         * Drop a whole-line comment, and a trailing one.
+         *
+         * Trailing comments matter for the parallel-corpus files: every line carries the
+         * English wording of its slot, so a translator can see what that id has to mean.
+         * The annotation must not become part of the phrase — without this the Tamil for
+         * "message received" parsed as `செய்தி கிடைத்தது   # 0: message received`, which
+         * of course never matched anything a recogniser said, and the codebook silently
+         * stopped compressing.
+         *
+         * Split on `" #"` rather than `"#"`, so a phrase may still contain a bare hash.
+         */
+        private fun stripComment(line: String): String {
+            val s = line.trimEnd('\r')
+            if (s.trimStart().startsWith("#")) return ""
+            val cut = s.indexOf(" #")
+            return (if (cut >= 0) s.substring(0, cut) else s).trim()
         }
 
         /**
@@ -130,14 +164,28 @@ class PhraseCodebook private constructor(
         // First occurrence wins, so a duplicated phrase cannot make the lower id
         // unreachable. The duplicate id stays decodable; it is simply never chosen.
         LinkedHashMap<String, Int>(phrases.size).apply {
-            phrases.forEachIndexed { id, phrase -> putIfAbsent(normalise(phrase), id) }
+            phrases.forEachIndexed { id, phrase ->
+                // Untranslated slots hold their id but must never be matched, or every
+                // unrelated utterance would compress to the first "-" in the file.
+                if (phrase != UNTRANSLATED) putIfAbsent(normalise(phrase), id)
+            }
         }
 
     /** The phrase id for [text], or null when it is not in the book — the normal case. */
     fun idOf(text: String): Int? = byNormalised[normalise(text)]
 
-    /** The phrase for [id], or null if this book is too short to have one. */
-    fun textOf(id: Int): String? = phrases.getOrNull(id)
+    /**
+     * The phrase for [id], or null when this book has no wording for it.
+     *
+     * Null covers both "the book is shorter than the sender's" and "this language has not
+     * translated that phrase yet" ([UNTRANSLATED]). Callers must treat them the same way:
+     * say nothing rather than guess.
+     */
+    fun textOf(id: Int): String? =
+        phrases.getOrNull(id)?.takeIf { it != UNTRANSLATED }
+
+    /** How many ids this book holds a real wording for, ignoring untranslated slots. */
+    val translatedCount: Int get() = phrases.count { it != UNTRANSLATED }
 
     /**
      * What [packet] says, resolving a phrase reference against this book.

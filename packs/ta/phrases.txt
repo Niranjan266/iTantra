@@ -1,0 +1,64 @@
+# iTantra phrase codebook — தமிழ் (Tamil)
+#
+# ⚠ DRAFT — NEEDS REVIEW BY A TAMIL SPEAKER BEFORE IT IS USED IN THE FIELD.
+#
+# Two reasons this is not ready to freeze, and both matter:
+#
+#  1. These translations have not been checked by a native speaker. A wrong phrase in a
+#     distress codebook is worse than a missing one, because the receiver hears a
+#     confident sentence that nobody sent.
+#
+#  2. A phrase only compresses if the text the RECOGNISER produces matches the text here.
+#     Whisper's Tamil output has its own spelling and spacing habits, so some of these
+#     will never match until they are tuned against what the model actually returns. The
+#     way to find out is to speak each one and read the recognised text off the screen.
+#
+# Deliberately short — 32 phrases, the ones that matter most in the first minutes of a
+# flood. A list that can actually be reviewed beats a long one that cannot.
+#
+# THE LINE ORDER IS A WIRE CONTRACT once both devices hold this file: a phrase's position
+# is the number that travels on the link. APPEND ONLY after that point — never reorder,
+# never delete. Until review is done, this file is free to change, but both phones must
+# then be updated together.
+#
+# Blank lines and lines starting with # are ignored and do not consume an id.
+
+# --- 0-7  net discipline ---------------------------------------------------------------
+செய்தி கிடைத்தது
+மீண்டும் சொல்லுங்கள்
+காத்திருங்கள்
+ஆம்
+இல்லை
+உங்கள் இடத்தைச் சொல்லுங்கள்
+நீங்கள் யார்
+செய்தி முடிந்தது
+
+# --- 8-15  distress --------------------------------------------------------------------
+உடனே உதவி தேவை
+இது அவசர நிலை
+நாங்கள் சிக்கிக்கொண்டோம்
+நாங்கள் பாதுகாப்பாக இருக்கிறோம்
+எங்கள் இடத்திற்கு உதவி அனுப்புங்கள்
+நாங்கள் மேட்டுப் பகுதிக்குச் செல்கிறோம்
+இந்த வழியாக வர வேண்டாம்
+நிலை மோசமாகி வருகிறது
+
+# --- 16-23  water and rescue -----------------------------------------------------------
+வெள்ளம் உயர்கிறது
+வெள்ளம் உயர்கிறது படகுகளை அனுப்புங்கள்
+படகுகளை அனுப்புங்கள்
+ஆறு கரை உடைந்துவிட்டது
+சாலை தண்ணீரில் மூழ்கிவிட்டது
+பாலம் தண்ணீரில் உள்ளது
+மீட்புக் குழுவை அனுப்புங்கள்
+கயிறு தேவை
+
+# --- 24-31  people, medical, supplies --------------------------------------------------
+இங்கு அனைவரும் பாதுகாப்பாக உள்ளனர்
+சிலர் காணவில்லை
+ஒரு குழந்தை காணவில்லை
+மருத்துவர் தேவை
+மருந்து தேவை
+குடிநீர் தேவை
+உணவு தேவை
+மின்சாரம் இல்லை

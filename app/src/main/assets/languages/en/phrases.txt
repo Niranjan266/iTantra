@@ -1,0 +1,176 @@
+# iTantra phrase codebook — English
+#
+# One phrase per line. The LINE ORDER IS A WIRE CONTRACT: a phrase's position in this
+# file is the number that travels on the link. Both devices must hold an identical file
+# or a phrase id decodes to the wrong sentence.
+#
+#   APPEND ONLY. Never reorder, never delete, never edit an existing line's meaning.
+#   Retiring a phrase means leaving it in place and stopping using it.
+#
+# Blank lines and lines starting with # are ignored and do not consume an id.
+#
+# Chosen for what disaster traffic actually repeats — water, boats, roads, medicine,
+# people, and the handful of acknowledgements that keep a net orderly. Coverage, not
+# elegance, is the point: a phrase that is never sent saves nothing.
+
+# --- 0-15  net discipline -------------------------------------------------------------
+message received
+message not understood, repeat
+standing by
+wait, out
+nothing to report
+yes
+no
+unknown
+confirmed
+cancel that
+report your position
+report your status
+who is calling
+speak slower
+end of message
+acknowledged, no action needed
+
+# --- 16-31  distress ------------------------------------------------------------------
+we need help immediately
+this is an emergency
+we are trapped and cannot move
+we are safe for now
+send help to our position
+we cannot reach safety on foot
+there is no one here
+we have lost contact with the others
+do not come this way, it is not safe
+we are moving to higher ground
+we will stay where we are
+our phone battery is almost finished
+we can hear you but cannot reply
+sending one last message
+all clear here
+situation is getting worse
+
+# --- 32-47  water and flooding --------------------------------------------------------
+flood water is rising
+flood water is rising near the school, send boats
+the river has broken its bank
+the water is above the waist
+the water is still rising
+the water is going down
+the bridge is under water
+the road is under water
+the dam has opened its gates
+heavy rain has not stopped
+the well water is not safe to drink
+we have no clean drinking water
+the borewell is flooded
+the drain is blocked and water is backing up
+the field is completely submerged
+high tide is expected tonight
+
+# --- 48-63  people --------------------------------------------------------------------
+everyone here is safe
+some people are missing
+a child is missing
+an elderly person needs help
+a pregnant woman needs a hospital
+someone is badly injured
+someone has drowned
+we are ten people
+we are more than fifty people
+we have children with us
+we have elderly people with us
+we have a disabled person with us
+people are gathering at the temple
+people are gathering at the school
+people are gathering at the panchayat office
+everyone has been moved out
+
+# --- 64-79  medical ------------------------------------------------------------------
+we need a doctor
+we need medicine
+we need insulin
+we need snake bite treatment
+we need drinking water and food
+there is fever spreading here
+there is diarrhoea spreading here
+someone needs dialysis
+someone needs oxygen
+we need bandages and antiseptic
+bring a stretcher
+the health centre is closed
+the health centre is flooded
+an ambulance cannot reach us
+we have first aid here
+no medical help needed
+
+# --- 80-95  rescue and transport ------------------------------------------------------
+send boats
+send a helicopter
+send a rescue team
+send a vehicle
+we need rope
+we need life jackets
+we need a ladder
+the boat is full, send another
+the boat has arrived
+the rescue team has arrived
+we can walk to the main road
+we cannot cross the water
+a tractor can reach us
+the path is passable on foot
+the path is blocked by a fallen tree
+we do not need rescue
+
+# --- 96-111  infrastructure -----------------------------------------------------------
+there is no electricity
+there is no mobile network
+the transformer is damaged
+a live wire has fallen, keep away
+the road is washed away
+the culvert has collapsed
+a building has collapsed
+the school building is damaged
+the roof has blown off
+there is a landslide on the road
+the railway line is under water
+the pump is not working
+we have a generator
+we have no fuel
+we have fuel for one day
+the water supply has stopped
+
+# --- 112-127  supplies and shelter ----------------------------------------------------
+we need food
+we need drinking water
+we need blankets
+we need tarpaulin or tents
+we need baby food
+we need animal feed
+we have food for one day
+we have food for three days
+we have enough supplies
+the shelter is full
+the shelter has space
+we are in a temporary shelter
+cattle need to be moved
+cattle have been lost
+crops are destroyed
+the granary is flooded
+
+# --- 128-143  coordination ------------------------------------------------------------
+relay this message onward
+this message is for the district office
+this message is for the police
+this message is for the fire service
+this message is for the hospital
+we are relaying for another village
+pass this to anyone with a network signal
+we will call again in one hour
+we will call again at first light
+change to the next channel
+stay on this channel
+keep this line clear for emergencies
+how many people can you take
+we can take ten more people
+we cannot take any more people
+send a written list of names

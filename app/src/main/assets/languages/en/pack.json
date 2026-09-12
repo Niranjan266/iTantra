@@ -1,0 +1,21 @@
+{
+  "id": 0,
+  "code": "en",
+  "name": "English",
+  "asr": {
+    "encoder": "asr/encoder.onnx",
+    "decoder": "asr/decoder.onnx",
+    "joiner": "asr/joiner.onnx",
+    "tokens": "asr/tokens.txt",
+    "sampleRate": 16000,
+    "featureDim": 80
+  },
+  "tts": {
+    "model": "tts/model.onnx",
+    "tokens": "tts/tokens.txt",
+    "dataDir": "tts/espeak-ng-data",
+    "speakerId": 0,
+    "speed": 1.0
+  },
+  "selfTest": "flood water is rising near the school send boats"
+}

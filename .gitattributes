@@ -1,0 +1,46 @@
+# Line endings are pinned deliberately, not left to each developer's git settings.
+#
+# `core.autocrlf` is true on at least one machine in this project, which rewrites line
+# endings on checkout. For most files that is harmless. For the files below it is not, and
+# one of those cases already cost four full build-push-test cycles to diagnose: a
+# `tokens.txt` with CRLF leaves a stray carriage return attached to the last field, and
+# sherpa-onnx does not report an error for that — it aborts the process in native code with
+# no message at all. See the note in tools/export-mms-tts.py.
+
+# Default: let git normalise text in the repository, and leave binaries alone.
+* text=auto
+
+# --- Must be LF, because something other than a text editor parses them ---------------
+
+# Read by sherpa-onnx's C++ readers, which split on \n only. CRLF here is a native abort.
+tokens.txt text eol=lf
+*/tokens.txt text eol=lf
+
+# Phrase codebooks. Kotlin's readLines tolerates CRLF and PhraseCodebook strips it, so
+# this is defence in depth rather than a known break — but the file's line numbers are a
+# wire contract, and nothing about it should vary by who cloned it.
+phrases.txt text eol=lf
+
+# Shell scripts break outright with CRLF: the interpreter on the shebang line gets a
+# trailing \r and the script fails with a confusing "not found".
+gradlew text eol=lf
+*.sh text eol=lf
+
+# --- Must be CRLF ----------------------------------------------------------------------
+
+# Windows-only, and PowerShell/cmd are the consumers.
+gradlew.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# --- Binary: never normalise, never diff as text --------------------------------------
+
+*.onnx binary
+*.aar binary
+*.jar binary
+*.apk binary
+*.tflite binary
+*.wav binary
+*.png binary
+*.jpg binary
+*.pdf binary
+*.pptx binary

@@ -1,0 +1,6 @@
+{
+  "manifest_version": 1,
+  "installed": [
+    { "id": 0, "code": "en", "name": "English", "dir": "en" }
+  ]
+}

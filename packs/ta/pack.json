@@ -1,0 +1,21 @@
+{
+  "id": 6,
+  "code": "ta",
+  "name": "தமிழ்",
+  "asr": {
+    "type": "whisper",
+    "encoder": "asr/encoder.onnx",
+    "decoder": "asr/decoder.onnx",
+    "tokens": "asr/tokens.txt",
+    "language": "ta",
+    "sampleRate": 16000,
+    "featureDim": 80
+  },
+  "selfTest": "வெள்ளம் உயர்கிறது படகுகளை அனுப்புங்கள்",
+  "tts": {
+    "model": "tts/model.onnx",
+    "tokens": "tts/tokens.txt",
+    "sampleRate": 16000,
+    "numThreads": 2
+  }
+}

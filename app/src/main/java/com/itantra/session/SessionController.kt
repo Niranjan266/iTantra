@@ -116,6 +116,22 @@ class SessionController(
     private val records = mutableListOf<TransmissionRecord>()
 
     /**
+     * Recent messages, newest first, for the Messages screen.
+     *
+     * Deliberately **in memory only and bounded**. Nothing is written to disk: a distress
+     * app that keeps a durable transcript of who said what, on a phone that may be handed
+     * around or lost, creates a risk the user never asked for. If persistence is wanted
+     * later it should be an explicit choice with an explicit way to clear it, not a side
+     * effect of showing a list.
+     */
+    private val _messages = MutableStateFlow<List<LoggedMessage>>(emptyList())
+    val messages: StateFlow<List<LoggedMessage>> = _messages.asStateFlow()
+
+    private fun log(entry: LoggedMessage) {
+        _messages.update { (listOf(entry) + it).take(MAX_LOG) }
+    }
+
+    /**
      * Collectors for the current transport. Held so that switching transports can
      * cancel them — without this, every switch would leave the old collector running
      * and each frame would be handled once per transport ever selected.
@@ -715,6 +731,21 @@ class SessionController(
             },
         )
 
+        log(
+            LoggedMessage(
+                atMs = System.currentTimeMillis(),
+                incoming = false,
+                text = text,
+                original = null,
+                langId = langId,
+                intent = intent,
+                wireBytes = frame.size,
+                kind = if (phraseId != null) Translator.Kind.PHRASE_SAME_LANGUAGE
+                else Translator.Kind.VERBATIM,
+                packet = packet,
+            )
+        )
+
         _ui.update { it.copy(
             lastSentPacket = packet,
             lastSentHex = PacketCodec.hexDump(frame),
@@ -816,6 +847,20 @@ class SessionController(
                 // contention, and this does file-backed codebook lookups.
                 val delivery = deliveryOf(packet)
 
+                log(
+                    LoggedMessage(
+                        atMs = System.currentTimeMillis(),
+                        incoming = true,
+                        text = delivery.translated,
+                        original = delivery.original,
+                        langId = packet.langId,
+                        intent = packet.intent,
+                        wireBytes = frame.size,
+                        kind = delivery.kind,
+                        packet = packet,
+                    )
+                )
+
                 _ui.update { it.copy(
                     lastReceivedPacket = packet,
                     lastReceivedText = delivery.translated,
@@ -882,6 +927,19 @@ class SessionController(
     fun replayLast() {
         val packet = _ui.value.lastReceivedPacket ?: return
         onPacketReceived(packet)
+    }
+
+    /**
+     * Speak any message from the log again.
+     *
+     * Re-renders from the stored packet rather than replaying audio, because no audio was
+     * ever kept — none crossed the link. One consequence is worth knowing rather than
+     * hiding: a phrase-referenced message replayed **after switching language is spoken in
+     * the new language**, because the id is resolved against whatever pack is selected
+     * now. That is the translation, on demand, from history.
+     */
+    fun speak(message: LoggedMessage) {
+        onPacketReceived(message.packet)
     }
 
     /** Stop playback, unless a DISTRESS message is protecting itself (PRD F-32). */
@@ -1006,3 +1064,29 @@ data class SessionUiState(
     val engineLoadMs: Double? = null,
     val engineError: String? = null,
 )
+
+/**
+ * One entry in the recent-message list.
+ *
+ * Holds the [packet] so the entry can be replayed and re-spoken later — including in a
+ * different language, since re-rendering resolves the phrase id against whatever pack is
+ * selected at that moment. Replaying an old message after switching language is, in
+ * effect, asking for the translation again.
+ */
+data class LoggedMessage(
+    val atMs: Long,
+    /** True for a message that arrived, false for one this phone sent. */
+    val incoming: Boolean,
+    /** What it says in the listener's language. */
+    val text: String,
+    /** The sender's own wording, when a translation happened. */
+    val original: String?,
+    val langId: Int,
+    val intent: Int,
+    val wireBytes: Int,
+    val kind: com.itantra.codec.Translator.Kind,
+    val packet: com.itantra.codec.Packet,
+)
+
+/** Cap on the in-memory message log. */
+private const val MAX_LOG = 50

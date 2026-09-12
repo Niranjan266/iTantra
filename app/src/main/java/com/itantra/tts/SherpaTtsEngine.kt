@@ -29,8 +29,10 @@ import com.k2fsa.sherpa.onnx.OfflineTtsVitsModelConfig
  */
 class SherpaTtsEngine(
     private val pack: LanguagePack,
-    private val numThreads: Int = 2,
 ) : SpeechRenderer {
+
+    /** From the pack, which knows what its own model needs. See TtsModel.numThreads. */
+    private val numThreads: Int get() = pack.tts?.numThreads ?: 2
 
     companion object {
         private const val TAG = "iTantra.Tts"

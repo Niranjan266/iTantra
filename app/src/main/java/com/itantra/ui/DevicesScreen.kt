@@ -138,20 +138,30 @@ fun DevicesScreen(
         Spacer(Modifier.height(18.dp))
 
         // --- paired phones ---------------------------------------------------------
+        // Filter to plausible peers. Android's paired list is everything the phone has
+        // ever bonded with — on the test handset that was 20 entries including four sets
+        // of earbuds, a soundbar and a set-top box. Offering "Join" on headphones is an
+        // invitation to a confusing failure, and this filter already existed on the older
+        // screen; rebuilding to the design dropped it.
+        val peers = pairedDevices.filter { it.couldBePeer }
+        val hidden = pairedDevices.size - peers.size
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Paired phones", style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onBackground)
             Spacer(Modifier.width(8.dp))
             Text(
-                // The real count. Zero is shown as zero.
-                "${pairedDevices.size}",
+                // The real count of plausible peers, and how many were filtered out, so
+                // the number is never silently smaller than what Android shows.
+                if (hidden > 0) "${peers.size}  ($hidden other devices hidden)"
+                else "${peers.size}",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         Spacer(Modifier.height(8.dp))
 
-        if (pairedDevices.isEmpty()) {
+        if (peers.isEmpty()) {
             OutlinedCard {
                 Text(
                     "No paired phones yet. Pair the two phones once in Android's Bluetooth " +
@@ -161,7 +171,7 @@ fun DevicesScreen(
                 )
             }
         } else {
-            pairedDevices.forEach { device ->
+            peers.forEach { device ->
                 val connectedToThis = (state.transportState as? TransportState.Connected)
                     ?.peer?.contains(device.name, ignoreCase = true) == true
                 Spacer(Modifier.height(8.dp))

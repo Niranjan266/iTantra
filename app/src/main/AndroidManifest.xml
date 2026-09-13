@@ -48,6 +48,15 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
+    <!-- Wi-Fi Direct (WifiDirectTransport): two phones form their own network with no
+         router. NEARBY_WIFI_DEVICES replaces the location permission on Android 13+, and
+         is flagged neverForLocation because nothing here reads position. -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="tiramisu" />
+    <uses-feature android:name="android.hardware.wifi.direct" android:required="false" />
+
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <uses-feature android:name="android.hardware.bluetooth" android:required="false" />

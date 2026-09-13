@@ -34,6 +34,7 @@ import com.itantra.session.SessionMode
 import com.itantra.transport.BluetoothDevices
 import com.itantra.transport.BleMeshTransport
 import com.itantra.transport.BluetoothRfcommTransport
+import com.itantra.transport.WifiDirectTransport
 import com.itantra.transport.WifiMulticastTransport
 import com.itantra.transport.FloodRelay
 import com.itantra.transport.RepeatSender
@@ -299,10 +300,24 @@ class MainActivity : ComponentActivity() {
         // turns the mesh on rather than leaving the user to find a second switch.
         // Relaying adds reach on any one-to-many bearer, and achieves nothing on a
         // point-to-point link where the single peer already heard the message.
+        // Relay adds reach on a one-to-many bearer. Wi-Fi Direct is a two-party link, so
+        // relaying it would only duplicate what the single peer already received.
         meshEnabled = choice is TransportChoice.BleMesh ||
             choice is TransportChoice.WifiBroadcast
         if (choice is TransportChoice.BleMesh && !BleMeshTransport.hasPermission(this)) {
             permissionLauncher.launch(BleMeshTransport.requiredPermissions())
+        }
+        if (choice is TransportChoice.WifiDirect) {
+            // NEARBY_WIFI_DEVICES on Android 13+, the location permission before that —
+            // Wi-Fi Direct discovery is gated on one or the other.
+            val needed = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                arrayOf(Manifest.permission.NEARBY_WIFI_DEVICES)
+            } else {
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+            if (needed.any { ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED }) {
+                permissionLauncher.launch(needed)
+            }
         }
         rebuildTransport()
     }
@@ -337,6 +352,9 @@ class MainActivity : ComponentActivity() {
 
             is TransportChoice.WifiBroadcast ->
                 WifiMulticastTransport(context = applicationContext, scope = app.appScope)
+
+            is TransportChoice.WifiDirect ->
+                WifiDirectTransport(context = applicationContext, scope = app.appScope)
         }
 
         // The decorators compose, and the order is deliberate:

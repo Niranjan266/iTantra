@@ -105,6 +105,16 @@ fun DevicesScreen(
         Spacer(Modifier.height(8.dp))
 
         LinkOption(
+            icon = MsIcons.Hub,
+            title = "Wi-Fi Direct",
+            detail = "The phones make their own network · no router, no internet",
+            range = "any length",
+            chosen = selected is TransportChoice.WifiDirect,
+            enabled = true,
+            onClick = { onChoose(TransportChoice.WifiDirect) },
+        )
+        Spacer(Modifier.height(8.dp))
+        LinkOption(
             icon = MsIcons.WifiTethering,
             title = "Wi-Fi broadcast",
             detail = "Everyone on this Wi-Fi hears you · carries full sentences",

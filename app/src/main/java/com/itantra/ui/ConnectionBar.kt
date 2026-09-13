@@ -54,12 +54,23 @@ sealed class TransportChoice {
      */
     object WifiBroadcast : TransportChoice()
 
+    /**
+     * Wi-Fi Direct: the phones make their own network, no router and no internet.
+     *
+     * The only bearer here that needs no existing infrastructure AND carries a full
+     * spoken sentence. Android negotiates which phone hosts, so unlike Bluetooth direct
+     * there is no way for both users to pick the same role and end up with neither
+     * listening.
+     */
+    object WifiDirect : TransportChoice()
+
     fun label(): String = when (this) {
         Loopback -> "Loopback"
         BluetoothHost -> "Bluetooth host"
         is BluetoothJoin -> device.name
         BleMesh -> "BLE mesh"
         WifiBroadcast -> "Wi-Fi broadcast"
+        WifiDirect -> "Wi-Fi Direct"
     }
 }
 

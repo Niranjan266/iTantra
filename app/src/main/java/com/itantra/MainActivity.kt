@@ -25,7 +25,10 @@ import java.io.File
 // android.content.Intent. The alias keeps both readable in this file.
 import com.itantra.codec.Intent as MessageIntent
 import com.itantra.codec.LanguageId
+import com.itantra.lang.CatalogueEntry
+import com.itantra.lang.LanguageCatalogue
 import com.itantra.lang.LanguagePack
+import com.itantra.lang.PackDownloader
 import com.itantra.session.SessionController
 import com.itantra.session.SessionMode
 import com.itantra.transport.BluetoothDevices
@@ -70,6 +73,12 @@ class MainActivity : ComponentActivity() {
     private var micGranted by mutableStateOf(false)
     private val pairedDevices = mutableStateListOf<PairedDevice>()
     private val packs = mutableStateListOf<LanguagePack>()
+
+    /** Languages that can be added, and the state of any download in progress. */
+    private val available = mutableStateListOf<CatalogueEntry>()
+    private var downloading by mutableStateOf<String?>(null)
+    private var downloadProgress by mutableStateOf(0f)
+    private var downloadNote by mutableStateOf("")
 
     private var selfTestResult by mutableStateOf("")
 
@@ -242,6 +251,11 @@ class MainActivity : ComponentActivity() {
                                 else -> SettingsScreen(
                                     state = state,
                                     packs = packs,
+                                    available = available,
+                                    downloading = downloading,
+                                    downloadProgress = downloadProgress,
+                                    downloadNote = downloadNote,
+                                    onDownload = ::downloadLanguage,
                                     bearerBps = bearerBps,
                                     onSelectLanguage = { pack ->
                                         app.appScope.launch { session.selectLanguage(pack) }
@@ -367,6 +381,9 @@ class MainActivity : ComponentActivity() {
         // The session needs every pack, not just the selected one, so a received message
         // can also be shown in the sender's language.
         session.installedPacks = packs.toList()
+
+        available.clear()
+        available.addAll(LanguageCatalogue.available(this, packs))
     }
 
     /**
@@ -375,6 +392,39 @@ class MainActivity : ComponentActivity() {
      * A file, not a screenshot: the submission claims measured numbers, so the raw
      * rows have to be able to leave the device and be checked.
      */
+    /**
+     * Fetch a language, then make it usable without a restart.
+     *
+     * On the application scope: a 188 MB download must survive the screen turning off,
+     * and abandoning it half way would leave the user paying for the bytes twice.
+     */
+    private fun downloadLanguage(entry: CatalogueEntry) {
+        if (downloading != null) return
+        downloading = entry.code
+        downloadProgress = 0f
+        downloadNote = "starting…"
+
+        app.appScope.launch {
+            val dir = PackDownloader(applicationContext).download(entry) { p ->
+                downloadProgress = p.fraction
+                downloadNote = "${(p.fraction * 100).toInt()}% · ${p.label}"
+            }
+            downloading = null
+            if (dir != null) {
+                // Rescan rather than trusting what we just wrote: the pack has to survive
+                // the same discovery path as one copied on by hand, or "adding a language
+                // is a file copy" would only be true for the ones we downloaded.
+                refreshPermissions()
+            } else {
+                Toast.makeText(
+                    this@MainActivity,
+                    "Could not download ${entry.name}. Check the connection and try again.",
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
+        }
+    }
+
     private fun exportCsv() {
         runCatching {
             val dir = File(cacheDir, "exports").apply { mkdirs() }

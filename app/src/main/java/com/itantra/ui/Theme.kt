@@ -91,6 +91,14 @@ val StatusReady = TertiaryContainer
 val StatusReadyContainer = OnTertiaryContainer
 val OnStatusReady = Color(0xFF002111)
 
+/**
+ * A message is being spoken aloud.
+ *
+ * The design's secondary blue rather than the primary, so "playing" is distinguishable
+ * from "listening" at a glance without introducing a colour the design does not contain.
+ */
+val StatusSpeaking = Secondary
+
 /** Routine urgency. */
 val UrgencyRoutine = Primary
 

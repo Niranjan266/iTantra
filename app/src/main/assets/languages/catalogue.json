@@ -1,0 +1,64 @@
+{
+  "_comment": [
+    "The ten Indian languages of SIH PS-26173, and where their models come from.",
+    "",
+    "DATA, not code: the app reads this to decide what it can offer to download.",
+    "Adding an eleventh language is an edit to this file plus a pack.json, with no",
+    "Kotlin change anywhere — the same rule the rest of the project follows.",
+    "",
+    "Recognition is AI4Bharat IndicConformer, Apache-2.0, one CTC graph per language",
+    "over a vocabulary SHARED by all ten. That sharing is why a second Indic language",
+    "costs only its own model file and not another 66 KB of tokens.",
+    "",
+    "Speech is Meta MMS. Note the licence: CC-BY-NC 4.0, non-commercial only. That is",
+    "fine for a competition entry and must be stated; a commercial deployment needs a",
+    "different voice. Recognition carries no such restriction.",
+    "",
+    "MMS ships as PyTorch and has to be converted to ONNX before sherpa can load it.",
+    "tools/export-mms-tts.py does that, and the converted voices are attached to this",
+    "project's GitHub release because there is no published ONNX build of them."
+  ],
+
+  "asr": {
+    "family": "nemo_ctc",
+    "source": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx",
+    "licence": "Apache-2.0",
+    "modelUrl": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/main/{code}/model.int8.onnx",
+    "tokensUrl": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/main/tokens.txt",
+    "approxModelMb": 188,
+    "approxTokensKb": 66
+  },
+
+  "tts": {
+    "family": "vits",
+    "frontend": "characters",
+    "source": "https://huggingface.co/facebook/mms-tts-{mms}",
+    "licence": "CC-BY-NC-4.0",
+    "converter": "tools/export-mms-tts.py",
+    "approxModelMb": 37
+  },
+
+  "_idComment": [
+    "NO language ids here, deliberately.",
+    "",
+    "The id is part of the frozen wire format (LanguageId / TRD section 4.3) and the",
+    "app resolves it from the ISO code below. Writing the numbers here as well would",
+    "mean two sources of truth for something that can never be renumbered — and the",
+    "first draft of this file got six of the ten WRONG, which would have put the wrong",
+    "language id on the wire for Bengali, Telugu, Marathi, Gujarati, Kannada, Malayalam",
+    "and Odia. A packet is supposed to decode to the same language in ten years."
+  ],
+
+  "languages": [
+    { "code": "en", "mms": "eng", "name": "English",   "bundled": true },
+    { "code": "hi", "mms": "hin", "name": "हिन्दी" },
+    { "code": "gu", "mms": "guj", "name": "ગુજરાતી" },
+    { "code": "mr", "mms": "mar", "name": "मराठी" },
+    { "code": "kn", "mms": "kan", "name": "ಕನ್ನಡ" },
+    { "code": "ml", "mms": "mal", "name": "മലയാളം" },
+    { "code": "ta", "mms": "tam", "name": "தமிழ்" },
+    { "code": "te", "mms": "tel", "name": "తెలుగు" },
+    { "code": "or", "mms": "ory", "name": "ଓଡ଼ିଆ" },
+    { "code": "bn", "mms": "ben", "name": "বাংলা" }
+  ]
+}

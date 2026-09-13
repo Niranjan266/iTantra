@@ -109,6 +109,19 @@ class WifiMulticastTransport(
     private var lock: WifiManager.MulticastLock? = null
     private var group: InetAddress? = null
 
+    /**
+     * Addresses we have received from, and send a unicast copy to.
+     *
+     * Multicast and broadcast are both discretionary on Wi-Fi: an access point may forward
+     * unicast between clients happily — proven here with ping — while dropping group and
+     * broadcast traffic to save airtime. Once a peer has been heard from even once, a
+     * direct copy reaches it whatever the access point thinks of multicast.
+     *
+     * This cannot bootstrap discovery on its own, which is why all three are sent: group,
+     * broadcast, and unicast to everyone already known.
+     */
+    private val knownPeers = java.util.concurrent.ConcurrentHashMap<String, Long>()
+
     @Volatile var datagramsSent: Int = 0
         private set
 
@@ -140,6 +153,11 @@ class WifiMulticastTransport(
 
                 val s = MulticastSocket(PORT)
                 s.reuseAddress = true
+                // Required before a datagram may be sent to a broadcast address. Without
+                // it every broadcast send fails — and the first version wrapped that send
+                // in a runCatching that discarded the exception, so the fallback path
+                // looked active while doing nothing at all.
+                s.broadcast = true
                 // Our own datagrams come back to us. Left ON deliberately: the relay
                 // already suppresses duplicates by (sessionId, seq), and hearing our own
                 // transmission is how a sender can tell the radio actually sent it.
@@ -182,6 +200,7 @@ class WifiMulticastTransport(
                 break
             }
             datagramsReceived++
+            packet.address?.hostAddress?.let { knownPeers[it] = System.currentTimeMillis() }
             // Logged because its absence is the whole diagnosis: a phone that sends
             // happily and receives nothing is almost always the access point refusing to
             // forward multicast between wireless clients, not a fault in this code.
@@ -213,6 +232,14 @@ class WifiMulticastTransport(
                 // the configurations multicast does not, and costs one extra datagram.
                 broadcastAddress()?.let { b ->
                     runCatching { s.send(DatagramPacket(frame, frame.size, b, PORT)) }
+                        .onFailure { Log.w(TAG, "broadcast to ${b.hostAddress} failed", it) }
+                }
+                // And directly to anyone already heard from.
+                knownPeers.keys.forEach { host ->
+                    runCatching {
+                        s.send(DatagramPacket(
+                            frame, frame.size, InetAddress.getByName(host), PORT))
+                    }.onFailure { Log.w(TAG, "unicast to $host failed: ${it.message}") }
                 }
             }
             datagramsSent++

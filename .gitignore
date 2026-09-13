@@ -23,3 +23,6 @@ app/src/main/assets/languages/*/tts/
 # pack must contain, and the fetch script fills in the rest.
 !app/src/main/assets/languages/manifest.json
 !app/src/main/assets/languages/*/pack.json
+
+# Personal planning notes, deliberately not published.
+Claude idea.md

@@ -137,6 +137,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         refreshPermissions()
 
+        // Come back up on the link the user last chose, rather than on the loopback that
+        // only talks to itself. See [rememberChoice] for why this matters so much.
+        restoreChoice()?.let(::chooseTransport)
+
         setContent {
             ItantraTheme {
                 Surface {
@@ -308,8 +312,44 @@ class MainActivity : ComponentActivity() {
         refreshPermissions()
     }
 
+    /**
+     * Remember the link the user picked, so the next launch does not silently fall back.
+     *
+     * This was the whole of "it does not send from one mobile to another". The default is
+     * [TransportChoice.Loopback], which echoes every frame back to the phone that sent it
+     * — so after restarting the app, a message showed up as **both** Sent and Received on
+     * the speaker's own screen, looking exactly like success, while no radio was involved
+     * and the other phone heard nothing. A transport that quietly forgets itself and fails
+     * in a way indistinguishable from working is worse than one that fails loudly.
+     *
+     * Only the radio-free and router-free choices are restored. A Bluetooth link is not:
+     * it names one specific paired device that may be off, out of range or unpaired by
+     * now, and reconnecting to it unasked at launch would hang the screen on a link the
+     * user has not chosen for this conversation.
+     */
+    private fun rememberChoice(choice: TransportChoice) {
+        val key = when (choice) {
+            is TransportChoice.WifiBroadcast -> "wifi-broadcast"
+            is TransportChoice.WifiDirect -> "wifi-direct"
+            is TransportChoice.BleMesh -> "ble-mesh"
+            is TransportChoice.Loopback -> "loopback"
+            // Bluetooth deliberately not remembered — see above.
+            else -> return
+        }
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString(KEY_LINK, key).apply()
+    }
+
+    private fun restoreChoice(): TransportChoice? =
+        when (getSharedPreferences(PREFS, MODE_PRIVATE).getString(KEY_LINK, null)) {
+            "wifi-broadcast" -> TransportChoice.WifiBroadcast
+            "wifi-direct" -> TransportChoice.WifiDirect
+            "ble-mesh" -> TransportChoice.BleMesh
+            else -> null
+        }
+
     private fun chooseTransport(choice: TransportChoice) {
         transportChoice = choice
+        rememberChoice(choice)
         // The broadcast bearer is the only one where relaying adds reach, so selecting it
         // turns the mesh on rather than leaving the user to find a second switch.
         // Relaying adds reach on any one-to-many bearer, and achieves nothing on a
@@ -533,4 +573,9 @@ class MainActivity : ComponentActivity() {
         // if the user puts the phone in their pocket (PRD F-32).
         session.releaseMicrophone()
     }
+    companion object {
+        private const val PREFS = "itantra"
+        private const val KEY_LINK = "link"
+    }
+
 }

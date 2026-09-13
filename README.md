@@ -227,8 +227,16 @@ execute, which is ~21 MB off the size the efficiency metric measures.
 
 The English pack ships **inside the APK** and is copied into app storage on first launch
 (measured: 201 ms). Install the APK on any phone and it works immediately — no `adb push`,
-no download, no account, and the app declares **no `INTERNET` permission at all**, so
-offline operation is structural rather than merely intended.
+no download, no account, and the app contacts **no server of any kind** — there is no web address anywhere in the
+source, no account and no DNS lookup.
+
+**A correction.** This used to say the app declared *no `INTERNET` permission at all*,
+which was true and was a structural guarantee rather than a promise. Adding the Wi-Fi
+bearer ended that: Android requires `INTERNET` for **any** socket, including the purely
+local multicast this uses, and there is no local-only alternative. The datagrams carry a
+TTL of 1 to a `239.x` administratively-scoped group, so a router will not forward them off
+the subnet — but that is reasoning, where the old claim was a fact. The **BLE bearer still
+needs no such permission**, and remains the choice when that distinction matters.
 
 Adding a language is still a file-copy: drop a folder beside the first one. The bundled
 pack takes exactly the same code path as one added later — it is a convenience, not a

@@ -45,11 +45,21 @@ sealed class TransportChoice {
      */
     object BleMesh : TransportChoice()
 
+    /**
+     * Everyone on the same Wi-Fi, over multicast.
+     *
+     * Carries ~1400 bytes rather than BLE's 24, so free speech travels and not only
+     * codebook phrases — at the cost of needing a Wi-Fi network (a phone's own hotspot
+     * counts) and the INTERNET permission Android demands for any socket.
+     */
+    object WifiBroadcast : TransportChoice()
+
     fun label(): String = when (this) {
         Loopback -> "Loopback"
         BluetoothHost -> "Bluetooth host"
         is BluetoothJoin -> device.name
         BleMesh -> "BLE mesh"
+        WifiBroadcast -> "Wi-Fi broadcast"
     }
 }
 

@@ -34,6 +34,20 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
         android:maxSdkVersion="30" />
 
+    <!-- Wi-Fi broadcast bearer (WifiMulticastTransport).
+         INTERNET is required by Android for ANY socket, including a purely local
+         multicast one — there is no local-only alternative. It does NOT mean the app
+         talks to a server: nothing here resolves a hostname or leaves the subnet, the
+         destination is a 239.x administratively-scoped group, and the datagrams carry a
+         TTL of 1 so a router will not forward them onward.
+
+         The BLE bearer needs none of this and remains available when that distinction
+         matters. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Android drops multicast in the Wi-Fi driver unless a MulticastLock is held. -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <uses-feature android:name="android.hardware.bluetooth" android:required="false" />

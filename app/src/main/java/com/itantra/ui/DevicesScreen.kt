@@ -105,6 +105,19 @@ fun DevicesScreen(
         Spacer(Modifier.height(8.dp))
 
         LinkOption(
+            icon = MsIcons.WifiTethering,
+            title = "Wi-Fi broadcast",
+            detail = "Everyone on this Wi-Fi hears you · carries full sentences",
+            range = "~1400 B",
+            chosen = selected is TransportChoice.WifiBroadcast,
+            // No Bluetooth needed. A phone's own hotspot counts as a network, so this
+            // works with no router and no internet — but it does need Wi-Fi of some kind,
+            // which the BLE bearer below does not.
+            enabled = true,
+            onClick = { onChoose(TransportChoice.WifiBroadcast) },
+        )
+        Spacer(Modifier.height(8.dp))
+        LinkOption(
             icon = MsIcons.Podcasts,
             title = "Broadcast mesh",
             detail = "No pairing · every phone in range relays",

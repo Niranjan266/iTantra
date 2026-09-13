@@ -907,7 +907,18 @@ class SessionController(
      */
     private fun onPacketReceived(packet: Packet) {
         val policy = alertPolicy ?: return
-        val pcm = renderer.render(packet)
+
+        // Speak it in the listener's language, and then — when the sender used a
+        // different one and that language is also installed here — in the sender's own
+        // words as well.
+        //
+        // Two renderings of one message, not two messages. A listener who understands
+        // both gets to check the translation against the original, which for a distress
+        // call is a real safety property rather than a nicety: a phrase id resolving to
+        // the wrong sentence is silent otherwise.
+        val translated = renderer.render(packet)
+        val original = originalAudioFor(packet)
+        val pcm = if (original != null) translated + gap() + original else translated
 
         val accepted = policy.play(pcm, packet.intent) {
             _ui.update { it.copy(isPlaying = false, playingIntent = null) }
@@ -930,6 +941,43 @@ class SessionController(
             }
         }
     }
+
+    /**
+     * The sender's own words, rendered by the sender's language pack.
+     *
+     * Null whenever there is nothing to add: the sender used our language, the message was
+     * plain text rather than a phrase reference, or that language is not installed here.
+     * Building a voice engine per playback would be far too slow, so this only speaks for
+     * languages already on the phone, and loads that pack's voice on demand.
+     */
+    private fun originalAudioFor(packet: Packet): ShortArray? {
+        if (!speakOriginalToo) return null
+        val mine = currentPack ?: return null
+        if (packet.langId == mine.id) return null
+
+        val senderPack = installedPacks.firstOrNull { it.id == packet.langId } ?: return null
+        if (senderPack.tts?.isComplete != true) return null
+
+        val engine = originalRenderers.getOrPut(senderPack.id) {
+            SherpaTtsEngine(senderPack).also { if (!it.load()) return null }
+        }
+        val pcm = engine.render(packet)
+        return pcm.takeIf { it.isNotEmpty() }
+    }
+
+    /** Half a second of silence, so the two renderings do not run together as one. */
+    private fun gap(): ShortArray = ShortArray(AudioSpec.SAMPLE_RATE / 2)
+
+    /**
+     * Voices for languages other than the selected one, kept loaded once used.
+     *
+     * Cached because loading a VITS model takes seconds and a listener who wants the
+     * original once will want it every time. Released with everything else.
+     */
+    private val originalRenderers = mutableMapOf<Int, SherpaTtsEngine>()
+
+    /** Whether a translated message is also spoken in the sender's own language. */
+    var speakOriginalToo: Boolean = true
 
     /**
      * Say the last received message again.

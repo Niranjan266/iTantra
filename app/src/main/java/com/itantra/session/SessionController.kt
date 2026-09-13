@@ -131,6 +131,86 @@ class SessionController(
     private val _messages = MutableStateFlow<List<LoggedMessage>>(emptyList())
     val messages: StateFlow<List<LoggedMessage>> = _messages.asStateFlow()
 
+    /**
+     * Who else is running iTantra on this link, heard from their own beacons.
+     *
+     * This is the answer to "who can hear me", and it is per-bearer for free: presence is
+     * an ordinary ITP-1 packet, so whichever transport is selected carries it.
+     *
+     * Peers expire. A phone that walks away sends nothing more, and a list that only ever
+     * grows would show a peer who left ten minutes ago as present — worse than showing
+     * nobody, because someone might rely on it.
+     */
+    private val _peers = MutableStateFlow<List<Peer>>(emptyList())
+    val peers: StateFlow<List<Peer>> = _peers.asStateFlow()
+
+    private var beaconJob: Job? = null
+
+    /**
+     * Announce this phone, repeatedly, for as long as a transport is up.
+     *
+     * Every few seconds rather than once: phones arrive after we did, and a single
+     * announcement at startup is invisible to anyone who was not already listening.
+     */
+    fun startAnnouncing(deviceName: String) {
+        beaconJob?.cancel()
+        beaconJob = scope.launch {
+            while (true) {
+                sendPresence(deviceName)
+                expirePeers()
+                kotlinx.coroutines.delay(BEACON_INTERVAL_MS)
+            }
+        }
+    }
+
+    fun stopAnnouncing() {
+        beaconJob?.cancel()
+        beaconJob = null
+    }
+
+    private suspend fun sendPresence(deviceName: String) {
+        if (!_ui.value.transportState.isConnected) return
+        val packet = Packet(
+            sessionId = sessionId,
+            // Deliberately NOT the message sequence. A beacon must never consume a seq
+            // that a real message would use, or the relay's duplicate suppression would
+            // silently drop the next thing somebody actually said.
+            seq = PRESENCE_SEQ,
+            langId = currentPack?.id ?: LanguageId.UNSPECIFIED,
+            intent = Intent.ROUTINE,
+            payload = Symbols.encodePresence(
+                currentPack?.id ?: LanguageId.UNSPECIFIED,
+                deviceName,
+            ),
+            textMode = false,
+        )
+        runCatching { transport.send(PacketCodec.encode(packet)) }
+    }
+
+    private fun expirePeers() {
+        val cutoff = System.currentTimeMillis() - PEER_TIMEOUT_MS
+        _peers.update { list -> list.filter { it.lastSeenMs >= cutoff } }
+    }
+
+    /** Record a beacon. Returns true if this packet was presence and must not be spoken. */
+    private fun handleIfPresence(packet: Packet): Boolean {
+        if (packet.textMode) return false
+        val (langId, name) = Symbols.decodePresence(packet.payload) ?: return false
+        if (packet.sessionId == sessionId) return true // our own beacon, heard back
+
+        val now = System.currentTimeMillis()
+        _peers.update { list ->
+            val others = list.filter { it.sessionId != packet.sessionId }
+            others + Peer(
+                sessionId = packet.sessionId,
+                name = name.ifBlank { "a phone" },
+                langId = langId,
+                lastSeenMs = now,
+            )
+        }
+        return true
+    }
+
     private fun log(entry: LoggedMessage) {
         _messages.update { (listOf(entry) + it).take(MAX_LOG) }
     }
@@ -810,6 +890,12 @@ class SessionController(
             is DecodeResult.Success -> {
                 val packet = result.packet
 
+                // A beacon is not a message. Taken out here, before anything else looks
+                // at it, so it is never counted as a transmission, never logged, never
+                // shown and — worst of all — never spoken aloud. Every phone in range
+                // announcing itself out loud every four seconds would be unusable.
+                if (handleIfPresence(packet)) return
+
                 if (isDuplicate(packet)) {
                     _ui.update { it.copy(
                         duplicatesSuppressed = it.duplicatesSuppressed + 1,
@@ -1153,3 +1239,41 @@ data class LoggedMessage(
 
 /** Cap on the in-memory message log. */
 private const val MAX_LOG = 50
+
+/**
+ * Another phone running iTantra, heard on the current link.
+ *
+ * Identified by its session id, which is random per app run — so the same handset restarted
+ * appears as a new peer. That is the honest behaviour: a stable device identity would mean
+ * storing one, and this app deliberately keeps nothing.
+ */
+data class Peer(
+    val sessionId: Int,
+    val name: String,
+    val langId: Int,
+    val lastSeenMs: Long,
+) {
+    fun secondsAgo(nowMs: Long = System.currentTimeMillis()): Int =
+        ((nowMs - lastSeenMs) / 1000).toInt().coerceAtLeast(0)
+}
+
+/** How often a phone announces itself. */
+private const val BEACON_INTERVAL_MS = 4_000L
+
+/**
+ * How long a peer stays listed after its last beacon.
+ *
+ * Three missed beacons rather than one: a single dropped packet on a busy channel is
+ * ordinary, and a peer flickering in and out of the list is worse than a slightly stale one.
+ */
+private const val PEER_TIMEOUT_MS = 13_000L
+
+/**
+ * The sequence number every beacon uses.
+ *
+ * Fixed and outside the range real messages walk through, so a beacon can never occupy a
+ * seq that a spoken message needs. The relay suppresses duplicates by (sessionId, seq), and
+ * a beacon stealing a seq would make the next real message from that phone look like one
+ * already seen — and be silently dropped.
+ */
+private const val PRESENCE_SEQ = 255

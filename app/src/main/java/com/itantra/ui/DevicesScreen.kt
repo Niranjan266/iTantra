@@ -31,6 +31,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.itantra.lang.LanguagePack
+import com.itantra.session.Peer
 import com.itantra.session.SessionUiState
 import com.itantra.transport.PairedDevice
 import com.itantra.transport.TransportState
@@ -58,6 +60,11 @@ import com.itantra.transport.TransportState
 fun DevicesScreen(
     state: SessionUiState,
     pairedDevices: List<PairedDevice>,
+    peers: List<Peer>,
+    packs: List<LanguagePack>,
+    scanned: List<PairedDevice>,
+    scanning: Boolean,
+    onScan: () -> Unit,
     bluetoothReady: Boolean,
     selected: TransportChoice,
     onChoose: (TransportChoice) -> Unit,
@@ -159,6 +166,131 @@ fun DevicesScreen(
         )
 
         Spacer(Modifier.height(18.dp))
+
+        // --- who is actually out there ---------------------------------------------
+        //
+        // The list that answers "can anyone hear me". Every entry is a phone that sent a
+        // beacon in the last few seconds on the link currently selected — not a paired
+        // device, not a device that exists, one that is running this app right now.
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                if (peers.isEmpty()) MsIcons.Radar else MsIcons.Group,
+                null,
+                tint = if (peers.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant
+                else StatusReady,
+                modifier = Modifier.size(18.dp),
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                if (peers.isEmpty()) "Looking for other iTantra phones…"
+                else "${peers.size} iTantra ${if (peers.size == 1) "phone" else "phones"} nearby",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+
+        if (peers.isEmpty()) {
+            OutlinedCard {
+                Text(
+                    if (state.transportState.isConnected)
+                        "Nobody has announced themselves yet. Open iTantra on the other " +
+                            "phone and choose the same connection above — each one calls " +
+                            "out every few seconds."
+                    else
+                        "Choose a connection above first. Phones can only find each " +
+                            "other once a link is up.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        } else {
+            peers.forEach { peer ->
+                PeerRow(peer, packs)
+                Spacer(Modifier.height(8.dp))
+            }
+        }
+
+        Spacer(Modifier.height(18.dp))
+
+        // --- everything Bluetooth can see, paired or not ----------------------------
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "Bluetooth devices in range",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+            Spacer(Modifier.weight(1f))
+            Box(
+                Modifier
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(
+                        if (scanning) MaterialTheme.colorScheme.surfaceContainerHigh
+                        else MaterialTheme.colorScheme.primary
+                    )
+                    .pointerInput(scanning) {
+                        detectTapGestures(onTap = { if (!scanning) onScan() })
+                    }
+                    .padding(horizontal = 12.dp, vertical = 7.dp),
+            ) {
+                Text(
+                    if (scanning) "Searching…" else "Search",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (scanning) MaterialTheme.colorScheme.onSurfaceVariant
+                    else Color.White,
+                )
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+
+        if (scanned.isEmpty()) {
+            OutlinedCard {
+                Text(
+                    // Says what a scan will and will not tell you. A Bluetooth scan finds
+                    // devices, not apps: a phone showing up here may not be running
+                    // iTantra at all, which is what the list above is for.
+                    if (scanning) "Listening for anything with Bluetooth switched on. " +
+                        "This takes about twelve seconds."
+                    else "Tap Search to find phones nearby, including ones this phone has " +
+                        "never paired with. A device appearing here is not necessarily " +
+                        "running iTantra.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+        } else {
+            scanned.forEach { d ->
+                OutlinedCard {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            if (d.couldBePeer) MsIcons.PhoneAndroid else MsIcons.Bluetooth,
+                            null,
+                            tint = if (d.couldBePeer) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp),
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                d.name,
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                maxLines = 1,
+                            )
+                            Text(
+                                if (d.couldBePeer) "a phone or computer" else "an accessory",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+            }
+        }
+
+        Spacer(Modifier.height(10.dp))
 
         // --- paired phones ---------------------------------------------------------
         // Filter to plausible peers. Android's paired list is everything the phone has
@@ -362,5 +494,47 @@ private fun SmallAction(label: String, enabled: Boolean, onClick: () -> Unit) {
             style = MaterialTheme.typography.labelMedium,
             color = if (enabled) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+/**
+ * One other phone running iTantra, heard live.
+ *
+ * Shows what it will actually take to talk to them — their language, so the user can see
+ * whether a message will cross languages or arrive as-is — and how long since they were
+ * last heard, because "nearby" is a claim with a shelf life.
+ */
+@Composable
+private fun PeerRow(peer: Peer, packs: List<LanguagePack>) = OutlinedCard {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            Modifier.size(38.dp).clip(CircleShape).background(StatusReady.copy(alpha = 0.15f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(MsIcons.PhoneAndroid, null, tint = StatusReady, modifier = Modifier.size(20.dp))
+        }
+        Spacer(Modifier.width(10.dp))
+        Column(Modifier.weight(1f)) {
+            Text(
+                peer.name,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 1,
+            )
+            Text(
+                // The pack's own name where we have that language, so it reads in its own
+                // script; the wire id otherwise, rather than an English guess at it.
+                buildString {
+                    append("speaks ")
+                    append(packs.firstOrNull { it.id == peer.langId }?.displayName
+                        ?: "language ${peer.langId}")
+                    val ago = peer.secondsAgo()
+                    append(if (ago <= 5) " · here now" else " · heard ${ago}s ago")
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(MsIcons.Sensors, null, tint = StatusReady, modifier = Modifier.size(18.dp))
     }
 }

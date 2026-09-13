@@ -182,6 +182,10 @@ class WifiMulticastTransport(
                 break
             }
             datagramsReceived++
+            // Logged because its absence is the whole diagnosis: a phone that sends
+            // happily and receives nothing is almost always the access point refusing to
+            // forward multicast between wireless clients, not a fault in this code.
+            Log.i(TAG, "received ${packet.length} B from ${packet.address?.hostAddress}")
             // Copy: the buffer is reused on the next iteration, so handing the array
             // straight on would let a later datagram overwrite an earlier message.
             _incoming.emit(packet.data.copyOf(packet.length))
@@ -200,6 +204,16 @@ class WifiMulticastTransport(
         return runCatching {
             withContext(Dispatchers.IO) {
                 s.send(DatagramPacket(frame, frame.size, addr, PORT))
+                // Send to the subnet broadcast address as well.
+                //
+                // Many consumer access points drop multicast between wireless clients —
+                // IGMP snooping with no querier, or client isolation — and the symptom is
+                // exactly this: sending succeeds, nothing is ever received, and the code
+                // looks wrong when the network is the problem. Broadcast survives some of
+                // the configurations multicast does not, and costs one extra datagram.
+                broadcastAddress()?.let { b ->
+                    runCatching { s.send(DatagramPacket(frame, frame.size, b, PORT)) }
+                }
             }
             datagramsSent++
             Log.i(TAG, "sent ${frame.size} B to $GROUP:$PORT")
@@ -237,6 +251,18 @@ class WifiMulticastTransport(
      * mobile data active is often not the one the other phones are on. Naming it is the
      * difference between a group everyone is in and several groups of one.
      */
+    /**
+     * The subnet broadcast address of the Wi-Fi interface, if it has one.
+     *
+     * Not 255.255.255.255: Android drops that on some versions, while the interface's own
+     * directed broadcast (192.168.31.255 for a /24) is delivered.
+     */
+    private fun broadcastAddress(): InetAddress? = runCatching {
+        firstWifiInterface()?.interfaceAddresses
+            ?.firstOrNull { it.broadcast != null }
+            ?.broadcast
+    }.getOrNull()
+
     private fun firstWifiInterface(): NetworkInterface? = runCatching {
         NetworkInterface.getNetworkInterfaces().toList().firstOrNull {
             it.isUp && it.supportsMulticast() && !it.isLoopback &&

@@ -25,6 +25,7 @@ import java.io.File
 // android.content.Intent. The alias keeps both readable in this file.
 import com.itantra.codec.Intent as MessageIntent
 import com.itantra.codec.LanguageId
+import com.itantra.codec.Symbols
 import com.itantra.lang.CatalogueEntry
 import com.itantra.lang.LanguageCatalogue
 import com.itantra.lang.LanguagePack
@@ -32,6 +33,7 @@ import com.itantra.lang.PackDownloader
 import com.itantra.session.SessionController
 import com.itantra.session.SessionMode
 import com.itantra.transport.BluetoothDevices
+import com.itantra.transport.BluetoothScanner
 import com.itantra.transport.BleMeshTransport
 import com.itantra.transport.BluetoothRfcommTransport
 import com.itantra.transport.WifiDirectTransport
@@ -73,6 +75,9 @@ class MainActivity : ComponentActivity() {
     private var bluetoothReady by mutableStateOf(false)
     private var micGranted by mutableStateOf(false)
     private val pairedDevices = mutableStateListOf<PairedDevice>()
+
+    /** A live Bluetooth scan, started only when the user asks for one. */
+    private val scanner by lazy { BluetoothScanner(applicationContext) }
     private val packs = mutableStateListOf<LanguagePack>()
 
     /** Languages that can be added, and the state of any download in progress. */
@@ -137,6 +142,9 @@ class MainActivity : ComponentActivity() {
                 Surface {
                     val state by session.ui.collectAsState()
                     val messages by session.messages.collectAsState()
+                    val peers by session.peers.collectAsState()
+                    val scanned by scanner.found.collectAsState()
+                    val scanning by scanner.scanning.collectAsState()
 
                     Column(Modifier.fillMaxSize()) {
                         Box(Modifier.weight(1f)) {
@@ -239,6 +247,11 @@ class MainActivity : ComponentActivity() {
                                 destination == Destination.DEVICES -> DevicesScreen(
                                     state = state,
                                     pairedDevices = pairedDevices,
+                                    peers = peers,
+                                    packs = packs,
+                                    scanned = scanned,
+                                    scanning = scanning,
+                                    onScan = { scanner.start() },
                                     bluetoothReady = bluetoothReady,
                                     selected = transportChoice,
                                     onChoose = ::chooseTransport,
@@ -376,7 +389,28 @@ class MainActivity : ComponentActivity() {
             throttled
         }
         // Application scope: a connection attempt must survive the screen turning off.
-        app.appScope.launch { session.switchTransport(next) }
+        app.appScope.launch {
+            session.switchTransport(next)
+            // Announce this phone on whatever link is now up, so the other phones can
+            // list it. Restarted per switch: a beacon on the old bearer reaches nobody.
+            session.startAnnouncing(deviceName())
+        }
+    }
+
+    /**
+     * A short name for this phone, for presence beacons.
+     *
+     * Android's own device name where the user has set one, since that is the name they
+     * already recognise, and the model otherwise. Truncated hard: the beacon has eight
+     * bytes for a name so it still fits a legacy BLE advertisement.
+     */
+    private fun deviceName(): String {
+        val settings = runCatching {
+            android.provider.Settings.Global.getString(contentResolver, "device_name")
+        }.getOrNull()
+        // Trimming happens in encodePresence, by bytes — doing it here by characters is
+        // what produced an oversized beacon.
+        return settings?.takeIf { it.isNotBlank() } ?: android.os.Build.MODEL
     }
 
     private fun refreshPermissions() {
@@ -464,6 +498,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
+        // A Bluetooth scan saturates the radio for about twelve seconds and would keep
+        // doing so with the screen off, for a list nobody is looking at.
+        scanner.stop()
         // Never hold the microphone while off screen. Note this releases the mic only:
         // playback deliberately continues, because a DISTRESS message must finish even
         // if the user puts the phone in their pocket (PRD F-32).

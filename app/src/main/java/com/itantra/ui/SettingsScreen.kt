@@ -154,10 +154,15 @@ fun SettingsScreen(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    // Structural, not a claim: the manifest declares no INTERNET
-                    // permission, so the app could not reach a network if it tried.
-                    "This app has no internet permission at all. Nothing can leave " +
-                        "this phone except over Bluetooth to a phone beside you.",
+                    // This used to say "no internet permission at all", which was true
+                    // and structural — until the Wi-Fi bearer was added, because Android
+                    // requires INTERNET for ANY socket including a local multicast one.
+                    // Leaving the old wording would have been a claim the user cannot
+                    // check and that is no longer true. This is the honest version.
+                    "No account, no server, no internet connection is ever used. The " +
+                        "app contacts nothing: there is no web address anywhere in it. " +
+                        "Messages go only to phones beside you, over Bluetooth or your " +
+                        "own Wi-Fi.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

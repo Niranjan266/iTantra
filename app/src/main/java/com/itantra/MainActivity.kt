@@ -31,6 +31,7 @@ import com.itantra.session.SessionMode
 import com.itantra.transport.BluetoothDevices
 import com.itantra.transport.BleMeshTransport
 import com.itantra.transport.BluetoothRfcommTransport
+import com.itantra.transport.WifiMulticastTransport
 import com.itantra.transport.FloodRelay
 import com.itantra.transport.RepeatSender
 import com.itantra.transport.LoopbackTransport
@@ -42,6 +43,7 @@ import com.itantra.ui.BottomNav
 import com.itantra.ui.Destination
 import com.itantra.ui.DevicesScreen
 import com.itantra.ui.HomeScreen
+import com.itantra.ui.MeshDiagnosticsScreen
 import com.itantra.ui.MessagesScreen
 import com.itantra.ui.SettingsScreen
 import com.itantra.ui.TransportChoice
@@ -80,6 +82,9 @@ class MainActivity : ComponentActivity() {
      */
     private var technicalView by mutableStateOf(false)
 
+    /** The design's Mesh Diagnostics screen. The older PttScreen stays behind it. */
+    private var meshDiagnostics by mutableStateOf(false)
+
     /** Which of the design's four destinations is showing. */
     private var destination by mutableStateOf(Destination.HOME)
 
@@ -96,6 +101,17 @@ class MainActivity : ComponentActivity() {
      * already heard the message — so it is not forced on every transport.
      */
     private var meshEnabled by mutableStateOf(false)
+
+    /**
+     * The live relay, so its counters can be shown.
+     *
+     * Held as state rather than read through the transport chain: the diagnostics screen
+     * needs the numbers from the exact relay currently in use, and a transport switch
+     * replaces it.
+     */
+    private var relay by mutableStateOf<FloodRelay?>(null)
+    private var meshRelayed by mutableStateOf(0)
+    private var meshSuppressed by mutableStateOf(0)
     private var repeatCopies by mutableStateOf(3)
 
     private val permissionLauncher = registerForActivityResult(
@@ -115,9 +131,18 @@ class MainActivity : ComponentActivity() {
                     Column(Modifier.fillMaxSize()) {
                         Box(Modifier.weight(1f)) {
                             when {
-                                // The technical view is a full-screen detour rather than a
-                                // tab: it is scaffolding for the submission's numbers, and
-                                // it deliberately does not share the product's chrome.
+                                meshDiagnostics -> MeshDiagnosticsScreen(
+                                    state = state,
+                                    transportName = state.transportName,
+                                    meshRelayed = relay?.relayedCount ?: 0,
+                                    meshSuppressed = relay?.suppressedCount ?: 0,
+                                    onLoopbackTest = { technicalView = true; meshDiagnostics = false },
+                                    onBack = { meshDiagnostics = false },
+                                )
+
+                                // The older technical view is kept behind the new one: it
+                                // carries the wire-format dump, CSV export and self-test
+                                // that the submission's measurements come from.
                                 technicalView -> PttScreen(
                                     state = state,
                                     transportChoice = transportChoice,
@@ -225,7 +250,7 @@ class MainActivity : ComponentActivity() {
                                         bearerBps = bps
                                         rebuildTransport()
                                     },
-                                    onOpenTechnical = { technicalView = true },
+                                    onOpenTechnical = { meshDiagnostics = true },
                                 )
                             }
                         }
@@ -238,6 +263,7 @@ class MainActivity : ComponentActivity() {
                             onSelect = {
                                 destination = it
                                 technicalView = false
+                                meshDiagnostics = false
                             },
                             messageCount = messages.size,
                         )
@@ -257,7 +283,10 @@ class MainActivity : ComponentActivity() {
         transportChoice = choice
         // The broadcast bearer is the only one where relaying adds reach, so selecting it
         // turns the mesh on rather than leaving the user to find a second switch.
-        meshEnabled = choice is TransportChoice.BleMesh
+        // Relaying adds reach on any one-to-many bearer, and achieves nothing on a
+        // point-to-point link where the single peer already heard the message.
+        meshEnabled = choice is TransportChoice.BleMesh ||
+            choice is TransportChoice.WifiBroadcast
         if (choice is TransportChoice.BleMesh && !BleMeshTransport.hasPermission(this)) {
             permissionLauncher.launch(BleMeshTransport.requiredPermissions())
         }
@@ -291,6 +320,9 @@ class MainActivity : ComponentActivity() {
 
             is TransportChoice.BleMesh ->
                 BleMeshTransport(context = applicationContext, scope = app.appScope)
+
+            is TransportChoice.WifiBroadcast ->
+                WifiMulticastTransport(context = applicationContext, scope = app.appScope)
         }
 
         // The decorators compose, and the order is deliberate:
@@ -304,12 +336,11 @@ class MainActivity : ComponentActivity() {
         // mesh traffic it is supposed to measure.
         val throttled = bearerBps?.let { ThrottleWrapper(base, it) } ?: base
         val next = if (meshEnabled) {
-            RepeatSender(
-                FloodRelay(throttled, app.appScope),
-                app.appScope,
-                copies = repeatCopies,
-            )
+            val r = FloodRelay(throttled, app.appScope)
+            relay = r
+            RepeatSender(r, app.appScope, copies = repeatCopies)
         } else {
+            relay = null
             throttled
         }
         // Application scope: a connection attempt must survive the screen turning off.

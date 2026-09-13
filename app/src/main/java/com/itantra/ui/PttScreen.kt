@@ -73,7 +73,18 @@ fun PttScreen(
     onTalkStart: () -> Unit,
     onTransmit: (text: String, langId: Int, intent: Int) -> Unit,
 ) {
-    var text by remember { mutableStateOf("Flood water is rising near the school, send boats") }
+    // The fallback sentence follows the SELECTED LANGUAGE, from that pack's own self-test
+    // phrase. It used to be a hard-coded English string whatever language was chosen,
+    // which is wrong for a Tamil speaker on its face — and it also meant the fallback
+    // could never match the Tamil codebook, so a Tamil sender always paid full price for
+    // a sentence that had a three-byte reference sitting in the book.
+    val pack = packs.firstOrNull { it.id == state.selectedLangId }
+    var text by remember(pack?.id) {
+        mutableStateOf(
+            pack?.selfTestPhrase?.takeIf { it.isNotBlank() }
+                ?: "Flood water is rising near the school, send boats"
+        )
+    }
     var intent by remember { mutableStateOf(Intent.ROUTINE) }
     var pressed by remember { mutableStateOf(false) }
 

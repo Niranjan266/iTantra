@@ -2,7 +2,11 @@ package com.itantra.transport
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.bluetooth.le.AdvertisingSet
+import android.bluetooth.le.AdvertisingSetCallback
+import android.bluetooth.le.AdvertisingSetParameters
 import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
@@ -241,6 +245,16 @@ class BleMeshTransport(
                     // duplicate of the old one — the OS cannot tell them apart, but
                     // FloodRelay can.
                     .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                    .apply {
+                        // Legacy-only scanning silently ignores extended advertisements,
+                        // so a long message would be sent perfectly and never heard.
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                            supportsExtendedAdvertising
+                        ) {
+                            setLegacy(false)
+                            setPhy(ScanSettings.PHY_LE_ALL_SUPPORTED)
+                        }
+                    }
                     .build(),
                 scanCallback,
             )
@@ -269,17 +283,28 @@ class BleMeshTransport(
     override suspend fun send(frame: ByteArray): Boolean {
         val adv = advertiser ?: return false
 
-        if (!MeshFrame.fits(frame)) {
+        if (frame.size > maxPayload()) {
             // Refused, not truncated. A truncated packet fails its CRC at every receiver
             // and is indistinguishable from interference, which would send someone
             // debugging the radio instead of the message size.
-            Log.w(TAG, "frame of ${frame.size} B exceeds the " +
-                "${MeshFrame.BLE_LEGACY_CAPACITY} B advertisement budget — not sent")
+            Log.w(TAG, "frame of ${frame.size} B exceeds the ${maxPayload()} B " +
+                "advertisement budget on this device — not sent")
             _state.value = TransportState.Failed(
                 "Message too long for BLE broadcast (${frame.size} B of " +
-                    "${MeshFrame.BLE_LEGACY_CAPACITY} B). Use a codebook phrase."
+                    "${maxPayload()} B). Use a codebook phrase."
             )
             return false
+        }
+
+        // Extended advertising for anything that will not fit a legacy packet.
+        //
+        // Legacy advertising carries 24 usable bytes, which is a codebook phrase and
+        // nothing else: a spelled-out sentence is ~108 B and was simply refused. Both
+        // test handsets report extended advertising, which raises the ceiling into the
+        // hundreds — so free speech travels over the mesh on any phone that supports it,
+        // and only genuinely old hardware is limited to codebook phrases.
+        if (frame.size > MeshFrame.BLE_LEGACY_CAPACITY) {
+            return sendExtended(adv, frame)
         }
 
         return sendLock.withLock {
@@ -323,6 +348,76 @@ class BleMeshTransport(
             ok
         }
     }
+
+    /**
+     * Largest frame this handset can broadcast.
+     *
+     * Not a constant: legacy advertising is 24 usable bytes everywhere, while extended
+     * advertising depends on the radio and the OS reports the real figure. Using the
+     * device's own answer means a modern phone is not held to the oldest phone's limit.
+     */
+    private fun maxPayload(): Int =
+        if (supportsExtendedAdvertising) {
+            // Leave room for the manufacturer-data header (4 B) inside the reported max.
+            ((adapter?.leMaximumAdvertisingDataLength ?: 0) - 4)
+                .coerceAtLeast(MeshFrame.BLE_LEGACY_CAPACITY)
+        } else {
+            MeshFrame.BLE_LEGACY_CAPACITY
+        }
+
+    /**
+     * Broadcast a frame too large for a legacy advertisement.
+     *
+     * Non-connectable and non-scannable: we are a beacon, and a scannable set would invite
+     * scan requests that cost airtime and tell a stranger we are here.
+     */
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.O)
+    private suspend fun sendExtended(adv: BluetoothLeAdvertiser, frame: ByteArray): Boolean =
+        sendLock.withLock {
+            val params = AdvertisingSetParameters.Builder()
+                .setLegacyMode(false)
+                .setConnectable(false)
+                .setScannable(false)
+                .setInterval(AdvertisingSetParameters.INTERVAL_LOW)
+                .setTxPowerLevel(AdvertisingSetParameters.TX_POWER_HIGH)
+                .setPrimaryPhy(BluetoothDevice.PHY_LE_1M)
+                // 2M on the secondary channel: twice the symbol rate for the payload,
+                // which shortens time on air for the same bytes.
+                .setSecondaryPhy(BluetoothDevice.PHY_LE_2M)
+                .build()
+
+            val data = AdvertiseData.Builder()
+                .setIncludeDeviceName(false)
+                .setIncludeTxPowerLevel(false)
+                .addManufacturerData(COMPANY_ID, frame)
+                .build()
+
+            var ok = false
+            val callback = object : AdvertisingSetCallback() {
+                override fun onAdvertisingSetStarted(
+                    set: AdvertisingSet?,
+                    txPower: Int,
+                    status: Int,
+                ) {
+                    ok = status == ADVERTISE_SUCCESS
+                    if (ok) Log.i(TAG, "advertising ${frame.size} B (extended) for ${advertiseWindowMs}ms")
+                    else {
+                        advertiseFailures++
+                        Log.e(TAG, "extended advertise failed: $status")
+                    }
+                }
+            }
+
+            runCatching { adv.startAdvertisingSet(params, data, null, null, null, callback) }
+                .onFailure {
+                    Log.e(TAG, "startAdvertisingSet threw", it)
+                    return@withLock false
+                }
+
+            delay(advertiseWindowMs)
+            runCatching { adv.stopAdvertisingSet(callback) }
+            ok
+        }
 
     override suspend fun close() {
         runCatching { scanner?.stopScan(scanCallback) }

@@ -2,6 +2,15 @@ package com.itantra.transport
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.content.BroadcastReceiver
+import android.content.Intent
+import android.content.IntentFilter
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothManager
 import android.content.Context
@@ -81,7 +90,7 @@ object BluetoothDevices {
      * while they are the overwhelming majority of pairings. Uncategorised is kept
      * because some phones report themselves that way.
      */
-    private fun couldRunTheApp(majorDeviceClass: Int?): Boolean = when (majorDeviceClass) {
+    internal fun couldRunTheApp(majorDeviceClass: Int?): Boolean = when (majorDeviceClass) {
         BluetoothClass.Device.Major.PHONE,
         BluetoothClass.Device.Major.COMPUTER,
         BluetoothClass.Device.Major.UNCATEGORIZED,
@@ -92,4 +101,94 @@ object BluetoothDevices {
 
     private fun adapterOf(context: Context) =
         (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
+}
+
+/**
+ * A live scan for Bluetooth devices in range, paired or not.
+ *
+ * [BluetoothDevices.paired] only lists what this phone has already bonded with, which is
+ * the wrong answer to "who is near me": a phone that has never been paired is exactly the
+ * one a stranger is carrying, and a bonded list is mostly the owner's own headphones.
+ *
+ * Discovery is expensive — it saturates the radio for about twelve seconds and slows any
+ * active connection — so it is started explicitly and stopped as soon as the screen that
+ * asked for it goes away.
+ */
+class BluetoothScanner(private val context: Context) {
+
+    private val _found = MutableStateFlow<List<PairedDevice>>(emptyList())
+    val found: StateFlow<List<PairedDevice>> = _found.asStateFlow()
+
+    private val _scanning = MutableStateFlow(false)
+    val scanning: StateFlow<Boolean> = _scanning.asStateFlow()
+
+    private var receiver: BroadcastReceiver? = null
+
+    @SuppressLint("MissingPermission")
+    fun start() {
+        if (receiver != null) return
+        val adapter = (context.getSystemService(Context.BLUETOOTH_SERVICE)
+            as? BluetoothManager)?.adapter ?: return
+        if (!BluetoothDevices.hasPermission(context)) return
+
+        val r = object : BroadcastReceiver() {
+            override fun onReceive(c: Context?, intent: Intent?) {
+                when (intent?.action) {
+                    BluetoothDevice.ACTION_FOUND -> {
+                        val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            intent.getParcelableExtra(
+                                BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java
+                            )
+                        } else {
+                            @Suppress("DEPRECATION")
+                            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                        } ?: return
+                        add(device)
+                    }
+                    BluetoothAdapter.ACTION_DISCOVERY_STARTED -> _scanning.value = true
+                    BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> _scanning.value = false
+                }
+            }
+        }
+        receiver = r
+        context.registerReceiver(r, IntentFilter().apply {
+            addAction(BluetoothDevice.ACTION_FOUND)
+            addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
+            addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+        })
+
+        // A scan already running returns no results to us, so restart it.
+        runCatching {
+            if (adapter.isDiscovering) adapter.cancelDiscovery()
+            adapter.startDiscovery()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun add(device: BluetoothDevice) {
+        val name = runCatching { device.name }.getOrNull()
+        val entry = PairedDevice(
+            // An unnamed device is normal — many only reveal a name once connected — and
+            // showing the address is more use than hiding the row entirely.
+            name = name?.takeIf { it.isNotBlank() } ?: device.address,
+            address = device.address,
+            couldBePeer = BluetoothDevices.couldRunTheApp(device.bluetoothClass?.majorDeviceClass),
+        )
+        _found.update { list ->
+            if (list.any { it.address == entry.address }) list
+            else (list + entry).sortedByDescending { it.couldBePeer }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun stop() {
+        runCatching { receiver?.let { context.unregisterReceiver(it) } }
+        receiver = null
+        runCatching {
+            val adapter = (context.getSystemService(Context.BLUETOOTH_SERVICE)
+                as? BluetoothManager)?.adapter
+            if (adapter?.isDiscovering == true) adapter.cancelDiscovery()
+        }
+        _scanning.value = false
+    }
 }

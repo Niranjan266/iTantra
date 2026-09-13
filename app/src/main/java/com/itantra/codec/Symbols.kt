@@ -14,7 +14,8 @@ package com.itantra.codec
  *   4        QUESTION
  *   5        PAUSE_SHORT
  *   6        PHRASE_REF       escape: next two bytes are a 12-bit phrase id
- *   7-15     reserved control
+ *   7        PRESENCE         "I am here": language id then a short device name
+ *   8-15     reserved control
  *   16-119   Indic phonemes   (Common Label Set; labels loaded from the language pack)
  *   120-179  English phonemes (ARPAbet; table below)
  *   180-199  numeral tokens
@@ -53,6 +54,37 @@ object Symbols {
      * so an older build degrades to dropping the phrase rather than to mis-speaking it.
      */
     const val PHRASE_REF = 6
+
+    /**
+     * Escape: this packet is a presence beacon, not something anybody said.
+     *
+     * Payload is `PRESENCE`, the sender's language id, then up to [PRESENCE_NAME_MAX]
+     * bytes of a short device name in UTF-8.
+     *
+     * Why a packet rather than a per-transport mechanism: every bearer here already
+     * carries ITP-1 frames, so presence written this way works over Bluetooth, BLE
+     * broadcast, Wi-Fi multicast and Wi-Fi Direct **without any of them knowing about
+     * it**. A discovery scheme built into one transport would have to be built three more
+     * times.
+     *
+     * A receiver must record the peer and **not** display or speak it. A beacon that
+     * reached the speaker would make every phone in range announce itself out loud.
+     */
+    const val PRESENCE = 7
+
+    /**
+     * Name budget, chosen so a beacon still fits a legacy BLE advertisement.
+     *
+     * 11 header + 1 escape + 1 language + 7 name + 2 checksum = 22 bytes, plus the 1-byte
+     * mesh TTL = 23, against the 24 usable in a legacy advertisement.
+     *
+     * Eight looked right and was one byte too many: it produced a 24-byte packet that
+     * became 25 once the relay added its hop count, and the BLE bearer refused it. Presence
+     * would then have worked on every bearer except the one where knowing who is nearby
+     * matters most — and refused silently, because a beacon nobody sees looks exactly like
+     * nobody being there.
+     */
+    const val PRESENCE_NAME_MAX = 7
 
     /** Bytes on the wire for one phrase reference: the escape plus a 12-bit id. */
     const val PHRASE_REF_SIZE = 3
@@ -121,6 +153,35 @@ object Symbols {
         )
     }
 
+    /** Build a presence beacon payload: who I am and what I speak. */
+    fun encodePresence(langId: Int, name: String): ByteArray {
+        require(langId in 0..255) { "langId out of range: $langId" }
+        // Trim by BYTES, not by characters, and only on a character boundary. Taking
+        // eight *characters* of a Tamil or Hindi name is twenty-four bytes, which is how
+        // a "seven byte" name became an oversized packet.
+        var trimmed = name.trim()
+        while (trimmed.toByteArray(Charsets.UTF_8).size > PRESENCE_NAME_MAX && trimmed.isNotEmpty()) {
+            trimmed = trimmed.dropLast(1)
+        }
+        val bytes = trimmed.toByteArray(Charsets.UTF_8)
+        return byteArrayOf(PRESENCE.toByte(), langId.toByte()) + bytes
+    }
+
+    /** The (languageId, name) in a presence beacon, or null if this is not one. */
+    fun decodePresence(payload: ByteArray): Pair<Int, String>? {
+        if (payload.size < 2) return null
+        if ((payload[0].toInt() and 0xFF) != PRESENCE) return null
+        val langId = payload[1].toInt() and 0xFF
+        val name = runCatching {
+            String(payload, 2, payload.size - 2, Charsets.UTF_8).trim()
+        }.getOrDefault("")
+        return langId to name
+    }
+
+    /** True when this payload is a presence beacon and must not be spoken. */
+    fun isPresence(payload: ByteArray): Boolean =
+        payload.isNotEmpty() && (payload[0].toInt() and 0xFF) == PRESENCE
+
     /**
      * Read the phrase id at [offset], which must point at a [PHRASE_REF].
      *
@@ -150,6 +211,7 @@ object Symbols {
         QUESTION -> "?"
         PAUSE_SHORT -> ","
         PHRASE_REF -> "<PHRASE>"
+        PRESENCE -> "<HERE>"
         else -> englishLabelOf(symbol) ?: "#$symbol"
     }
 }

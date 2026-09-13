@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.itantra.lang.CatalogueEntry
 import com.itantra.lang.LanguagePack
 import com.itantra.session.SessionUiState
 
@@ -48,8 +49,13 @@ import com.itantra.session.SessionUiState
 fun SettingsScreen(
     state: SessionUiState,
     packs: List<LanguagePack>,
+    available: List<CatalogueEntry>,
+    downloading: String?,
+    downloadProgress: Float,
+    downloadNote: String,
     bearerBps: Int?,
     onSelectLanguage: (LanguagePack) -> Unit,
+    onDownload: (CatalogueEntry) -> Unit,
     onChooseBearer: (Int?) -> Unit,
     onOpenTechnical: () -> Unit,
 ) {
@@ -91,6 +97,37 @@ fun SettingsScreen(
                 onClick = { onSelectLanguage(pack) },
             )
             Spacer(Modifier.height(8.dp))
+        }
+
+        // --- languages that can be added -------------------------------------------
+        if (available.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "Add a language",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+            Text(
+                // Says the bargain plainly rather than burying it: a network is needed
+                // once, here, and never again afterwards.
+                "Download once while you have internet. After that the language works " +
+                    "with no network at all, like the ones already installed.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(8.dp))
+
+            available.forEach { entry ->
+                AvailableRow(
+                    entry = entry,
+                    busy = downloading == entry.code,
+                    otherBusy = downloading != null && downloading != entry.code,
+                    progress = downloadProgress,
+                    note = downloadNote,
+                    onDownload = { onDownload(entry) },
+                )
+                Spacer(Modifier.height(8.dp))
+            }
         }
 
         Spacer(Modifier.height(10.dp))
@@ -254,5 +291,97 @@ private fun BearerChip(label: String, chosen: Boolean, onClick: () -> Unit) {
             style = MaterialTheme.typography.labelMedium,
             color = if (chosen) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+/**
+ * One language that is not installed yet.
+ *
+ * States what it will and will not do **before** the download, not after. A freshly
+ * downloaded pack understands speech but cannot speak it — the voices need converting from
+ * Meta's PyTorch release and are not published as ONNX — and finding that out after
+ * waiting for 188 MB would be a poor way to learn it.
+ */
+@Composable
+private fun AvailableRow(
+    entry: CatalogueEntry,
+    busy: Boolean,
+    otherBusy: Boolean,
+    progress: Float,
+    note: String,
+    onDownload: () -> Unit,
+) {
+    OutlinedCard {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    MsIcons.Translate, null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text(
+                    entry.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                Text(
+                    if (busy) note
+                    else "Understands you · about ${entry.approxMb - 37} MB",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            if (!busy) {
+                Box(
+                    Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            if (otherBusy) MaterialTheme.colorScheme.surfaceContainerHigh
+                            else MaterialTheme.colorScheme.primary
+                        )
+                        .pointerInput(entry.code, otherBusy) {
+                            detectTapGestures(onTap = { if (!otherBusy) onDownload() })
+                        }
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        "Get",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = if (otherBusy) MaterialTheme.colorScheme.onSurfaceVariant
+                        else Color.White,
+                    )
+                }
+            }
+        }
+
+        if (busy) {
+            Spacer(Modifier.height(10.dp))
+            // A real bar rather than a spinner: 188 MB on a poor connection is minutes,
+            // and "is this moving at all" is the only question the user has.
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+            ) {
+                Box(
+                    Modifier
+                        .fillMaxWidth(progress.coerceIn(0f, 1f))
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(MaterialTheme.colorScheme.primary)
+                )
+            }
+        }
     }
 }

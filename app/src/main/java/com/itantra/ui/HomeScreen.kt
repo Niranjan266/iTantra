@@ -100,7 +100,10 @@ fun HomeScreen(
 
         StatusHeader(state = state, micGranted = micGranted)
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(10.dp))
+        RoleBanner(state)
+
+        Spacer(Modifier.height(10.dp))
         ConnectionCard(state)
 
         Spacer(Modifier.height(12.dp))
@@ -315,17 +318,19 @@ private fun TranslationCard(
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         LangPane(
-            caption = "You speak",
+            caption = "You speak, and are heard as",
             name = mine?.displayName ?: "—",
             modifier = Modifier.weight(1f),
         )
         Icon(MsIcons.SyncAlt, null, tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(20.dp).padding(horizontal = 2.dp))
         LangPane(
-            caption = "They hear",
-            // Only claimable once a message has actually arrived and told us their
-            // language. Before that it is unknown, and says so.
-            name = theirs?.displayName ?: "any language",
+            caption = "They hear, in their own choice",
+            // Deliberately not a promise about the far end. THE LISTENER decides what
+            // they hear, by picking their own language on their own phone — this device
+            // cannot and should not choose for them. Before a message arrives we do not
+            // even know what they picked.
+            name = theirs?.displayName ?: "whatever they chose",
             modifier = Modifier.weight(1f),
         )
     }
@@ -637,4 +642,75 @@ private fun Color.lighten(amount: Float) = Color(
     green + (1f - green) * amount,
     blue + (1f - blue) * amount,
     alpha,
+)
+
+// --- who is speaking, who is listening ---------------------------------------------------
+
+/**
+ * Which end of the conversation this phone is, right now.
+ *
+ * Push-to-talk has no fixed speaker and no fixed receiver — every phone is both, and which
+ * one it is changes the moment somebody presses the button. That is obvious to whoever is
+ * holding the phone and invisible to everyone else, which is why this band exists: on a
+ * desk with two handsets it is otherwise impossible to tell which one is transmitting.
+ *
+ * Three states, each with its own colour *and* its own symbol, on the rule used throughout
+ * this app that colour alone never carries meaning:
+ *
+ *  - **Speaking** — this phone has the button held and is capturing;
+ *  - **Playing** — a message arrived and is being spoken aloud here;
+ *  - **Listening** — the resting state, which is most of the time.
+ */
+@Composable
+private fun RoleBanner(state: SessionUiState) {
+    val (icon, title, detail, colour) = when {
+        state.isRecording -> Quad(
+            MsIcons.Mic,
+            "You are SPEAKING",
+            "Everyone listening will hear this in their own language",
+            UrgencyEmergency,
+        )
+        state.isPlaying -> Quad(
+            MsIcons.VolumeUp,
+            "PLAYING a message",
+            "Spoken in the language you chose on this phone",
+            StatusSpeaking,
+        )
+        else -> Quad(
+            MsIcons.Hearing,
+            "You are LISTENING",
+            "Hold the button to speak",
+            MaterialTheme.colorScheme.primary,
+        )
+    }
+
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = colour,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(icon, null, tint = Color.White, modifier = Modifier.size(22.dp))
+            Spacer(Modifier.width(10.dp))
+            Column {
+                Text(title, style = MaterialTheme.typography.titleSmall, color = Color.White)
+                Text(
+                    detail,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.White.copy(alpha = 0.9f),
+                )
+            }
+        }
+    }
+}
+
+/** Four values from a `when`, without a data class per use site. */
+private data class Quad(
+    val icon: ImageVector,
+    val title: String,
+    val detail: String,
+    val colour: Color,
 )

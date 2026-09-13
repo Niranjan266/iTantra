@@ -1,6 +1,7 @@
 package com.itantra.transport
 
 import com.itantra.codec.PacketCodec
+import com.itantra.codec.Symbols
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -155,7 +156,26 @@ class FloodRelay(
 
         // Reject anything that is not really ours before spending a cache entry on it.
         // A BLE scan hears every beacon in range, and most of them are shop tags.
-        val id = idOf(frame) ?: return
+        val packet = PacketCodec.decode(frame).packetOrNull() ?: return
+
+        // Presence beacons skip duplicate suppression entirely.
+        //
+        // They repeat by design, every few seconds, carrying the SAME sequence number —
+        // deliberately fixed so a beacon can never consume a seq a real message needs.
+        // Run through the seen-set that makes them look identical, so the first one is
+        // delivered and every one after it is discarded as a duplicate: the peer appears
+        // once, is never refreshed, and vanishes when it expires. Which is exactly what
+        // happened — datagrams arriving steadily while the screen said "looking for other
+        // iTantra phones".
+        //
+        // They are also not relayed. Presence answers "who can I hear directly", and a
+        // relayed beacon would advertise a phone that this device cannot actually reach.
+        if (Symbols.isPresence(packet.payload)) {
+            _incoming.emit(frame)
+            return
+        }
+
+        val id = (packet.sessionId shl 8) or packet.seq
 
         if (!remember(id)) {
             // Heard this already, from another neighbour. Dropping it here is what keeps

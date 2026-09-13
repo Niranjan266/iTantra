@@ -69,6 +69,7 @@ fun DevicesScreen(
     selected: TransportChoice,
     onChoose: (TransportChoice) -> Unit,
     onRequestPermission: () -> Unit,
+    onOpenBluetoothSettings: () -> Unit,
 ) {
     Column(
         Modifier
@@ -212,6 +213,38 @@ fun DevicesScreen(
         }
 
         Spacer(Modifier.height(18.dp))
+
+        // --- pairing ---------------------------------------------------------------
+        //
+        // Pairing CANNOT happen inside this app. Android reserves the bonding flow for its
+        // own settings screen — an app may ask to connect to a bonded device, and may
+        // discover unbonded ones, but the confirm-this-code exchange belongs to the OS.
+        // Without a way through to it, a user told to "pair the phones" has nowhere to go,
+        // which is exactly the dead end this screen used to be.
+        OutlinedCard {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(MsIcons.Bluetooth, null, tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(10.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        "Pairing happens in Android settings",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                    Text(
+                        "Only needed for Bluetooth direct. The other three connections " +
+                            "above need no pairing at all.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            PrimaryButton("Open Bluetooth settings", MsIcons.Settings, onOpenBluetoothSettings)
+        }
+
+        Spacer(Modifier.height(16.dp))
 
         // --- everything Bluetooth can see, paired or not ----------------------------
         Row(verticalAlignment = Alignment.CenterVertically) {

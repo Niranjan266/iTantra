@@ -252,6 +252,7 @@ class MainActivity : ComponentActivity() {
                                     scanned = scanned,
                                     scanning = scanning,
                                     onScan = { scanner.start() },
+                                    onOpenBluetoothSettings = ::openBluetoothSettings,
                                     bluetoothReady = bluetoothReady,
                                     selected = transportChoice,
                                     onChoose = ::chooseTransport,
@@ -411,6 +412,32 @@ class MainActivity : ComponentActivity() {
         // Trimming happens in encodePresence, by bytes — doing it here by characters is
         // what produced an oversized beacon.
         return settings?.takeIf { it.isNotBlank() } ?: android.os.Build.MODEL
+    }
+
+    /**
+     * Hand the user to Android's own Bluetooth screen.
+     *
+     * Bonding is not something an app can do: the confirm-this-code exchange belongs to
+     * the OS. Telling someone to pair two phones without a way to get there is a dead end,
+     * and this was one.
+     */
+    private fun openBluetoothSettings() {
+        val opened = runCatching {
+            startActivity(Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS))
+            true
+        }.getOrDefault(false)
+        if (!opened) {
+            // Some vendor builds hide the Bluetooth screen behind a different action.
+            runCatching { startActivity(Intent(android.provider.Settings.ACTION_SETTINGS)) }
+                .onFailure {
+                    Toast.makeText(
+                        this,
+                        "Could not open settings — pair the phones from Android's " +
+                            "Bluetooth screen.",
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
+        }
     }
 
     private fun refreshPermissions() {

@@ -34,7 +34,9 @@ import com.itantra.session.SessionController
 import com.itantra.session.SessionMode
 import com.itantra.transport.BluetoothDevices
 import com.itantra.transport.BluetoothScanner
+import com.itantra.transport.AcousticTransport
 import com.itantra.transport.BleMeshTransport
+import com.itantra.transport.CompositeTransport
 import com.itantra.transport.BluetoothRfcommTransport
 import com.itantra.transport.WifiDirectTransport
 import com.itantra.transport.WifiMulticastTransport
@@ -140,9 +142,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         refreshPermissions()
 
-        // Come back up on the link the user last chose, rather than on the loopback that
-        // only talks to itself. See [rememberChoice] for why this matters so much.
-        restoreChoice()?.let(::chooseTransport)
+        // Come back up on the link the user last chose — or, on a first launch, on
+        // Automatic — never on the loopback that only talks to itself. See
+        // [rememberChoice] for why this matters so much.
+        chooseTransport(restoreChoice() ?: TransportChoice.Automatic)
 
         setContent {
             ItantraTheme {
@@ -161,7 +164,9 @@ class MainActivity : ComponentActivity() {
                                     transportName = state.transportName,
                                     meshRelayed = relay?.relayedCount ?: 0,
                                     meshSuppressed = relay?.suppressedCount ?: 0,
-                                    onLoopbackTest = { technicalView = true; meshDiagnostics = false },
+                                    onRunSelfTest = ::runSelfTest,
+                                    selfTestResult = selfTestResult,
+                                    onOpenTechnical = { technicalView = true; meshDiagnostics = false },
                                     onBack = { meshDiagnostics = false },
                                 )
 
@@ -197,14 +202,7 @@ class MainActivity : ComponentActivity() {
                                     measurementSummary = session.summary(),
                                     onExportCsv = ::exportCsv,
                                     selfTestResult = selfTestResult,
-                                    onSelfTest = {
-                                        app.appScope.launch {
-                                            selfTestResult = "Running self-test…"
-                                            selfTestResult = session.runSelfTest(
-                                                "flood water is rising near the school send boats"
-                                            )
-                                        }
-                                    },
+                                    onSelfTest = ::runSelfTest,
                                     onSetMode = { m ->
                                         app.appScope.launch {
                                             session.setMode(
@@ -260,6 +258,7 @@ class MainActivity : ComponentActivity() {
                                     scanning = scanning,
                                     onScan = { scanner.start() },
                                     onOpenBluetoothSettings = ::openBluetoothSettings,
+                                    onPair = ::pairWith,
                                     bluetoothReady = bluetoothReady,
                                     selected = transportChoice,
                                     onChoose = ::chooseTransport,
@@ -334,6 +333,8 @@ class MainActivity : ComponentActivity() {
      */
     private fun rememberChoice(choice: TransportChoice) {
         val key = when (choice) {
+            is TransportChoice.Automatic -> "automatic"
+            is TransportChoice.Sound -> "sound"
             is TransportChoice.WifiBroadcast -> "wifi-broadcast"
             is TransportChoice.WifiDirect -> "wifi-direct"
             is TransportChoice.BleMesh -> "ble-mesh"
@@ -346,6 +347,8 @@ class MainActivity : ComponentActivity() {
 
     private fun restoreChoice(): TransportChoice? =
         when (getSharedPreferences(PREFS, MODE_PRIVATE).getString(KEY_LINK, null)) {
+            "automatic" -> TransportChoice.Automatic
+            "sound" -> TransportChoice.Sound
             "wifi-broadcast" -> TransportChoice.WifiBroadcast
             "wifi-direct" -> TransportChoice.WifiDirect
             "ble-mesh" -> TransportChoice.BleMesh
@@ -362,8 +365,13 @@ class MainActivity : ComponentActivity() {
         // Relay adds reach on a one-to-many bearer. Wi-Fi Direct is a two-party link, so
         // relaying it would only duplicate what the single peer already received.
         meshEnabled = choice is TransportChoice.BleMesh ||
-            choice is TransportChoice.WifiBroadcast
-        if (choice is TransportChoice.BleMesh && !BleMeshTransport.hasPermission(this)) {
+            choice is TransportChoice.WifiBroadcast ||
+            choice is TransportChoice.Automatic
+        val wantsBle = choice is TransportChoice.BleMesh || choice is TransportChoice.Automatic
+        if (choice is TransportChoice.Sound && !AcousticTransport.hasPermission(this)) {
+            permissionLauncher.launch(arrayOf(Manifest.permission.RECORD_AUDIO))
+        }
+        if (wantsBle && !BleMeshTransport.hasPermission(this)) {
             permissionLauncher.launch(BleMeshTransport.requiredPermissions())
         }
         if (choice is TransportChoice.WifiDirect) {
@@ -411,6 +419,18 @@ class MainActivity : ComponentActivity() {
 
             is TransportChoice.WifiBroadcast ->
                 WifiMulticastTransport(context = applicationContext, scope = app.appScope)
+
+            is TransportChoice.Sound ->
+                AcousticTransport(context = applicationContext, scope = app.appScope)
+
+            is TransportChoice.Automatic ->
+                CompositeTransport(
+                    listOf(
+                        WifiMulticastTransport(context = applicationContext, scope = app.appScope),
+                        BleMeshTransport(context = applicationContext, scope = app.appScope),
+                    ),
+                    app.appScope,
+                )
 
             is TransportChoice.WifiDirect ->
                 WifiDirectTransport(context = applicationContext, scope = app.appScope)
@@ -584,6 +604,42 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Speak the selected language's own test sentence, recognise it, and report.
+     *
+     * The sentence comes from the pack. It used to be an English sentence whatever the
+     * language, so a Tamil self-test asked a Tamil voice to read English.
+     */
+    private fun runSelfTest() {
+        if (selfTestResult == RUNNING) return
+        selfTestResult = RUNNING
+        app.appScope.launch {
+            val pack = packs.firstOrNull { it.id == session.ui.value.selectedLangId }
+            val sentence = pack?.selfTestPhrase
+                ?: "flood water is rising near the school send boats"
+            selfTestResult = runCatching { session.runSelfTest(sentence) }
+                .getOrElse { "Self-test failed: ${it.message}" }
+        }
+    }
+
+    /** Start pairing; Android shows its confirm-the-code dialog on both phones. */
+    private fun pairWith(device: PairedDevice) {
+        scanner.stop()
+        if (!BluetoothDevices.pair(this, device.address)) {
+            Toast.makeText(
+                this,
+                "Could not start pairing with ${device.name}. Is Bluetooth on?",
+                Toast.LENGTH_LONG,
+            ).show()
+        } else {
+            Toast.makeText(
+                this,
+                "Confirm the code on both phones to pair with ${device.name}.",
+                Toast.LENGTH_LONG,
+            ).show()
+        }
+    }
+
     private fun exportCsv() {
         runCatching {
             val dir = File(cacheDir, "exports").apply { mkdirs() }
@@ -616,6 +672,7 @@ class MainActivity : ComponentActivity() {
     companion object {
         private const val PREFS = "itantra"
         private const val KEY_LINK = "link"
+        private const val RUNNING = "Running self-test… speaking, then listening."
     }
 
 }

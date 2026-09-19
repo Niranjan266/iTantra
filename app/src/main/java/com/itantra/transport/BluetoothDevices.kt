@@ -60,9 +60,8 @@ object BluetoothDevices {
     /**
      * Devices already paired in Android's Bluetooth settings.
      *
-     * Pairing deliberately stays in the OS. It is a one-time provisioning step, and
-     * reimplementing it inside the app would add a discovery and bonding flow that
-     * earns no marks and can fail on stage.
+     * Pairing is started from the Devices screen with [pair] and confirmed in the
+     * system's own dialog; this list is what that produced.
      */
     @SuppressLint("MissingPermission")
     fun paired(context: Context): List<PairedDevice> {
@@ -81,6 +80,30 @@ object BluetoothDevices {
                     .thenBy { it.name.lowercase() }
             )
         }.getOrDefault(emptyList())
+    }
+
+    /**
+     * Start pairing with a device found by a scan.
+     *
+     * An app can START bonding; Android then shows its own confirm-the-code dialog on both
+     * phones, and the user finishes it there. So the user never has to leave the app to
+     * find Android's Bluetooth screen, and the security of the exchange stays the OS's.
+     * The earlier version of this file said pairing had to stay in Settings — it only has
+     * to be CONFIRMED by the OS, which is a different thing.
+     *
+     * @return false if it could not even be started (no permission, Bluetooth off, or the
+     *   address is invalid). True means the system dialog is on its way, not that pairing
+     *   has succeeded — [paired] is re-read when the dialog closes and the app resumes.
+     */
+    @SuppressLint("MissingPermission")
+    fun pair(context: Context, address: String): Boolean {
+        if (!hasPermission(context)) return false
+        val adapter = adapterOf(context) ?: return false
+        return runCatching {
+            // Discovery competes with bonding for the radio and makes it slow or fail.
+            if (adapter.isDiscovering) adapter.cancelDiscovery()
+            adapter.getRemoteDevice(address).createBond()
+        }.getOrDefault(false)
     }
 
     /**

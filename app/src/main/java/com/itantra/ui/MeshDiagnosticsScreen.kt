@@ -3,6 +3,7 @@ package com.itantra.ui
 import android.app.ActivityManager
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -72,7 +73,10 @@ fun MeshDiagnosticsScreen(
     transportName: String,
     meshRelayed: Int,
     meshSuppressed: Int,
-    onLoopbackTest: () -> Unit,
+    /** Speak a sentence with this phone's voice, recognise it, report accuracy and timing. */
+    onRunSelfTest: () -> Unit,
+    selfTestResult: String,
+    onOpenTechnical: () -> Unit,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -102,7 +106,7 @@ fun MeshDiagnosticsScreen(
                     .size(36.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                    .pointerInput(Unit) { detectTapGestures(onTap = { onBack() }) },
+                    .clickable { onBack() },
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(MsIcons.ArrowBack, "Back", tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -253,7 +257,35 @@ fun MeshDiagnosticsScreen(
         }
 
         Spacer(Modifier.height(12.dp))
-        PrimaryButton("Run a live loopback test", MsIcons.PlayCircle, onLoopbackTest)
+        // It used to be labelled "Run a live loopback test" and did not run anything — it
+        // opened another screen. A button that names an action has to perform it.
+        PrimaryButton("Run speech self-test", MsIcons.PlayCircle, onRunSelfTest)
+        if (selfTestResult.isNotBlank()) {
+            Spacer(Modifier.height(10.dp))
+            Surface(
+                shape = RoundedCornerShape(14.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    selfTestResult,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(12.dp),
+                )
+            }
+        }
+        Spacer(Modifier.height(10.dp))
+        Text(
+            "Open technical view",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onOpenTechnical() }
+                .padding(vertical = 12.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+        )
         Spacer(Modifier.height(24.dp))
     }
 }

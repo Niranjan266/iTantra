@@ -1,6 +1,7 @@
 package com.itantra.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -238,7 +239,7 @@ private fun LanguageRow(pack: LanguagePack, chosen: Boolean, onClick: () -> Unit
                 if (chosen) MaterialTheme.colorScheme.primaryContainer
                 else MaterialTheme.colorScheme.surfaceContainerLowest
             )
-            .pointerInput(pack.id) { detectTapGestures(onTap = { onClick() }) }
+            .clickable { onClick() }
             .padding(14.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -298,7 +299,7 @@ private fun BearerChip(label: String, chosen: Boolean, onClick: () -> Unit) {
                 if (chosen) MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.surfaceContainerHigh
             )
-            .pointerInput(label) { detectTapGestures(onTap = { onClick() }) }
+            .clickable { onClick() }
             .padding(horizontal = 14.dp, vertical = 10.dp),
     ) {
         Text(
@@ -362,9 +363,7 @@ private fun AvailableRow(
                             if (otherBusy) MaterialTheme.colorScheme.surfaceContainerHigh
                             else MaterialTheme.colorScheme.primary
                         )
-                        .pointerInput(entry.code, otherBusy) {
-                            detectTapGestures(onTap = { if (!otherBusy) onDownload() })
-                        }
+                        .clickable { if (!otherBusy) onDownload() }
                         .padding(horizontal = 14.dp, vertical = 8.dp),
                 ) {
                     Text(
@@ -442,9 +441,7 @@ private fun VoiceUpdateRow(
                             if (otherBusy) MaterialTheme.colorScheme.surfaceContainerHigh
                             else MaterialTheme.colorScheme.primary
                         )
-                        .pointerInput(pack.code, otherBusy) {
-                            detectTapGestures(onTap = { if (!otherBusy) onGet() })
-                        }
+                        .clickable { if (!otherBusy) onGet() }
                         .padding(horizontal = 14.dp, vertical = 8.dp),
                 ) {
                     Text(

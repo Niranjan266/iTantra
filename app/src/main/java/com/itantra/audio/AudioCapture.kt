@@ -112,6 +112,8 @@ class AudioCapture(private val scope: CoroutineScope) {
 
         record = rec
         running = true
+        // Before recording starts, so the sound-link listener has released the mic.
+        MicUse.speechStarted()
 
         try {
             rec.startRecording()
@@ -151,6 +153,7 @@ class AudioCapture(private val scope: CoroutineScope) {
     }
 
     fun stop() {
+        if (running) MicUse.speechStopped()
         running = false
         job?.cancel()
         job = null

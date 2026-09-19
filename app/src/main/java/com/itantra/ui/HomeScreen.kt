@@ -15,6 +15,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -141,8 +143,11 @@ fun HomeScreen(
                 recording = state.isRecording,
                 level = state.peakLevel.toFloat(),
                 accent = urgencyColour(urgency),
-                onPress = { if (micGranted) onTalkStart() else onRequestMic() },
+                onPress = onTalkStart,
                 onRelease = { onTalkEnd(state.selectedLangId ?: 0, urgency) },
+                // Not ready: the only useful thing a press can do is ask for the mic.
+                // Models still loading are shown by the headline above the button.
+                onDisabledPress = { if (!micGranted) onRequestMic() },
             )
         }
 
@@ -349,9 +354,7 @@ private fun TranslationCard(
                             if (chosen) MaterialTheme.colorScheme.primary
                             else MaterialTheme.colorScheme.surfaceContainerHigh
                         )
-                        .pointerInput(pack.id) {
-                            detectTapGestures(onTap = { onSelectLanguage(pack) })
-                        },
+                        .clickable { onSelectLanguage(pack) },
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -393,6 +396,8 @@ private fun TalkButton(
     accent: Color,
     onPress: () -> Unit,
     onRelease: () -> Unit,
+    /** A press while not ready. Must never open the microphone. */
+    onDisabledPress: () -> Unit,
 ) {
     val scale by animateFloatAsState(
         if (recording) 1f + (level.coerceIn(0f, 1f) * 0.10f) else 1f,
@@ -403,6 +408,16 @@ private fun TalkButton(
         0f, 1f, infiniteRepeatable(tween(1400), RepeatMode.Restart), label = "ring",
     )
     val base = if (enabled) accent else MaterialTheme.colorScheme.outline
+
+    // The gesture handler below lives across recompositions, so it must read the CURRENT
+    // actions, not the ones from when it started. It used to be keyed on `enabled` and
+    // capture onRelease directly — which closed over the language and urgency of that
+    // moment. Tapping Emergency, or switching language, and then talking still sent the
+    // message as Normal, in the old language: the chip lit up and the packet ignored it.
+    val currentPress by rememberUpdatedState(onPress)
+    val currentRelease by rememberUpdatedState(onRelease)
+    val currentEnabled by rememberUpdatedState(enabled)
+    val currentDisabledPress by rememberUpdatedState(onDisabledPress)
 
     Box(contentAlignment = Alignment.Center, modifier = Modifier.size(260.dp)) {
         // Rings track the measured voice level, not a timer. A ring that pulsed on a
@@ -428,14 +443,20 @@ private fun TalkButton(
                 .background(Brush.verticalGradient(listOf(base.lighten(0.10f), base)))
                 .border(5.dp, Color.White.copy(alpha = 0.30f), CircleShape)
                 .semantics { contentDescription = "Hold to talk" }
-                .pointerInput(enabled) {
+                .pointerInput(Unit) {
                     detectTapGestures(onPress = {
-                        onPress()
+                        // Not ready (models still loading) — ignore the press entirely
+                        // rather than opening the mic for a recogniser that is not there.
+                        if (!currentEnabled) {
+                            currentDisabledPress()
+                            return@detectTapGestures
+                        }
+                        currentPress()
                         // tryAwaitRelease also returns on cancellation (a drag off the
                         // button), which must still end the utterance — otherwise the
                         // recorder stays open and the next press finds a stuck state.
                         tryAwaitRelease()
-                        onRelease()
+                        currentRelease()
                     })
                 },
             contentAlignment = Alignment.Center,
@@ -495,7 +516,7 @@ private fun androidx.compose.foundation.layout.RowScope.UrgencyChip(
                 colour.copy(alpha = 0.5f),
                 RoundedCornerShape(14.dp),
             )
-            .pointerInput(Unit) { detectTapGestures(onTap = { onClick() }) }
+            .clickable { onClick() }
             .semantics { contentDescription = label },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -577,7 +598,7 @@ private fun MessageCard(state: SessionUiState, onReplay: () -> Unit) = Card {
             .height(48.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.primary)
-            .pointerInput(Unit) { detectTapGestures(onTap = { onReplay() }) }
+            .clickable { onReplay() }
             .semantics { contentDescription = "Hear it again" },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,

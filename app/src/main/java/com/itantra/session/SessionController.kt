@@ -170,6 +170,8 @@ class SessionController(
 
     private suspend fun sendPresence(deviceName: String) {
         if (!_ui.value.transportState.isConnected) return
+        // The sound link would turn every beacon into an audible chirp.
+        if (!transport.carriesPresence) return
         val packet = Packet(
             sessionId = sessionId,
             // Deliberately NOT the message sequence. A beacon must never consume a seq

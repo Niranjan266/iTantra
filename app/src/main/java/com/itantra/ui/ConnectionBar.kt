@@ -64,6 +64,25 @@ sealed class TransportChoice {
      */
     object WifiDirect : TransportChoice()
 
+    /**
+     * Wi-Fi broadcast and BLE broadcast at the same time
+     * (see [com.itantra.transport.CompositeTransport]).
+     *
+     * The default, because it removes the guess: two phones find each other whether or
+     * not they share a Wi-Fi network, and a sentence too long for BLE still travels over
+     * Wi-Fi. Every other choice is a way of restricting this one.
+     */
+    object Automatic : TransportChoice()
+
+    /**
+     * Tone bursts from the speaker to the microphone
+     * (see [com.itantra.transport.AcousticTransport]).
+     *
+     * No radio at all: works in airplane mode, and through any voice radio held to the
+     * phone. Slow — a phrase takes under three seconds — and audible by design.
+     */
+    object Sound : TransportChoice()
+
     fun label(): String = when (this) {
         Loopback -> "Loopback"
         BluetoothHost -> "Bluetooth host"
@@ -71,6 +90,8 @@ sealed class TransportChoice {
         BleMesh -> "BLE mesh"
         WifiBroadcast -> "Wi-Fi broadcast"
         WifiDirect -> "Wi-Fi Direct"
+        Automatic -> "Automatic"
+        Sound -> "Sound"
     }
 }
 

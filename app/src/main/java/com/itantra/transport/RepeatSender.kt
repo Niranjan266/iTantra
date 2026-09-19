@@ -64,6 +64,8 @@ class RepeatSender(
         get() = if (copies > 1) "${inner.name} ×$copies" else inner.name
 
     override val nominalBitrate: Int? get() = inner.nominalBitrate
+
+    override val carriesPresence: Boolean get() = inner.carriesPresence
     override val state: StateFlow<TransportState> get() = inner.state
     override val incoming: Flow<ByteArray> get() = inner.incoming
 

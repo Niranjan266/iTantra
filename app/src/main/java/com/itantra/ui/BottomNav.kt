@@ -1,6 +1,7 @@
 package com.itantra.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -95,7 +96,7 @@ private fun NavItem(
     Column(
         Modifier
             .clip(RoundedCornerShape(12.dp))
-            .pointerInput(destination) { detectTapGestures(onTap = { onClick() }) }
+            .clickable { onClick() }
             .padding(horizontal = 14.dp, vertical = 4.dp)
             .semantics { contentDescription = destination.label },
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -3,6 +3,7 @@ package com.itantra.ui
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,6 +71,7 @@ fun DevicesScreen(
     onChoose: (TransportChoice) -> Unit,
     onRequestPermission: () -> Unit,
     onOpenBluetoothSettings: () -> Unit,
+    onPair: (PairedDevice) -> Unit = {},
 ) {
     Column(
         Modifier
@@ -112,6 +114,29 @@ fun DevicesScreen(
             color = MaterialTheme.colorScheme.onBackground)
         Spacer(Modifier.height(8.dp))
 
+        LinkOption(
+            icon = MsIcons.NearMe,
+            title = "Automatic · recommended",
+            detail = "Finds iTantra phones over Wi-Fi and Bluetooth at once · no pairing",
+            range = "Wi-Fi + BLE",
+            chosen = selected is TransportChoice.Automatic,
+            // Works with only one of the two: no Wi-Fi network still leaves BLE, and
+            // Bluetooth off still leaves Wi-Fi.
+            enabled = true,
+            onClick = { onChoose(TransportChoice.Automatic) },
+        )
+        Spacer(Modifier.height(8.dp))
+        LinkOption(
+            icon = MsIcons.GraphicEq,
+            title = "Sound",
+            detail = "Tones from the speaker to the other phone's mic · no radio, " +
+                "works in airplane mode or through a walkie-talkie",
+            range = "a room · 47 bit/s",
+            chosen = selected is TransportChoice.Sound,
+            enabled = true,
+            onClick = { onChoose(TransportChoice.Sound) },
+        )
+        Spacer(Modifier.height(8.dp))
         LinkOption(
             icon = MsIcons.Hub,
             title = "Wi-Fi Direct",
@@ -261,9 +286,7 @@ fun DevicesScreen(
                         if (scanning) MaterialTheme.colorScheme.surfaceContainerHigh
                         else MaterialTheme.colorScheme.primary
                     )
-                    .pointerInput(scanning) {
-                        detectTapGestures(onTap = { if (!scanning) onScan() })
-                    }
+                    .clickable { if (!scanning) onScan() }
                     .padding(horizontal = 12.dp, vertical = 7.dp),
             ) {
                 Text(
@@ -293,7 +316,9 @@ fun DevicesScreen(
             }
             Spacer(Modifier.height(8.dp))
         } else {
+            val pairedAddresses = pairedDevices.map { it.address }.toSet()
             scanned.forEach { d ->
+                val alreadyPaired = d.address in pairedAddresses
                 OutlinedCard {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -312,10 +337,19 @@ fun DevicesScreen(
                                 maxLines = 1,
                             )
                             Text(
-                                if (d.couldBePeer) "a phone or computer" else "an accessory",
+                                when {
+                                    alreadyPaired -> "Paired · join it below"
+                                    d.couldBePeer -> "a phone or computer · not paired"
+                                    else -> "an accessory"
+                                },
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
+                        }
+                        // Only phones and computers get the button: pairing with earbuds
+                        // cannot make them run iTantra, and would only clutter the list.
+                        if (d.couldBePeer && !alreadyPaired) {
+                            SmallAction(label = "Pair", enabled = true) { onPair(d) }
                         }
                     }
                 }
@@ -352,8 +386,9 @@ fun DevicesScreen(
         if (peers.isEmpty()) {
             OutlinedCard {
                 Text(
-                    "No paired phones yet. Pair the two phones once in Android's Bluetooth " +
-                        "settings, or use the broadcast mesh above — that needs no pairing.",
+                    "No paired phones yet. Tap Search above, then Pair on the other phone " +
+                        "and confirm the code on both screens. Or use Automatic, Wi-Fi " +
+                        "broadcast or BLE broadcast — those need no pairing at all.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -433,9 +468,7 @@ private fun LinkOption(
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .pointerInput(title, enabled) {
-                detectTapGestures(onTap = { if (enabled) onClick() })
-            },
+            .clickable { if (enabled) onClick() },
     ) {
         Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
             val fg = when {
@@ -498,7 +531,7 @@ internal fun PrimaryButton(label: String, icon: ImageVector, onClick: () -> Unit
             .height(46.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.primary)
-            .pointerInput(label) { detectTapGestures(onTap = { onClick() }) },
+            .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
@@ -517,9 +550,7 @@ private fun SmallAction(label: String, enabled: Boolean, onClick: () -> Unit) {
                 if (enabled) MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.surfaceContainerHigh
             )
-            .pointerInput(label, enabled) {
-                detectTapGestures(onTap = { if (enabled) onClick() })
-            }
+            .clickable { if (enabled) onClick() }
             .padding(horizontal = 14.dp, vertical = 8.dp),
     ) {
         Text(

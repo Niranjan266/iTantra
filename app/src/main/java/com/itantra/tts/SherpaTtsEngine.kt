@@ -1,6 +1,8 @@
 package com.itantra.tts
 
 import android.util.Log
+import com.itantra.audio.AudioSpec
+import com.itantra.audio.Resampler
 import com.itantra.codec.Packet
 import com.itantra.lang.LanguagePack
 import com.itantra.lang.TokensFile
@@ -50,7 +52,10 @@ class SherpaTtsEngine(
 
     val isLoaded: Boolean get() = tts != null
 
-    /** Native sample rate of the voice. Not necessarily 16 kHz — Piper voices vary. */
+    /**
+     * Native sample rate of the voice. Not necessarily 16 kHz — Piper voices are 22,050.
+     * Everything this class returns has already been converted to [AudioSpec.SAMPLE_RATE].
+     */
     val sampleRate: Int get() = tts?.sampleRate() ?: 0
 
     /** Slow. Call off the main thread. */
@@ -127,7 +132,7 @@ class SherpaTtsEngine(
                 sid = model.speakerId,
                 speed = speedFor(packet, model.speed),
             )
-            toPcm16(audio.samples)
+            toPcm16(toPlayerRate(audio.samples, audio.sampleRate))
         }.getOrElse {
             Log.e(TAG, "synthesis failed", it)
             ShortArray(0)
@@ -161,7 +166,7 @@ class SherpaTtsEngine(
                 speed = speedFor(packet, model.speed),
             ) { chunk ->
                 // sherpa treats a non-1 return as "stop generating".
-                if (onChunk(toPcm16(chunk))) 1 else 0
+                if (onChunk(toPcm16(toPlayerRate(chunk, engine.sampleRate())))) 1 else 0
             }
             true
         }.getOrElse {
@@ -190,6 +195,17 @@ class SherpaTtsEngine(
         runCatching { tts?.release() }
         tts = null
     }
+
+    /**
+     * Bring the voice to the player's rate.
+     *
+     * The player runs at 16 kHz; Piper and Mimic3 voices speak at 22,050 Hz. Without
+     * this, five of the ten languages played at 73% speed, five and a half semitones
+     * low — the "deep voice" that was reported. See [Resampler].
+     */
+    private fun toPlayerRate(samples: FloatArray, voiceRate: Int): FloatArray =
+        if (voiceRate <= 0) samples
+        else Resampler.resample(samples, voiceRate, AudioSpec.SAMPLE_RATE)
 
     private fun toPcm16(samples: FloatArray): ShortArray =
         ShortArray(samples.size) { i ->

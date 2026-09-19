@@ -89,6 +89,8 @@ class FloodRelay(
 
     override val nominalBitrate: Int? get() = inner.nominalBitrate
 
+    override val carriesPresence: Boolean get() = inner.carriesPresence
+
     override val state: StateFlow<TransportState> get() = inner.state
 
     private val _incoming = MutableSharedFlow<ByteArray>(extraBufferCapacity = 64)

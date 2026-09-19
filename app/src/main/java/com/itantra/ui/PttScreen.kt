@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -157,6 +158,11 @@ fun PttScreen(
 
         Spacer(Modifier.height(24.dp))
 
+        // Read at release time, not when the gesture started: the handler below is only
+        // restarted when text, intent or mode change, so a language switched in between
+        // would otherwise go out labelled with the previous language's wire id.
+        val currentLangId by rememberUpdatedState(state.selectedLangId ?: LanguageId.UNSPECIFIED)
+
         // Push to talk. Held, not tapped — this is the walkie-talkie contract.
         Box(
             modifier = Modifier
@@ -190,11 +196,7 @@ fun PttScreen(
                                 // a constant here. A hardcoded id would label every
                                 // packet with one language regardless of what was
                                 // spoken, and the receiver would render it wrongly.
-                                onTransmit(
-                                    text,
-                                    state.selectedLangId ?: LanguageId.UNSPECIFIED,
-                                    intent,
-                                )
+                                onTransmit(text, currentLangId, intent)
                             }
                         }
                     )

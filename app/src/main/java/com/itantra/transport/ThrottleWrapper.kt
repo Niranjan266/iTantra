@@ -42,6 +42,8 @@ class ThrottleWrapper(
 
     override val nominalBitrate: Int get() = bitsPerSecond
 
+    override val carriesPresence: Boolean get() = delegate.carriesPresence
+
     override val state: StateFlow<TransportState> get() = delegate.state
     override val incoming: Flow<ByteArray> get() = delegate.incoming
 

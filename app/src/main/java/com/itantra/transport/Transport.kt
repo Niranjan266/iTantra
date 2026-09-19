@@ -32,6 +32,15 @@ interface Transport {
     val incoming: Flow<ByteArray>
 
     /** Begin connecting. Returns once the attempt has started, not once connected. */
+    /**
+     * Whether presence beacons should be sent on this link.
+     *
+     * True for radio links, where a beacon every few seconds is free and is how phones
+     * find each other. False for the sound link, where it would be an audible chirp every
+     * few seconds for as long as the app is open.
+     */
+    val carriesPresence: Boolean get() = true
+
     suspend fun connect()
 
     /**

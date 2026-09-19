@@ -26,3 +26,6 @@ app/src/main/assets/languages/*/tts/
 
 # Personal planning notes, deliberately not published.
 Claude idea.md
+
+# Python bytecode from the tools/ scripts
+__pycache__/

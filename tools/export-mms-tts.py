@@ -108,8 +108,16 @@ def main() -> None:
     if skipped:
         print(f"  dropped {len(skipped)} non-single-character symbol(s): {skipped}")
 
-    example = tokenizer("வணக்கம்", return_tensors="pt")
+    # Trace with text in THIS language. A fixed Tamil word worked for Tamil and broke
+    # every other language: the Marathi tokenizer knows no Tamil letters, maps the word
+    # to nothing, and tracing an empty input fails inside VITS with "narrow(): length
+    # must be non-negative". A dozen letters from the model's own vocabulary always
+    # tokenize, whatever the script.
+    letters = [s for s, _ in sorted(vocab.items(), key=lambda kv: kv[1])
+               if len(s) == 1 and s.isalpha()][:12]
+    example = tokenizer("".join(letters), return_tensors="pt")
     x = example["input_ids"]
+    assert x.shape[1] > 2, f"sample text tokenized to nothing: {letters}"
     x_lengths = torch.tensor([x.shape[1]], dtype=torch.int64)
 
     onnx_path = os.path.join(args.out, "model.onnx")

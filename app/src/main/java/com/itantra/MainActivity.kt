@@ -82,6 +82,9 @@ class MainActivity : ComponentActivity() {
 
     /** Languages that can be added, and the state of any download in progress. */
     private val available = mutableStateListOf<CatalogueEntry>()
+
+    /** Installed languages whose voice is missing or outdated, by code. */
+    private var voiceUpdates by mutableStateOf<Map<String, CatalogueEntry>>(emptyMap())
     private var downloading by mutableStateOf<String?>(null)
     private var downloadProgress by mutableStateOf(0f)
     private var downloadNote by mutableStateOf("")
@@ -275,6 +278,8 @@ class MainActivity : ComponentActivity() {
                                     downloadProgress = downloadProgress,
                                     downloadNote = downloadNote,
                                     onDownload = ::downloadLanguage,
+                                    voiceUpdates = voiceUpdates,
+                                    onUpdateVoice = ::downloadVoice,
                                     bearerBps = bearerBps,
                                     onSelectLanguage = { pack ->
                                         app.appScope.launch { session.selectLanguage(pack) }
@@ -503,6 +508,7 @@ class MainActivity : ComponentActivity() {
 
         available.clear()
         available.addAll(LanguageCatalogue.available(this, packs))
+        voiceUpdates = LanguageCatalogue.voiceUpdates(this, packs)
     }
 
     /**
@@ -538,6 +544,40 @@ class MainActivity : ComponentActivity() {
                 Toast.makeText(
                     this@MainActivity,
                     "Could not download ${entry.name}. Check the connection and try again.",
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
+        }
+    }
+
+    /**
+     * Fetch just the voice for an installed language, then start using it at once.
+     *
+     * If that language is the one selected, the session reloads it so the next message is
+     * spoken by the new voice — not the old one still held in memory until a restart.
+     */
+    private fun downloadVoice(pack: LanguagePack) {
+        if (downloading != null) return
+        val entry = voiceUpdates[pack.code] ?: return
+        downloading = pack.code
+        downloadProgress = 0f
+        downloadNote = "starting…"
+
+        app.appScope.launch {
+            val ok = PackDownloader(applicationContext).downloadVoice(entry, pack.root) { p ->
+                downloadProgress = p.fraction
+                downloadNote = "${(p.fraction * 100).toInt()}% · ${p.label}"
+            }
+            downloading = null
+            refreshPermissions()
+            if (ok) {
+                packs.firstOrNull { it.code == pack.code }?.let { fresh ->
+                    if (fresh.id == session.ui.value.selectedLangId) session.selectLanguage(fresh)
+                }
+            } else {
+                Toast.makeText(
+                    this@MainActivity,
+                    "Could not download the ${pack.displayName} voice. Check the connection and try again.",
                     Toast.LENGTH_LONG,
                 ).show()
             }

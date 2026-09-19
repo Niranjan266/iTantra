@@ -34,8 +34,16 @@ data class CatalogueEntry(
     val langId: Int?,
     val asrModelUrl: String,
     val asrTokensUrl: String,
-    val approxMb: Int,
+    /** The voice archive, or null if the catalogue offers no voice for this language. */
+    val voiceUrl: String?,
+    /** Version of the offered voice. An installed pack below this is offered an update. */
+    val voiceVersion: Int,
+    val asrMb: Int,
+    val voiceMb: Int,
 ) {
+    /** Everything a fresh download fetches. */
+    val approxMb: Int get() = asrMb + voiceMb
+
     /** Usable only if the wire format knows this language. */
     val isKnown: Boolean get() = langId != null
 }
@@ -56,7 +64,9 @@ object LanguageCatalogue {
         val modelTemplate = asr.getString("modelUrl")
         val tokensUrl = asr.getString("tokensUrl")
         val asrMb = asr.optInt("approxModelMb", 0)
-        val ttsMb = root.optJSONObject("tts")?.optInt("approxModelMb", 0) ?: 0
+        val tts = root.optJSONObject("tts")
+        val voiceTemplate = tts?.optString("voiceUrl")?.takeIf { it.isNotEmpty() }
+        val voiceVersion = tts?.optInt("voiceVersion", 0) ?: 0
 
         val out = mutableListOf<CatalogueEntry>()
         val langs = root.getJSONArray("languages")
@@ -72,7 +82,10 @@ object LanguageCatalogue {
                 langId = LanguageId.idOfIsoCode(code),
                 asrModelUrl = modelTemplate.replace("{code}", code),
                 asrTokensUrl = tokensUrl,
-                approxMb = asrMb + ttsMb,
+                voiceUrl = voiceTemplate?.replace("{code}", code),
+                voiceVersion = voiceVersion,
+                asrMb = asrMb,
+                voiceMb = l.optInt("voiceMb", 0),
             )
         }
         out
@@ -85,6 +98,23 @@ object LanguageCatalogue {
      * but unusable — half-copied, missing its model — should still count as "installed" for
      * this purpose. Offering to download over the top of it would not fix it.
      */
+    /**
+     * Installed languages whose voice is missing or older than the one offered.
+     *
+     * Covers every pack downloaded before voices were hosted — those understand speech
+     * but were installed with no voice at all — and the old int8 voices, which carry no
+     * version and cost many times the CPU of the current ones.
+     */
+    fun voiceUpdates(context: Context, installed: List<LanguagePack>): Map<String, CatalogueEntry> {
+        val byCode = load(context).associateBy { it.code }
+        return installed.mapNotNull { pack ->
+            val entry = byCode[pack.code] ?: return@mapNotNull null
+            if (entry.voiceUrl == null) return@mapNotNull null
+            val have = pack.tts?.takeIf { it.isComplete }?.voiceVersion ?: -1
+            if (have < entry.voiceVersion) pack.code to entry else null
+        }.toMap()
+    }
+
     fun available(context: Context, installed: List<LanguagePack>): List<CatalogueEntry> {
         val have = installed.map { it.code }.toSet()
         return load(context).filter { it.code !in have && it.isKnown }

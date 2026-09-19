@@ -51,8 +51,9 @@ class LanguagePackManager(context: Context) {
          * while the screen cheerfully said "none yet".
          *
          * v2: added `phrases.txt` (the phrase codebook).
+         * v3: English voice replaced with the low-CPU build (int8 -> half-stored fp32).
          */
-        private const val BUNDLED_VERSION = 2
+        private const val BUNDLED_VERSION = 3
         private const val STAMP = ".installed_v$BUNDLED_VERSION"
     }
 

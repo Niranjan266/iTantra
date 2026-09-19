@@ -15,7 +15,10 @@
     "tokens": "tts/tokens.txt",
     "dataDir": "tts/espeak-ng-data",
     "speakerId": 0,
-    "speed": 1.0
+    "speed": 1.0,
+    "numThreads": 2,
+    "voiceVersion": 1,
+    "sampleRate": 22050
   },
   "selfTest": "flood water is rising near the school send boats"
 }

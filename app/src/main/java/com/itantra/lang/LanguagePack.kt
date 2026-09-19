@@ -120,8 +120,10 @@ data class LanguagePack(
          * Inference threads for synthesis.
          *
          * Declared by the pack because the right number depends on the model, not on the
-         * app: a small Piper voice saturates at two, while the Tamil VITS graph is heavy
-         * enough to keep four or more busy.
+         * app. Every current voice is set to two: enough to finish a sentence before the
+         * listener notices a gap, and leaving the other cores to the recogniser and the
+         * radio. The old int8 Tamil voice asked for four, trying to out-thread a model
+         * that was slow for a different reason (see tools/shrink-voice.py).
          *
          * This field existed in `pack.json` for weeks and was **never read** — TtsModel
          * had no such property, so the engine silently used its own default of 2 on an
@@ -129,6 +131,14 @@ data class LanguagePack(
          * declared setting that should have fixed it did nothing.
          */
         val numThreads: Int,
+        /**
+         * Which build of the voice this is, from the catalogue's `voiceVersion`.
+         *
+         * 0 for anything installed before versions existed, which includes the int8
+         * voices. Those cost up to 25x the CPU of the current builds, so a pack at 0 is
+         * offered an update rather than left running the slow one quietly.
+         */
+        val voiceVersion: Int = 0,
     ) {
         val isComplete: Boolean
             get() = model.isFile && tokens.isFile &&
@@ -192,6 +202,7 @@ data class LanguagePack(
                         // faster, through contention.
                         numThreads = t.optInt("numThreads", 2)
                             .coerceIn(1, Runtime.getRuntime().availableProcessors()),
+                        voiceVersion = t.optInt("voiceVersion", 0),
                     )
                 }
 

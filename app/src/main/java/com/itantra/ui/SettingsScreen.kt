@@ -56,6 +56,9 @@ fun SettingsScreen(
     bearerBps: Int?,
     onSelectLanguage: (LanguagePack) -> Unit,
     onDownload: (CatalogueEntry) -> Unit,
+    /** Installed languages whose voice is missing or outdated, by code. */
+    voiceUpdates: Map<String, CatalogueEntry> = emptyMap(),
+    onUpdateVoice: (LanguagePack) -> Unit = {},
     onChooseBearer: (Int?) -> Unit,
     onOpenTechnical: () -> Unit,
 ) {
@@ -96,6 +99,18 @@ fun SettingsScreen(
                 chosen = pack.id == state.selectedLangId,
                 onClick = { onSelectLanguage(pack) },
             )
+            voiceUpdates[pack.code]?.let { entry ->
+                Spacer(Modifier.height(6.dp))
+                VoiceUpdateRow(
+                    pack = pack,
+                    entry = entry,
+                    busy = downloading == pack.code,
+                    otherBusy = downloading != null && downloading != pack.code,
+                    progress = downloadProgress,
+                    note = downloadNote,
+                    onGet = { onUpdateVoice(pack) },
+                )
+            }
             Spacer(Modifier.height(8.dp))
         }
 
@@ -297,10 +312,8 @@ private fun BearerChip(label: String, chosen: Boolean, onClick: () -> Unit) {
 /**
  * One language that is not installed yet.
  *
- * States what it will and will not do **before** the download, not after. A freshly
- * downloaded pack understands speech but cannot speak it — the voices need converting from
- * Meta's PyTorch release and are not published as ONNX — and finding that out after
- * waiting for 188 MB would be a poor way to learn it.
+ * States what it will and will not do **before** the download, not after, and the real
+ * size including the voice — finding either out after the wait is a poor way to learn it.
  */
 @Composable
 private fun AvailableRow(
@@ -335,7 +348,8 @@ private fun AvailableRow(
                 )
                 Text(
                     if (busy) note
-                    else "Understands you · about ${entry.approxMb - 37} MB",
+                    else if (entry.voiceUrl != null) "Understands and speaks · about ${entry.approxMb} MB"
+                    else "Understands you · about ${entry.asrMb} MB",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -380,6 +394,82 @@ private fun AvailableRow(
                         .height(6.dp)
                         .clip(RoundedCornerShape(3.dp))
                         .background(MaterialTheme.colorScheme.primary)
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Offer the voice for an installed language that has none, or has an old one.
+ *
+ * Languages downloaded before voices were hosted can understand but not speak, and the
+ * old int8 voices speak at up to 25x the CPU. Either way this is a voice-only fetch —
+ * the recogniser already on the phone is kept.
+ */
+@Composable
+private fun VoiceUpdateRow(
+    pack: LanguagePack,
+    entry: CatalogueEntry,
+    busy: Boolean,
+    otherBusy: Boolean,
+    progress: Float,
+    note: String,
+    onGet: () -> Unit,
+) {
+    val hasVoice = pack.tts?.isComplete == true
+    OutlinedCard {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    if (hasVoice) "Faster voice available" else "Voice available",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                Text(
+                    if (busy) note
+                    else if (hasVoice) "Uses far less battery · about ${entry.voiceMb} MB"
+                    else "Lets ${pack.displayName} speak aloud · about ${entry.voiceMb} MB",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            if (!busy) {
+                Box(
+                    Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            if (otherBusy) MaterialTheme.colorScheme.surfaceContainerHigh
+                            else MaterialTheme.colorScheme.primary
+                        )
+                        .pointerInput(pack.code, otherBusy) {
+                            detectTapGestures(onTap = { if (!otherBusy) onGet() })
+                        }
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        if (hasVoice) "Update" else "Add voice",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = if (otherBusy) MaterialTheme.colorScheme.onSurfaceVariant
+                        else Color.White,
+                    )
+                }
+            }
+        }
+        if (busy) {
+            Spacer(Modifier.height(10.dp))
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+            ) {
+                Box(
+                    Modifier
+                        .fillMaxWidth(progress.coerceIn(0f, 1f))
+                        .height(6.dp)
+                        .background(MaterialTheme.colorScheme.primary),
                 )
             }
         }

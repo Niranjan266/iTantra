@@ -214,6 +214,15 @@ fun DevicesScreen(
                 color = MaterialTheme.colorScheme.onBackground,
             )
         }
+        if (peers.isNotEmpty()) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "Everyone listed hears you the moment you talk. Each phone shows and " +
+                    "speaks the message in the language its own owner chose.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Spacer(Modifier.height(8.dp))
 
         if (peers.isEmpty()) {
@@ -597,6 +606,15 @@ private fun PeerRow(peer: Peer, packs: List<LanguagePack>) = OutlinedCard {
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            // There is no connect step to get wrong, and saying so is the point: this
+            // phone is already reachable, and the listener picks the language they hear
+            // on their own phone. A row that looked tappable and did nothing read as a
+            // connection that had failed.
+            Text(
+                "Ready · nothing to connect, just hold the talk button",
+                style = MaterialTheme.typography.labelSmall,
+                color = StatusReady,
             )
         }
         Icon(MsIcons.Sensors, null, tint = StatusReady, modifier = Modifier.size(18.dp))

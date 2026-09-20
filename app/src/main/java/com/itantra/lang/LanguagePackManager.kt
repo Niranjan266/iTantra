@@ -124,6 +124,17 @@ class LanguagePackManager(context: Context) {
      * A directory containing a valid `pack.json` counts even if the manifest does not
      * list it — that is what makes "drop in a folder" work without editing anything.
      */
+    /**
+     * Every directory that could hold a pack, whether or not it has a valid pack.json.
+     *
+     * Used by [CodebookInstaller], which has to be able to add a codebook to a pack
+     * before that pack is loaded — the codebook is part of what makes it usable.
+     */
+    fun packDirs(): List<File> =
+        listOfNotNull(packsDir, externalPacksDir)
+            .filter { it.isDirectory }
+            .flatMap { it.listFiles()?.filter { f -> f.isDirectory } ?: emptyList() }
+
     fun installed(): List<LanguagePack> {
         val dirs = listOfNotNull(packsDir, externalPacksDir).filter { it.isDirectory }
         if (dirs.isEmpty()) return emptyList()

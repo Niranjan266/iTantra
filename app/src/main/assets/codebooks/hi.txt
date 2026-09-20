@@ -1,0 +1,158 @@
+# iTantra phrase codebook — हिन्दी (Hindi)
+#
+# THIS FILE IS A PARALLEL CORPUS. Line N here must mean exactly what line N of every
+# other language's file means, because the line number is the only thing that crosses
+# the link: id 33 spoken in Hindi and rendered on a Tamil phone IS the translation.
+#
+#   APPEND ONLY. Never reorder, never delete, never edit an existing line's meaning.
+#   A line containing just "-" means NOT TRANSLATED YET and still holds its id;
+#   removing one shifts every id after it, and a shifted id does not fail — it decodes
+#   to a real but different sentence.
+#
+# Blank lines and lines starting with # are ignored and do not consume an id.
+#
+# Reviewed against the English line by line; a native speaker should confirm wording before this is frozen.
+संदेश मिल गया  # 0: message received
+समझ नहीं आया, दोहराइए  # 1: message not understood, repeat
+इंतज़ार में हैं  # 2: standing by
+रुकिए, बात खत्म  # 3: wait, out
+बताने के लिए कुछ नहीं  # 4: nothing to report
+हाँ  # 5: yes
+नहीं  # 6: no
+पता नहीं  # 7: unknown
+पुष्टि हो गई  # 8: confirmed
+उसे रद्द कर दें  # 9: cancel that
+अपनी जगह बताइए  # 10: report your position
+अपनी स्थिति बताइए  # 11: report your status
+कौन बोल रहा है  # 12: who is calling
+धीरे बोलिए  # 13: speak slower
+संदेश समाप्त  # 14: end of message
+मिल गया, कुछ करने की ज़रूरत नहीं  # 15: acknowledged, no action needed
+हमें तुरंत मदद चाहिए  # 16: we need help immediately
+यह आपातकाल है  # 17: this is an emergency
+हम फँस गए हैं, हिल नहीं सकते  # 18: we are trapped and cannot move
+हम अभी सुरक्षित हैं  # 19: we are safe for now
+हमारी जगह पर मदद भेजिए  # 20: send help to our position
+पैदल सुरक्षित जगह नहीं पहुँच सकते  # 21: we cannot reach safety on foot
+यहाँ कोई नहीं है  # 22: there is no one here
+बाकी लोगों से संपर्क टूट गया है  # 23: we have lost contact with the others
+इस रास्ते से न आइए, सुरक्षित नहीं है  # 24: do not come this way, it is not safe
+हम ऊँची जगह जा रहे हैं  # 25: we are moving to higher ground
+हम यहीं रहेंगे  # 26: we will stay where we are
+हमारे फ़ोन की बैटरी खत्म होने वाली है  # 27: our phone battery is almost finished
+आपकी आवाज़ आ रही है पर जवाब नहीं भेज सकते  # 28: we can hear you but cannot reply
+आखिरी संदेश भेज रहे हैं  # 29: sending one last message
+यहाँ सब ठीक है  # 30: all clear here
+हालात बिगड़ रहे हैं  # 31: situation is getting worse
+बाढ़ का पानी बढ़ रहा है  # 32: flood water is rising
+स्कूल के पास बाढ़ का पानी बढ़ रहा है, नावें भेजिए  # 33: flood water is rising near the school, send boats
+नदी का किनारा टूट गया है  # 34: the river has broken its bank
+पानी कमर से ऊपर है  # 35: the water is above the waist
+पानी अभी भी बढ़ रहा है  # 36: the water is still rising
+पानी कम हो रहा है  # 37: the water is going down
+पुल पानी में डूबा है  # 38: the bridge is under water
+सड़क पानी में डूबी है  # 39: the road is under water
+बाँध के गेट खोल दिए गए हैं  # 40: the dam has opened its gates
+तेज़ बारिश नहीं रुकी है  # 41: heavy rain has not stopped
+कुएँ का पानी पीने लायक नहीं है  # 42: the well water is not safe to drink
+साफ़ पीने का पानी नहीं है  # 43: we have no clean drinking water
+बोरवेल पानी में डूब गया है  # 44: the borewell is flooded
+नाली जाम है और पानी पीछे आ रहा है  # 45: the drain is blocked and water is backing up
+खेत पूरी तरह डूब गया है  # 46: the field is completely submerged
+आज रात ऊँची लहरें आने की आशंका है  # 47: high tide is expected tonight
+यहाँ सब सुरक्षित हैं  # 48: everyone here is safe
+कुछ लोग लापता हैं  # 49: some people are missing
+एक बच्चा लापता है  # 50: a child is missing
+एक बुज़ुर्ग को मदद चाहिए  # 51: an elderly person needs help
+एक गर्भवती महिला को अस्पताल चाहिए  # 52: a pregnant woman needs a hospital
+कोई गंभीर रूप से घायल है  # 53: someone is badly injured
+कोई डूब गया है  # 54: someone has drowned
+हम दस लोग हैं  # 55: we are ten people
+हम पचास से ज़्यादा लोग हैं  # 56: we are more than fifty people
+हमारे साथ बच्चे हैं  # 57: we have children with us
+हमारे साथ बुज़ुर्ग हैं  # 58: we have elderly people with us
+हमारे साथ एक दिव्यांग व्यक्ति है  # 59: we have a disabled person with us
+लोग मंदिर में इकट्ठा हो रहे हैं  # 60: people are gathering at the temple
+लोग स्कूल में इकट्ठा हो रहे हैं  # 61: people are gathering at the school
+लोग पंचायत कार्यालय में इकट्ठा हो रहे हैं  # 62: people are gathering at the panchayat office
+सबको निकाल लिया गया है  # 63: everyone has been moved out
+डॉक्टर चाहिए  # 64: we need a doctor
+दवा चाहिए  # 65: we need medicine
+इंसुलिन चाहिए  # 66: we need insulin
+साँप के काटने का इलाज चाहिए  # 67: we need snake bite treatment
+पीने का पानी और खाना चाहिए  # 68: we need drinking water and food
+यहाँ बुखार फैल रहा है  # 69: there is fever spreading here
+यहाँ दस्त और उल्टी फैल रही है  # 70: there is diarrhoea spreading here
+किसी को डायलिसिस चाहिए  # 71: someone needs dialysis
+किसी को ऑक्सीजन चाहिए  # 72: someone needs oxygen
+पट्टी और एंटीसेप्टिक चाहिए  # 73: we need bandages and antiseptic
+स्ट्रेचर लाइए  # 74: bring a stretcher
+स्वास्थ्य केंद्र बंद है  # 75: the health centre is closed
+स्वास्थ्य केंद्र में पानी भर गया है  # 76: the health centre is flooded
+एम्बुलेंस हम तक नहीं पहुँच सकती  # 77: an ambulance cannot reach us
+यहाँ प्राथमिक उपचार है  # 78: we have first aid here
+डॉक्टरी मदद की ज़रूरत नहीं  # 79: no medical help needed
+नावें भेजिए  # 80: send boats
+हेलिकॉप्टर भेजिए  # 81: send a helicopter
+बचाव दल भेजिए  # 82: send a rescue team
+गाड़ी भेजिए  # 83: send a vehicle
+रस्सी चाहिए  # 84: we need rope
+लाइफ़ जैकेट चाहिए  # 85: we need life jackets
+सीढ़ी चाहिए  # 86: we need a ladder
+नाव भर गई है, दूसरी भेजिए  # 87: the boat is full, send another
+नाव आ गई है  # 88: the boat has arrived
+बचाव दल आ गया है  # 89: the rescue team has arrived
+हम मुख्य सड़क तक पैदल जा सकते हैं  # 90: we can walk to the main road
+हम पानी पार नहीं कर सकते  # 91: we cannot cross the water
+ट्रैक्टर हम तक पहुँच सकता है  # 92: a tractor can reach us
+रास्ता पैदल चलने लायक है  # 93: the path is passable on foot
+गिरे पेड़ से रास्ता बंद है  # 94: the path is blocked by a fallen tree
+बचाव की ज़रूरत नहीं  # 95: we do not need rescue
+बिजली नहीं है  # 96: there is no electricity
+मोबाइल नेटवर्क नहीं है  # 97: there is no mobile network
+ट्रांसफ़ॉर्मर खराब हो गया है  # 98: the transformer is damaged
+बिजली का तार गिरा है, दूर रहिए  # 99: a live wire has fallen, keep away
+सड़क बह गई है  # 100: the road is washed away
+पुलिया ढह गई है  # 101: the culvert has collapsed
+एक इमारत गिर गई है  # 102: a building has collapsed
+स्कूल की इमारत को नुकसान हुआ है  # 103: the school building is damaged
+छत उड़ गई है  # 104: the roof has blown off
+सड़क पर भूस्खलन हुआ है  # 105: there is a landslide on the road
+रेल लाइन पानी में डूबी है  # 106: the railway line is under water
+पंप काम नहीं कर रहा  # 107: the pump is not working
+हमारे पास जेनरेटर है  # 108: we have a generator
+ईंधन नहीं है  # 109: we have no fuel
+एक दिन का ईंधन है  # 110: we have fuel for one day
+पानी की सप्लाई बंद हो गई है  # 111: the water supply has stopped
+खाना चाहिए  # 112: we need food
+पीने का पानी चाहिए  # 113: we need drinking water
+कंबल चाहिए  # 114: we need blankets
+तिरपाल या तंबू चाहिए  # 115: we need tarpaulin or tents
+शिशु आहार चाहिए  # 116: we need baby food
+पशुओं का चारा चाहिए  # 117: we need animal feed
+एक दिन का खाना है  # 118: we have food for one day
+तीन दिन का खाना है  # 119: we have food for three days
+हमारे पास पर्याप्त सामान है  # 120: we have enough supplies
+शरण स्थल भर गया है  # 121: the shelter is full
+शरण स्थल में जगह है  # 122: the shelter has space
+हम अस्थायी शरण स्थल में हैं  # 123: we are in a temporary shelter
+मवेशियों को हटाना है  # 124: cattle need to be moved
+मवेशी खो गए हैं  # 125: cattle have been lost
+फ़सल बर्बाद हो गई है  # 126: crops are destroyed
+अनाज का गोदाम पानी में डूब गया है  # 127: the granary is flooded
+यह संदेश आगे पहुँचाइए  # 128: relay this message onward
+यह संदेश ज़िला कार्यालय के लिए है  # 129: this message is for the district office
+यह संदेश पुलिस के लिए है  # 130: this message is for the police
+यह संदेश अग्निशमन विभाग के लिए है  # 131: this message is for the fire service
+यह संदेश अस्पताल के लिए है  # 132: this message is for the hospital
+हम दूसरे गाँव के लिए संदेश भेज रहे हैं  # 133: we are relaying for another village
+जिसके पास नेटवर्क है उसे यह बताइए  # 134: pass this to anyone with a network signal
+एक घंटे में फिर संपर्क करेंगे  # 135: we will call again in one hour
+सुबह होते ही फिर संपर्क करेंगे  # 136: we will call again at first light
+अगले चैनल पर आइए  # 137: change to the next channel
+इसी चैनल पर रहिए  # 138: stay on this channel
+यह लाइन आपात स्थिति के लिए खाली रखिए  # 139: keep this line clear for emergencies
+आप कितने लोगों को ले जा सकते हैं  # 140: how many people can you take
+हम दस और लोगों को ले जा सकते हैं  # 141: we can take ten more people
+हम और लोगों को नहीं ले जा सकते  # 142: we cannot take any more people
+नामों की लिखी सूची भेजिए  # 143: send a written list of names

@@ -1,0 +1,158 @@
+# iTantra phrase codebook — தமிழ் (Tamil)
+#
+# THIS FILE IS A PARALLEL CORPUS. Line N here must mean exactly what line N of every
+# other language's file means, because the line number is the only thing that crosses
+# the link: id 33 spoken in Hindi and rendered on a Tamil phone IS the translation.
+#
+#   APPEND ONLY. Never reorder, never delete, never edit an existing line's meaning.
+#   A line containing just "-" means NOT TRANSLATED YET and still holds its id;
+#   removing one shifts every id after it, and a shifted id does not fail — it decodes
+#   to a real but different sentence.
+#
+# Blank lines and lines starting with # are ignored and do not consume an id.
+#
+# Reviewed against the English line by line; a native speaker should confirm wording before this is frozen.
+செய்தி கிடைத்தது  # 0: message received
+மீண்டும் சொல்லுங்கள்  # 1: message not understood, repeat
+காத்திருங்கள்  # 2: standing by
+காத்திருங்கள், இப்போது முடிக்கிறேன்  # 3: wait, out
+தெரிவிக்க ஒன்றுமில்லை  # 4: nothing to report
+ஆம்  # 5: yes
+இல்லை  # 6: no
+தெரியவில்லை  # 7: unknown
+உறுதி செய்யப்பட்டது  # 8: confirmed
+அதை ரத்து செய்யுங்கள்  # 9: cancel that
+உங்கள் இடத்தைச் சொல்லுங்கள்  # 10: report your position
+உங்கள் நிலையைச் சொல்லுங்கள்  # 11: report your status
+நீங்கள் யார்  # 12: who is calling
+மெதுவாகப் பேசுங்கள்  # 13: speak slower
+செய்தி முடிந்தது  # 14: end of message
+கிடைத்தது, நடவடிக்கை தேவையில்லை  # 15: acknowledged, no action needed
+உடனே உதவி தேவை  # 16: we need help immediately
+இது அவசர நிலை  # 17: this is an emergency
+நாங்கள் சிக்கிக்கொண்டோம்  # 18: we are trapped and cannot move
+நாங்கள் பாதுகாப்பாக இருக்கிறோம்  # 19: we are safe for now
+எங்கள் இடத்திற்கு உதவி அனுப்புங்கள்  # 20: send help to our position
+நடந்து பாதுகாப்பான இடத்திற்குச் செல்ல முடியாது  # 21: we cannot reach safety on foot
+இங்கு யாரும் இல்லை  # 22: there is no one here
+மற்றவர்களுடன் தொடர்பு அறுந்துவிட்டது  # 23: we have lost contact with the others
+இந்த வழியாக வர வேண்டாம்  # 24: do not come this way, it is not safe
+நாங்கள் மேட்டுப் பகுதிக்குச் செல்கிறோம்  # 25: we are moving to higher ground
+நாங்கள் இங்கேயே இருப்போம்  # 26: we will stay where we are
+எங்கள் தொலைபேசி மின்கலம் தீர்ந்துவிடும்  # 27: our phone battery is almost finished
+உங்கள் குரல் கேட்கிறது ஆனால் பதில் அனுப்ப முடியவில்லை  # 28: we can hear you but cannot reply
+இறுதிச் செய்தியை அனுப்புகிறேன்  # 29: sending one last message
+இங்கு எல்லாம் சரியாக உள்ளது  # 30: all clear here
+நிலை மோசமாகி வருகிறது  # 31: situation is getting worse
+வெள்ளம் உயர்கிறது  # 32: flood water is rising
+பள்ளி அருகே வெள்ளம் உயர்கிறது, படகுகளை அனுப்புங்கள்  # 33: flood water is rising near the school, send boats
+ஆறு கரை உடைந்துவிட்டது  # 34: the river has broken its bank
+தண்ணீர் இடுப்புக்கு மேல் உள்ளது  # 35: the water is above the waist
+தண்ணீர் இன்னும் உயர்ந்து கொண்டே இருக்கிறது  # 36: the water is still rising
+தண்ணீர் குறைந்து வருகிறது  # 37: the water is going down
+பாலம் தண்ணீரில் உள்ளது  # 38: the bridge is under water
+சாலை தண்ணீரில் மூழ்கிவிட்டது  # 39: the road is under water
+அணையின் மதகுகள் திறக்கப்பட்டுள்ளன  # 40: the dam has opened its gates
+கனமழை நிற்கவில்லை  # 41: heavy rain has not stopped
+கிணற்று நீர் குடிக்கத் தகுதியில்லை  # 42: the well water is not safe to drink
+சுத்தமான குடிநீர் இல்லை  # 43: we have no clean drinking water
+ஆழ்துளைக் கிணறு வெள்ளத்தில் மூழ்கிவிட்டது  # 44: the borewell is flooded
+வடிகால் அடைத்துக்கொண்டது, தண்ணீர் திரும்பி வருகிறது  # 45: the drain is blocked and water is backing up
+வயல் முழுவதும் மூழ்கிவிட்டது  # 46: the field is completely submerged
+இன்றிரவு கடல் பெருக்கம் எதிர்பார்க்கப்படுகிறது  # 47: high tide is expected tonight
+இங்கு அனைவரும் பாதுகாப்பாக உள்ளனர்  # 48: everyone here is safe
+சிலர் காணவில்லை  # 49: some people are missing
+ஒரு குழந்தை காணவில்லை  # 50: a child is missing
+ஒரு முதியவருக்கு உதவி தேவை  # 51: an elderly person needs help
+கர்ப்பிணிப் பெண்ணுக்கு மருத்துவமனை தேவை  # 52: a pregnant woman needs a hospital
+ஒருவர் கடுமையாக காயமடைந்துள்ளார்  # 53: someone is badly injured
+ஒருவர் நீரில் மூழ்கிவிட்டார்  # 54: someone has drowned
+நாங்கள் பத்து பேர்  # 55: we are ten people
+நாங்கள் ஐம்பது பேருக்கு மேல்  # 56: we are more than fifty people
+எங்களுடன் குழந்தைகள் உள்ளனர்  # 57: we have children with us
+எங்களுடன் முதியவர்கள் உள்ளனர்  # 58: we have elderly people with us
+எங்களுடன் மாற்றுத்திறனாளி ஒருவர் உள்ளார்  # 59: we have a disabled person with us
+மக்கள் கோவிலில் கூடுகிறார்கள்  # 60: people are gathering at the temple
+மக்கள் பள்ளியில் கூடுகிறார்கள்  # 61: people are gathering at the school
+மக்கள் ஊராட்சி அலுவலகத்தில் கூடுகிறார்கள்  # 62: people are gathering at the panchayat office
+அனைவரும் வெளியேற்றப்பட்டுவிட்டனர்  # 63: everyone has been moved out
+மருத்துவர் தேவை  # 64: we need a doctor
+மருந்து தேவை  # 65: we need medicine
+இன்சுலின் தேவை  # 66: we need insulin
+பாம்பு கடிக்கு சிகிச்சை தேவை  # 67: we need snake bite treatment
+குடிநீரும் உணவும் தேவை  # 68: we need drinking water and food
+இங்கு காய்ச்சல் பரவுகிறது  # 69: there is fever spreading here
+இங்கு வாந்தி பேதி பரவுகிறது  # 70: there is diarrhoea spreading here
+ஒருவருக்கு டயாலிசிஸ் தேவை  # 71: someone needs dialysis
+ஒருவருக்கு ஆக்சிஜன் தேவை  # 72: someone needs oxygen
+கட்டுத்துணியும் கிருமி நாசினியும் தேவை  # 73: we need bandages and antiseptic
+ஸ்ட்ரெச்சர் கொண்டு வாருங்கள்  # 74: bring a stretcher
+சுகாதார நிலையம் மூடப்பட்டுள்ளது  # 75: the health centre is closed
+சுகாதார நிலையம் வெள்ளத்தில் மூழ்கியுள்ளது  # 76: the health centre is flooded
+ஆம்புலன்ஸ் எங்களை அடைய முடியாது  # 77: an ambulance cannot reach us
+இங்கு முதலுதவி வசதி உள்ளது  # 78: we have first aid here
+மருத்துவ உதவி தேவையில்லை  # 79: no medical help needed
+படகுகளை அனுப்புங்கள்  # 80: send boats
+ஹெலிகாப்டர் அனுப்புங்கள்  # 81: send a helicopter
+மீட்புக் குழுவை அனுப்புங்கள்  # 82: send a rescue team
+வாகனம் அனுப்புங்கள்  # 83: send a vehicle
+கயிறு தேவை  # 84: we need rope
+லைஃப் ஜாக்கெட் தேவை  # 85: we need life jackets
+ஏணி தேவை  # 86: we need a ladder
+படகு நிரம்பிவிட்டது, இன்னொன்று அனுப்புங்கள்  # 87: the boat is full, send another
+படகு வந்துவிட்டது  # 88: the boat has arrived
+மீட்புக் குழு வந்துவிட்டது  # 89: the rescue team has arrived
+பிரதான சாலை வரை நடக்க முடியும்  # 90: we can walk to the main road
+தண்ணீரைக் கடக்க முடியாது  # 91: we cannot cross the water
+டிராக்டர் எங்களை அடைய முடியும்  # 92: a tractor can reach us
+பாதையில் நடந்து செல்ல முடியும்  # 93: the path is passable on foot
+மரம் விழுந்து பாதை அடைபட்டுள்ளது  # 94: the path is blocked by a fallen tree
+மீட்பு தேவையில்லை  # 95: we do not need rescue
+மின்சாரம் இல்லை  # 96: there is no electricity
+அலைபேசி சிக்னல் இல்லை  # 97: there is no mobile network
+மின்மாற்றி சேதமாகிவிட்டது  # 98: the transformer is damaged
+மின் கம்பி அறுந்து விழுந்துள்ளது, விலகி இருங்கள்  # 99: a live wire has fallen, keep away
+சாலை அடித்துச் செல்லப்பட்டுவிட்டது  # 100: the road is washed away
+சிறுபாலம் இடிந்துவிட்டது  # 101: the culvert has collapsed
+ஒரு கட்டிடம் இடிந்து விழுந்தது  # 102: a building has collapsed
+பள்ளிக் கட்டிடம் சேதமாகியுள்ளது  # 103: the school building is damaged
+கூரை பறந்துவிட்டது  # 104: the roof has blown off
+சாலையில் நிலச்சரிவு ஏற்பட்டுள்ளது  # 105: there is a landslide on the road
+ரயில் பாதை தண்ணீரில் மூழ்கியுள்ளது  # 106: the railway line is under water
+பம்ப் வேலை செய்யவில்லை  # 107: the pump is not working
+எங்களிடம் ஜெனரேட்டர் உள்ளது  # 108: we have a generator
+எரிபொருள் இல்லை  # 109: we have no fuel
+ஒரு நாளுக்கு எரிபொருள் உள்ளது  # 110: we have fuel for one day
+குடிநீர் விநியோகம் நிறுத்தப்பட்டுவிட்டது  # 111: the water supply has stopped
+உணவு தேவை  # 112: we need food
+குடிநீர் தேவை  # 113: we need drinking water
+போர்வைகள் தேவை  # 114: we need blankets
+தார்ப்பாய் அல்லது கூடாரம் தேவை  # 115: we need tarpaulin or tents
+குழந்தை உணவு தேவை  # 116: we need baby food
+கால்நடைத் தீவனம் தேவை  # 117: we need animal feed
+ஒரு நாளுக்கு உணவு உள்ளது  # 118: we have food for one day
+மூன்று நாட்களுக்கு உணவு உள்ளது  # 119: we have food for three days
+எங்களிடம் போதிய பொருட்கள் உள்ளன  # 120: we have enough supplies
+முகாம் நிரம்பிவிட்டது  # 121: the shelter is full
+முகாமில் இடம் உள்ளது  # 122: the shelter has space
+நாங்கள் தற்காலிக முகாமில் இருக்கிறோம்  # 123: we are in a temporary shelter
+கால்நடைகளை வெளியேற்ற வேண்டும்  # 124: cattle need to be moved
+கால்நடைகள் இழக்கப்பட்டன  # 125: cattle have been lost
+பயிர்கள் அழிந்துவிட்டன  # 126: crops are destroyed
+தானியக் கிடங்கு வெள்ளத்தில் மூழ்கியுள்ளது  # 127: the granary is flooded
+இந்தச் செய்தியை மேலும் அனுப்புங்கள்  # 128: relay this message onward
+இந்தச் செய்தி மாவட்ட அலுவலகத்திற்கு  # 129: this message is for the district office
+இந்தச் செய்தி காவல் நிலையத்திற்கு  # 130: this message is for the police
+இந்தச் செய்தி தீயணைப்புத் துறைக்கு  # 131: this message is for the fire service
+இந்தச் செய்தி மருத்துவமனைக்கு  # 132: this message is for the hospital
+நாங்கள் மற்றொரு கிராமத்திற்காக செய்தியை அனுப்புகிறோம்  # 133: we are relaying for another village
+சிக்னல் உள்ள யாருக்காவது இதைத் தெரிவியுங்கள்  # 134: pass this to anyone with a network signal
+ஒரு மணி நேரத்தில் மீண்டும் தொடர்பு கொள்வோம்  # 135: we will call again in one hour
+விடியற்காலையில் மீண்டும் தொடர்பு கொள்வோம்  # 136: we will call again at first light
+அடுத்த அலைவரிசைக்கு மாறுங்கள்  # 137: change to the next channel
+இதே அலைவரிசையில் இருங்கள்  # 138: stay on this channel
+அவசரத் தேவைக்கு இந்த வழியைக் காலியாக வைத்திருங்கள்  # 139: keep this line clear for emergencies
+எத்தனை பேரை அழைத்துச் செல்ல முடியும்  # 140: how many people can you take
+இன்னும் பத்து பேரை அழைத்துச் செல்ல முடியும்  # 141: we can take ten more people
+இன்னும் யாரையும் அழைத்துச் செல்ல முடியாது  # 142: we cannot take any more people
+பெயர்ப் பட்டியலை எழுதி அனுப்புங்கள்  # 143: send a written list of names

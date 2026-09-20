@@ -3,6 +3,7 @@ package com.itantra
 import android.app.Application
 import android.util.Log
 import com.itantra.alert.AlertPolicy
+import com.itantra.lang.CodebookInstaller
 import com.itantra.lang.LanguagePack
 import com.itantra.lang.LanguagePackManager
 import com.itantra.session.SessionController
@@ -84,6 +85,10 @@ class ITantraApp : Application() {
     }
 
     fun refreshPacks(): List<LanguagePack> {
+        // Before loading: a pack without a codebook cannot translate in either direction,
+        // and every codebook ships in the APK. See CodebookInstaller.
+        val updated = CodebookInstaller.installInto(this, packManager.packDirs())
+        if (updated > 0) Log.i(TAG, "installed $updated codebook(s)")
         installedPacks = packManager.installed()
         if (installedPacks.isEmpty()) {
             Log.w(TAG, "no usable language pack; running without speech models")

@@ -154,6 +154,52 @@ class PhraseCodebook private constructor(
         }
 
         private val WHITESPACE = Regex("\\s+")
+
+        /** Similarity of two normalised strings, 0..1, by edit distance over the longer. */
+        internal fun similarity(a: String, b: String): Double {
+            if (a == b) return 1.0
+            val longer = maxOf(a.length, b.length)
+            if (longer == 0) return 1.0
+            return 1.0 - editDistance(a, b).toDouble() / longer
+        }
+
+        /** Two words are "the same word" if one small slip separates them. */
+        private fun close(a: String, b: String): Boolean {
+            if (a == b) return true
+            // Short words must match exactly: at three letters, one edit is a different
+            // word, and in this codebook that includes "no".
+            if (minOf(a.length, b.length) < 4) return false
+            return editDistance(a, b) <= if (minOf(a.length, b.length) >= 7) 2 else 1
+        }
+
+        /**
+         * Levenshtein distance, two rows at a time.
+         *
+         * Counts code points, not bytes: an Indic letter with a vowel sign is several
+         * chars, and a byte-wise distance would rate two unrelated Tamil words as close.
+         */
+        internal fun editDistance(a: String, b: String): Int {
+            if (a == b) return 0
+            if (a.isEmpty()) return b.length
+            if (b.isEmpty()) return a.length
+            var prev = IntArray(b.length + 1) { it }
+            var cur = IntArray(b.length + 1)
+            for (i in 1..a.length) {
+                cur[0] = i
+                for (j in 1..b.length) {
+                    val cost = if (a[i - 1] == b[j - 1]) 0 else 1
+                    cur[j] = minOf(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost)
+                }
+                val swap = prev; prev = cur; cur = swap
+            }
+            return prev[b.length]
+        }
+
+        /** Below this, the two sentences are simply not the same sentence. */
+        private const val MIN_SIMILARITY = 0.62
+
+        /** How far the winner must be clear of the second-best phrase. */
+        private const val MIN_MARGIN = 0.04
     }
 
     val size: Int get() = phrases.size
@@ -173,6 +219,64 @@ class PhraseCodebook private constructor(
 
     /** The phrase id for [text], or null when it is not in the book — the normal case. */
     fun idOf(text: String): Int? = byNormalised[normalise(text)]
+
+    /**
+     * The phrase id for [text], allowing for the way people and recognisers actually
+     * speak: a politeness word added, one word misheard, a word order slightly changed.
+     *
+     * Exact matching alone made the codebook far less useful than it looks. "we need a
+     * doctor quickly" is the codebook's "we need a doctor" with a word added, and an
+     * exact lookup sends it as free text — which on a BLE link does not fit at all, and
+     * on any link **cannot be translated**, because only a line number crosses languages.
+     * Recognisers also produce small variations of the same sentence run to run.
+     *
+     * ## Deliberately hard to fool
+     *
+     * A wrong phrase in a distress codebook is worse than no phrase: "we do not need
+     * rescue" and "we need rescue" must never be confused. So a near match is accepted
+     * only when all of these hold:
+     *
+     *  - every important word of the codebook phrase is present in what was said
+     *    (so a missing "not" or "no" can never match),
+     *  - the similarity is at least [MIN_SIMILARITY],
+     *  - and it beats the runner-up by [MIN_MARGIN], so two phrases that differ by one
+     *    word both lose rather than one winning by a hair.
+     *
+     * Anything else returns null and the words travel as they were said.
+     */
+    fun closestId(text: String): Int? {
+        val said = normalise(text)
+        if (said.isEmpty()) return null
+        byNormalised[said]?.let { return it }
+
+        val saidWords = said.split(' ').filter { it.isNotEmpty() }
+        if (saidWords.isEmpty()) return null
+        val saidSet = saidWords.toHashSet()
+
+        var best = -1
+        var bestScore = 0.0
+        var runnerUp = 0.0
+        for ((phrase, id) in byNormalised) {
+            val words = phrase.split(' ').filter { it.isNotEmpty() }
+            if (words.isEmpty()) continue
+            // Length guard: a three-word phrase inside a twenty-word sentence is a
+            // coincidence, not a match.
+            if (saidWords.size > words.size * 3 + 2) continue
+            // A negation or any other word of the phrase that is simply absent is fatal.
+            // Checked on whole words, not characters, because dropping "not" barely
+            // changes a character-level score while reversing the meaning.
+            if (words.any { it !in saidSet && !saidSet.any { w -> close(w, it) } }) continue
+
+            val score = similarity(said, phrase)
+            when {
+                score > bestScore -> { runnerUp = bestScore; bestScore = score; best = id }
+                score > runnerUp -> runnerUp = score
+            }
+        }
+        if (best < 0 || bestScore < MIN_SIMILARITY) return null
+        if (bestScore - runnerUp < MIN_MARGIN) return null
+        return best
+    }
 
     /**
      * The phrase for [id], or null when this book has no wording for it.

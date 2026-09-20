@@ -756,7 +756,9 @@ class SessionController(
         // is a 12-bit index: 16 bytes on the wire instead of 60-odd. Disaster traffic is
         // highly repetitive, so this hits often — but a miss is the ordinary case for
         // free speech, not a failure, and costs nothing but the lookup. See PhraseCodebook.
-        val phraseId = currentPack?.phrases?.idOf(text)
+        // closestId, not idOf: an added politeness word or one misheard word would
+        // otherwise send the sentence as free text, which cannot cross languages at all.
+        val phraseId = currentPack?.phrases?.closestId(text)
 
         val payload: ByteArray
         val asText: Boolean
@@ -1006,7 +1008,39 @@ class SessionController(
         // the wrong sentence is silent otherwise.
         val translated = renderer.render(packet)
         val original = originalAudioFor(packet)
-        val pcm = if (original != null) translated + gap() + original else translated
+        // Order matters, and so does dropping the empty one.
+        //
+        // A message that could not be translated arrives as the sender's own words, and
+        // our voice cannot read another language's script: a Tamil voice handed Hindi
+        // text skips every character and returns silence. Playing "silence, pause, the
+        // sender's voice" makes a working message look broken, so an empty rendering is
+        // left out and the sender's voice carries it alone.
+        val pcm = listOfNotNull(
+            translated.takeIf { it.isNotEmpty() },
+            original?.takeIf { it.isNotEmpty() },
+        ).let { parts ->
+            when (parts.size) {
+                0 -> ShortArray(0)
+                1 -> parts[0]
+                else -> parts[0] + gap() + parts[1]
+            }
+        }
+
+        if (pcm.isEmpty()) {
+            // Nothing can be spoken: the words are in a language whose voice is not on
+            // this phone. The text is on screen, and saying so is better than a silence
+            // the listener has to interpret.
+            // The pack's own name when we have it, else the English name of the id.
+            val name = installedPacks.firstOrNull { it.id == packet.langId }?.displayName
+                ?: LanguageId.debugNameOf(packet.langId)
+            _ui.update {
+                it.copy(
+                    lastError = "Shown only: this phone has no $name voice to read it aloud. " +
+                        "Add $name in Settings to hear messages like this.",
+                )
+            }
+            return
+        }
 
         val accepted = policy.play(pcm, packet.intent) {
             _ui.update { it.copy(isPlaying = false, playingIntent = null) }

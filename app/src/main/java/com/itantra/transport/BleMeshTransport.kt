@@ -3,6 +3,7 @@ package com.itantra.transport
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.AdvertisingSet
 import android.bluetooth.le.AdvertisingSetCallback
@@ -173,7 +174,14 @@ class BleMeshTransport(
     private var advertiser: BluetoothLeAdvertiser? = null
     private var scanner: BluetoothLeScanner? = null
 
-    /** True when this handset can advertise more than the legacy 31 bytes. */
+    /**
+     * True when this handset can advertise more than the legacy 31 bytes.
+     *
+     * Two conditions, and both matter: API 26 for `startAdvertisingSet` to exist at all,
+     * and the radio's own answer for it to work. Callers must check this before any
+     * extended-advertising call.
+     */
+    @get:SuppressLint("NewApi") // the SDK_INT check is right here
     val supportsExtendedAdvertising: Boolean
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
             adapter?.isLeExtendedAdvertisingSupported == true
@@ -203,6 +211,8 @@ class BleMeshTransport(
         }
     }
 
+    // Permission is checked by hasPermission() before a caller selects this transport, and every call below is wrapped so a revoked permission is a failed send rather than a crash.
+    @SuppressLint("MissingPermission")
     override suspend fun connect() {
         if (adapter == null) {
             _state.value = TransportState.Failed("This device has no Bluetooth")
@@ -280,6 +290,8 @@ class BleMeshTransport(
      * over the one radio. That is also why [RepeatSender] spaces its copies: back-to-back
      * calls would simply queue here.
      */
+    // See connect(): the permission is checked before this transport is chosen, and each radio call is wrapped.
+    @SuppressLint("MissingPermission")
     override suspend fun send(frame: ByteArray): Boolean {
         val adv = advertiser ?: return false
 
@@ -304,6 +316,17 @@ class BleMeshTransport(
         // hundreds — so free speech travels over the mesh on any phone that supports it,
         // and only genuinely old hardware is limited to codebook phrases.
         if (frame.size > MeshFrame.BLE_LEGACY_CAPACITY) {
+            // Guarded, not merely annotated. startAdvertisingSet arrived in API 26 and
+            // this app supports 24, so on Android 7 the call itself does not exist:
+            // reaching it threw NoSuchMethodError, which no runCatching in the send path
+            // catches, and the process died the first time a long frame was sent. The
+            // property also asks the radio, because the OS version alone does not mean
+            // the hardware can do it.
+            if (!supportsExtendedAdvertising) {
+                Log.w(TAG, "a ${frame.size} B frame needs extended advertising, " +
+                    "which this phone does not support — send it as a codebook phrase")
+                return false
+            }
             return sendExtended(adv, frame)
         }
 
@@ -371,6 +394,7 @@ class BleMeshTransport(
      * Non-connectable and non-scannable: we are a beacon, and a scannable set would invite
      * scan requests that cost airtime and tell a stranger we are here.
      */
+    @SuppressLint("MissingPermission") // checked before this transport is selected
     @androidx.annotation.RequiresApi(Build.VERSION_CODES.O)
     private suspend fun sendExtended(adv: BluetoothLeAdvertiser, frame: ByteArray): Boolean =
         sendLock.withLock {
@@ -419,6 +443,8 @@ class BleMeshTransport(
             ok
         }
 
+    // Stopping a scan we may no longer have permission for is wrapped; there is nothing to fall back to.
+    @SuppressLint("MissingPermission")
     override suspend fun close() {
         runCatching { scanner?.stopScan(scanCallback) }
         job.cancel()

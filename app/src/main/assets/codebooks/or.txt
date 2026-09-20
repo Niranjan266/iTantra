@@ -1,0 +1,159 @@
+# iTantra phrase codebook — ଓଡ଼ିଆ (Odia)
+#
+# THIS FILE IS A PARALLEL CORPUS. Line N here must mean exactly what line N of every
+# other language's file means, because the line number is the only thing that crosses
+# the link: id 33 spoken in Telugu and rendered on a Malayalam phone IS the translation.
+#
+#   APPEND ONLY. Never reorder, never delete, never edit an existing line's meaning.
+#   A line containing just "-" means NOT TRANSLATED YET and still holds its id;
+#   removing one shifts every id after it, and a shifted id does not fail — it decodes
+#   to a real but different sentence.
+#
+# Blank lines and lines starting with # are ignored and do not consume an id.
+#
+# Reviewed against the English line by line; a native speaker should confirm the
+# wordings before this codebook is frozen.
+ସନ୍ଦେଶ ମିଳିଲା  # 0: message received
+ବୁଝିପାରିଲି ନାହିଁ, ପୁଣି କୁହନ୍ତୁ  # 1: message not understood, repeat
+ଅପେକ୍ଷା କରିଛୁ  # 2: standing by
+ଅପେକ୍ଷା କରନ୍ତୁ, ଏବେ ଶେଷ କରୁଛି  # 3: wait, out
+କହିବାର କିଛି ନାହିଁ  # 4: nothing to report
+ହଁ  # 5: yes
+ନାହିଁ  # 6: no
+ଜଣା ନାହିଁ  # 7: unknown
+ନିଶ୍ଚିତ ହେଲା  # 8: confirmed
+ତାହା ବାତିଲ କରନ୍ତୁ  # 9: cancel that
+ଆପଣଙ୍କ ସ୍ଥାନ କୁହନ୍ତୁ  # 10: report your position
+ଆପଣଙ୍କ ସ୍ଥିତି କୁହନ୍ତୁ  # 11: report your status
+କିଏ କହୁଛନ୍ତି  # 12: who is calling
+ଧୀରେ କୁହନ୍ତୁ  # 13: speak slower
+ସନ୍ଦେଶ ସମାପ୍ତ  # 14: end of message
+ମିଳିଲା, କିଛି କରିବାର ଆବଶ୍ୟକତା ନାହିଁ  # 15: acknowledged, no action needed
+ଆମକୁ ତୁରନ୍ତ ସାହାଯ୍ୟ ଦରକାର  # 16: we need help immediately
+ଏହା ଏକ ଆପାତକାଳୀନ ପରିସ୍ଥିତି  # 17: this is an emergency
+ଆମେ ଫସି ଯାଇଛୁ, ଚାଲିପାରୁନାହିଁ  # 18: we are trapped and cannot move
+ଆମେ ଏବେ ସୁରକ୍ଷିତ ଅଛୁ  # 19: we are safe for now
+ଆମ ସ୍ଥାନକୁ ସାହାଯ୍ୟ ପଠାନ୍ତୁ  # 20: send help to our position
+ଚାଲି ସୁରକ୍ଷିତ ସ୍ଥାନକୁ ଯାଇପାରିବୁ ନାହିଁ  # 21: we cannot reach safety on foot
+ଏଠାରେ କେହି ନାହାନ୍ତି  # 22: there is no one here
+ଅନ୍ୟମାନଙ୍କ ସହ ଯୋଗାଯୋଗ ବିଚ୍ଛିନ୍ନ  # 23: we have lost contact with the others
+ଏହି ବାଟରେ ଆସନ୍ତୁ ନାହିଁ, ସୁରକ୍ଷିତ ନୁହେଁ  # 24: do not come this way, it is not safe
+ଆମେ ଉଚ୍ଚ ସ୍ଥାନକୁ ଯାଉଛୁ  # 25: we are moving to higher ground
+ଆମେ ଏଠାରେ ହିଁ ରହିବୁ  # 26: we will stay where we are
+ଆମ ଫୋନର ବ୍ୟାଟେରୀ ସରିଯାଉଛି  # 27: our phone battery is almost finished
+ଆପଣଙ୍କ କଥା ଶୁଣାଯାଉଛି କିନ୍ତୁ ଉତ୍ତର ପଠାଇପାରୁନାହିଁ  # 28: we can hear you but cannot reply
+ଶେଷ ସନ୍ଦେଶ ପଠାଉଛୁ  # 29: sending one last message
+ଏଠାରେ ସବୁ ଠିକ ଅଛି  # 30: all clear here
+ପରିସ୍ଥିତି ଖରାପ ହେଉଛି  # 31: situation is getting worse
+ବଣ୍ୟା ପାଣି ବଢ଼ୁଛି  # 32: flood water is rising
+ସ୍କୁଲ ପାଖରେ ବଣ୍ୟା ପାଣି ବଢ଼ୁଛି, ଡଙ୍ଗା ପଠାନ୍ତୁ  # 33: flood water is rising near the school, send boats
+ନଦୀ କୁଳ ଭାଙ୍ଗିଯାଇଛି  # 34: the river has broken its bank
+ପାଣି ଅଣ୍ଟା ଉପରକୁ  # 35: the water is above the waist
+ପାଣି ଏବେ ବି ବଢ଼ୁଛି  # 36: the water is still rising
+ପାଣି କମୁଛି  # 37: the water is going down
+ପୋଲ ପାଣି ତଳେ  # 38: the bridge is under water
+ରାସ୍ତା ପାଣି ତଳେ  # 39: the road is under water
+ବନ୍ଧର ଫାଟକ ଖୋଲି ଦିଆଯାଇଛି  # 40: the dam has opened its gates
+ପ୍ରବଳ ବର୍ଷା ବନ୍ଦ ହୋଇନାହିଁ  # 41: heavy rain has not stopped
+କୂଅ ପାଣି ପିଇବା ଯୋଗ୍ୟ ନୁହେଁ  # 42: the well water is not safe to drink
+ପରିଷ୍କାର ପିଇବା ପାଣି ନାହିଁ  # 43: we have no clean drinking water
+ନଳକୂଅ ପାଣିରେ ବୁଡ଼ିଯାଇଛି  # 44: the borewell is flooded
+ନାଳ ବନ୍ଦ, ପାଣି ପଛକୁ ଆସୁଛି  # 45: the drain is blocked and water is backing up
+ଜମି ସମ୍ପୂର୍ଣ୍ଣ ବୁଡ଼ିଯାଇଛି  # 46: the field is completely submerged
+ଆଜି ରାତିରେ ବଡ଼ ଲହରର ଆଶଙ୍କା  # 47: high tide is expected tonight
+ଏଠାରେ ସମସ୍ତେ ସୁରକ୍ଷିତ  # 48: everyone here is safe
+କେତେକ ଲୋକ ନିଖୋଜ  # 49: some people are missing
+ଏକ ଶିଶୁ ନିଖୋଜ  # 50: a child is missing
+ଜଣେ ବୃଦ୍ଧଙ୍କୁ ସାହାଯ୍ୟ ଦରକାର  # 51: an elderly person needs help
+ଜଣେ ଗର୍ଭବତୀ ମହିଳାଙ୍କୁ ଡାକ୍ତରଖାନା ଦରକାର  # 52: a pregnant woman needs a hospital
+ଜଣେ ଗମ୍ଭୀର ଆହତ  # 53: someone is badly injured
+ଜଣେ ପାଣିରେ ବୁଡ଼ି ଯାଇଛନ୍ତି  # 54: someone has drowned
+ଆମେ ଦଶ ଜଣ  # 55: we are ten people
+ଆମେ ପଚାଶରୁ ଅଧିକ ଜଣ  # 56: we are more than fifty people
+ଆମ ସହିତ ପିଲାମାନେ ଅଛନ୍ତି  # 57: we have children with us
+ଆମ ସହିତ ବୃଦ୍ଧମାନେ ଅଛନ୍ତି  # 58: we have elderly people with us
+ଆମ ସହିତ ଜଣେ ଦିବ୍ୟାଙ୍ଗ ବ୍ୟକ୍ତି ଅଛନ୍ତି  # 59: we have a disabled person with us
+ଲୋକମାନେ ମନ୍ଦିରରେ ଜମା ହେଉଛନ୍ତି  # 60: people are gathering at the temple
+ଲୋକମାନେ ସ୍କୁଲରେ ଜମା ହେଉଛନ୍ତି  # 61: people are gathering at the school
+ଲୋକମାନେ ପଞ୍ଚାୟତ କାର୍ଯ୍ୟାଲୟରେ ଜମା ହେଉଛନ୍ତି  # 62: people are gathering at the panchayat office
+ସମସ୍ତଙ୍କୁ ବାହାର କରାଯାଇଛି  # 63: everyone has been moved out
+ଡାକ୍ତର ଦରକାର  # 64: we need a doctor
+ଔଷଧ ଦରକାର  # 65: we need medicine
+ଇନସୁଲିନ ଦରକାର  # 66: we need insulin
+ସାପ କାଟିବାର ଚିକିତ୍ସା ଦରକାର  # 67: we need snake bite treatment
+ପିଇବା ପାଣି ଓ ଖାଦ୍ୟ ଦରକାର  # 68: we need drinking water and food
+ଏଠାରେ ଜ୍ୱର ବ୍ୟାପୁଛି  # 69: there is fever spreading here
+ଏଠାରେ ଝାଡ଼ା ବାନ୍ତି ବ୍ୟାପୁଛି  # 70: there is diarrhoea spreading here
+ଜଣକୁ ଡାୟାଲିସିସ ଦରକାର  # 71: someone needs dialysis
+ଜଣକୁ ଅମ୍ଳଜାନ ଦରକାର  # 72: someone needs oxygen
+ବ୍ୟାଣ୍ଡେଜ ଓ ଆଣ୍ଟିସେପ୍ଟିକ ଦରକାର  # 73: we need bandages and antiseptic
+ଷ୍ଟ୍ରେଚର ଆଣନ୍ତୁ  # 74: bring a stretcher
+ସ୍ୱାସ୍ଥ୍ୟ କେନ୍ଦ୍ର ବନ୍ଦ  # 75: the health centre is closed
+ସ୍ୱାସ୍ଥ୍ୟ କେନ୍ଦ୍ରରେ ପାଣି ପ୍ରବେଶ କରିଛି  # 76: the health centre is flooded
+ଆମ୍ବୁଲାନ୍ସ ଆମ ପାଖରେ ପହଞ୍ଚିପାରୁନାହିଁ  # 77: an ambulance cannot reach us
+ଏଠାରେ ପ୍ରାଥମିକ ଚିକିତ୍ସା ଅଛି  # 78: we have first aid here
+ଡାକ୍ତରୀ ସାହାଯ୍ୟ ଆବଶ୍ୟକ ନାହିଁ  # 79: no medical help needed
+ଡଙ୍ଗା ପଠାନ୍ତୁ  # 80: send boats
+ହେଲିକପ୍ଟର ପଠାନ୍ତୁ  # 81: send a helicopter
+ଉଦ୍ଧାର ଦଳ ପଠାନ୍ତୁ  # 82: send a rescue team
+ଗାଡ଼ି ପଠାନ୍ତୁ  # 83: send a vehicle
+ରସି ଦରକାର  # 84: we need rope
+ଲାଇଫ ଜାକେଟ ଦରକାର  # 85: we need life jackets
+ସିଡ଼ି ଦରକାର  # 86: we need a ladder
+ଡଙ୍ଗା ଭରିଗଲା, ଆଉ ଏକ ପଠାନ୍ତୁ  # 87: the boat is full, send another
+ଡଙ୍ଗା ଆସିଛି  # 88: the boat has arrived
+ଉଦ୍ଧାର ଦଳ ଆସିଛି  # 89: the rescue team has arrived
+ଆମେ ମୁଖ୍ୟ ରାସ୍ତା ପର୍ଯ୍ୟନ୍ତ ଚାଲିପାରିବୁ  # 90: we can walk to the main road
+ଆମେ ପାଣି ଡେଇଁ ପାରିବୁ ନାହିଁ  # 91: we cannot cross the water
+ଟ୍ରାକ୍ଟର ଆମ ପାଖକୁ ଆସିପାରିବ  # 92: a tractor can reach us
+ବାଟ ଚାଲିବା ଯୋଗ୍ୟ ଅଛି  # 93: the path is passable on foot
+ଗଛ ପଡ଼ି ବାଟ ବନ୍ଦ  # 94: the path is blocked by a fallen tree
+ଉଦ୍ଧାରର ଆବଶ୍ୟକତା ନାହିଁ  # 95: we do not need rescue
+ବିଦ୍ୟୁତ ନାହିଁ  # 96: there is no electricity
+ମୋବାଇଲ ନେଟୱାର୍କ ନାହିଁ  # 97: there is no mobile network
+ଟ୍ରାନ୍ସଫର୍ମର ଖରାପ ହୋଇଛି  # 98: the transformer is damaged
+ବିଦ୍ୟୁତ ତାର ଛିଣ୍ଡି ପଡ଼ିଛି, ଦୂରେ ରୁହନ୍ତୁ  # 99: a live wire has fallen, keep away
+ରାସ୍ତା ଭାସିଯାଇଛି  # 100: the road is washed away
+ଛୋଟ ପୋଲ ଭାଙ୍ଗି ପଡ଼ିଛି  # 101: the culvert has collapsed
+ଏକ ଘର ଭାଙ୍ଗି ପଡ଼ିଛି  # 102: a building has collapsed
+ସ୍କୁଲ ଘର କ୍ଷତିଗ୍ରସ୍ତ  # 103: the school building is damaged
+ଛାତ ଉଡ଼ିଯାଇଛି  # 104: the roof has blown off
+ରାସ୍ତାରେ ଭୂସ୍ଖଳନ ହୋଇଛି  # 105: there is a landslide on the road
+ରେଳ ଲାଇନ ପାଣି ତଳେ  # 106: the railway line is under water
+ପମ୍ପ କାମ କରୁନାହିଁ  # 107: the pump is not working
+ଆମ ପାଖରେ ଜେନେରେଟର ଅଛି  # 108: we have a generator
+ଇନ୍ଧନ ନାହିଁ  # 109: we have no fuel
+ଏକ ଦିନର ଇନ୍ଧନ ଅଛି  # 110: we have fuel for one day
+ପାଣି ଯୋଗାଣ ବନ୍ଦ ହୋଇଯାଇଛି  # 111: the water supply has stopped
+ଖାଦ୍ୟ ଦରକାର  # 112: we need food
+ପିଇବା ପାଣି ଦରକାର  # 113: we need drinking water
+କମ୍ବଳ ଦରକାର  # 114: we need blankets
+ତ୍ରିପଲ କିମ୍ବା ତମ୍ବୁ ଦରକାର  # 115: we need tarpaulin or tents
+ଶିଶୁ ଖାଦ୍ୟ ଦରକାର  # 116: we need baby food
+ଗୋରୁଙ୍କ ଖାଦ୍ୟ ଦରକାର  # 117: we need animal feed
+ଏକ ଦିନର ଖାଦ୍ୟ ଅଛି  # 118: we have food for one day
+ତିନି ଦିନର ଖାଦ୍ୟ ଅଛି  # 119: we have food for three days
+ଆମ ପାଖରେ ପର୍ଯ୍ୟାପ୍ତ ସାମଗ୍ରୀ ଅଛି  # 120: we have enough supplies
+ଆଶ୍ରୟ ସ୍ଥଳ ଭରିଗଲା  # 121: the shelter is full
+ଆଶ୍ରୟ ସ୍ଥଳରେ ସ୍ଥାନ ଅଛି  # 122: the shelter has space
+ଆମେ ତାତ୍କାଲିକ ଆଶ୍ରୟ ସ୍ଥଳରେ ଅଛୁ  # 123: we are in a temporary shelter
+ଗୋରୁଙ୍କୁ ସ୍ଥାନାନ୍ତର କରିବାକୁ ପଡ଼ିବ  # 124: cattle need to be moved
+ଗୋରୁ ହଜିଯାଇଛନ୍ତି  # 125: cattle have been lost
+ଫସଲ ନଷ୍ଟ ହୋଇଯାଇଛି  # 126: crops are destroyed
+ଧାନ ଗୋଦାମ ପାଣିରେ ବୁଡ଼ିଯାଇଛି  # 127: the granary is flooded
+ଏହି ସନ୍ଦେଶ ଆଗକୁ ପଠାନ୍ତୁ  # 128: relay this message onward
+ଏହି ସନ୍ଦେଶ ଜିଲ୍ଲା କାର୍ଯ୍ୟାଲୟ ପାଇଁ  # 129: this message is for the district office
+ଏହି ସନ୍ଦେଶ ପୋଲିସ ପାଇଁ  # 130: this message is for the police
+ଏହି ସନ୍ଦେଶ ଅଗ୍ନିଶମ ବିଭାଗ ପାଇଁ  # 131: this message is for the fire service
+ଏହି ସନ୍ଦେଶ ଡାକ୍ତରଖାନା ପାଇଁ  # 132: this message is for the hospital
+ଆମେ ଅନ୍ୟ ଏକ ଗାଁ ପାଇଁ ସନ୍ଦେଶ ପଠାଉଛୁ  # 133: we are relaying for another village
+ଯାହା ପାଖରେ ନେଟୱାର୍କ ଅଛି ତାଙ୍କୁ ଏହା କୁହନ୍ତୁ  # 134: pass this to anyone with a network signal
+ଏକ ଘଣ୍ଟା ପରେ ପୁଣି ଯୋଗାଯୋଗ କରିବୁ  # 135: we will call again in one hour
+ସକାଳ ହେଲେ ପୁଣି ଯୋଗାଯୋଗ କରିବୁ  # 136: we will call again at first light
+ପରବର୍ତ୍ତୀ ଚ୍ୟାନେଲକୁ ଆସନ୍ତୁ  # 137: change to the next channel
+ଏହି ଚ୍ୟାନେଲରେ ରୁହନ୍ତୁ  # 138: stay on this channel
+ଆପାତକାଳ ପାଇଁ ଏହି ଲାଇନ ଖାଲି ରଖନ୍ତୁ  # 139: keep this line clear for emergencies
+ଆପଣ କେତେ ଜଣଙ୍କୁ ନେଇପାରିବେ  # 140: how many people can you take
+ଆମେ ଆଉ ଦଶ ଜଣଙ୍କୁ ନେଇପାରିବୁ  # 141: we can take ten more people
+ଆମେ ଆଉ କାହାକୁ ନେଇପାରିବୁ ନାହିଁ  # 142: we cannot take any more people
+ନାମର ଲିଖିତ ତାଲିକା ପଠାନ୍ତୁ  # 143: send a written list of names

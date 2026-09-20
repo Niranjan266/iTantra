@@ -1,0 +1,159 @@
+# iTantra phrase codebook — తెలుగు (Telugu)
+#
+# THIS FILE IS A PARALLEL CORPUS. Line N here must mean exactly what line N of every
+# other language's file means, because the line number is the only thing that crosses
+# the link: id 33 spoken in Telugu and rendered on a Malayalam phone IS the translation.
+#
+#   APPEND ONLY. Never reorder, never delete, never edit an existing line's meaning.
+#   A line containing just "-" means NOT TRANSLATED YET and still holds its id;
+#   removing one shifts every id after it, and a shifted id does not fail — it decodes
+#   to a real but different sentence.
+#
+# Blank lines and lines starting with # are ignored and do not consume an id.
+#
+# Reviewed against the English line by line; a native speaker should confirm the
+# wordings before this codebook is frozen.
+సందేశం అందింది  # 0: message received
+అర్థం కాలేదు, మళ్లీ చెప్పండి  # 1: message not understood, repeat
+వేచి ఉన్నాము  # 2: standing by
+ఆగండి, ఇప్పుడు ముగిస్తున్నాను  # 3: wait, out
+చెప్పడానికి ఏమీ లేదు  # 4: nothing to report
+అవును  # 5: yes
+కాదు  # 6: no
+తెలియదు  # 7: unknown
+నిర్ధారించబడింది  # 8: confirmed
+దాన్ని రద్దు చేయండి  # 9: cancel that
+మీ స్థలం చెప్పండి  # 10: report your position
+మీ పరిస్థితి చెప్పండి  # 11: report your status
+ఎవరు మాట్లాడుతున్నారు  # 12: who is calling
+నెమ్మదిగా మాట్లాడండి  # 13: speak slower
+సందేశం ముగిసింది  # 14: end of message
+అందింది, ఏమీ చేయవలసిన అవసరం లేదు  # 15: acknowledged, no action needed
+మాకు వెంటనే సహాయం కావాలి  # 16: we need help immediately
+ఇది అత్యవసర పరిస్థితి  # 17: this is an emergency
+మేము చిక్కుకుపోయాము, కదలలేము  # 18: we are trapped and cannot move
+ఇప్పటికి మేము క్షేమంగా ఉన్నాము  # 19: we are safe for now
+మా స్థలానికి సహాయం పంపండి  # 20: send help to our position
+నడిచి సురక్షిత స్థలానికి చేరలేము  # 21: we cannot reach safety on foot
+ఇక్కడ ఎవరూ లేరు  # 22: there is no one here
+మిగిలిన వారితో సంబంధం తెగిపోయింది  # 23: we have lost contact with the others
+ఈ దారిలో రావద్దు, సురక్షితం కాదు  # 24: do not come this way, it is not safe
+మేము ఎత్తైన ప్రాంతానికి వెళ్తున్నాము  # 25: we are moving to higher ground
+మేము ఇక్కడే ఉంటాము  # 26: we will stay where we are
+మా ఫోన్ బ్యాటరీ అయిపోతోంది  # 27: our phone battery is almost finished
+మీ మాట వినిపిస్తోంది కానీ బదులు పంపలేము  # 28: we can hear you but cannot reply
+చివరి సందేశం పంపుతున్నాము  # 29: sending one last message
+ఇక్కడ అంతా సవ్యంగా ఉంది  # 30: all clear here
+పరిస్థితి దిగజారుతోంది  # 31: situation is getting worse
+వరద నీరు పెరుగుతోంది  # 32: flood water is rising
+పాఠశాల దగ్గర వరద నీరు పెరుగుతోంది, పడవలు పంపండి  # 33: flood water is rising near the school, send boats
+నది గట్టు తెగిపోయింది  # 34: the river has broken its bank
+నీరు నడుము పైకి వచ్చింది  # 35: the water is above the waist
+నీరు ఇంకా పెరుగుతోంది  # 36: the water is still rising
+నీరు తగ్గుతోంది  # 37: the water is going down
+వంతెన నీటిలో మునిగింది  # 38: the bridge is under water
+రోడ్డు నీటిలో మునిగింది  # 39: the road is under water
+ఆనకట్ట గేట్లు తెరిచారు  # 40: the dam has opened its gates
+భారీ వర్షం ఆగలేదు  # 41: heavy rain has not stopped
+బావి నీరు తాగడానికి పనికిరాదు  # 42: the well water is not safe to drink
+శుభ్రమైన తాగునీరు లేదు  # 43: we have no clean drinking water
+బోరుబావి నీటిలో మునిగింది  # 44: the borewell is flooded
+కాలువ మూసుకుపోయింది, నీరు వెనక్కి వస్తోంది  # 45: the drain is blocked and water is backing up
+పొలం పూర్తిగా మునిగిపోయింది  # 46: the field is completely submerged
+ఈ రాత్రి పెద్ద అలలు వచ్చే సూచన ఉంది  # 47: high tide is expected tonight
+ఇక్కడ అందరూ క్షేమంగా ఉన్నారు  # 48: everyone here is safe
+కొందరు కనిపించడం లేదు  # 49: some people are missing
+ఒక పిల్లవాడు కనిపించడం లేదు  # 50: a child is missing
+ఒక వృద్ధునికి సహాయం కావాలి  # 51: an elderly person needs help
+గర్భిణి స్త్రీకి ఆసుపత్రి కావాలి  # 52: a pregnant woman needs a hospital
+ఒకరికి తీవ్ర గాయాలు అయ్యాయి  # 53: someone is badly injured
+ఒకరు నీటిలో మునిగిపోయారు  # 54: someone has drowned
+మేము పది మంది  # 55: we are ten people
+మేము ఏభై మందికి పైగా  # 56: we are more than fifty people
+మాతో పిల్లలు ఉన్నారు  # 57: we have children with us
+మాతో వృద్ధులు ఉన్నారు  # 58: we have elderly people with us
+మాతో ఒక దివ్యాంగుడు ఉన్నారు  # 59: we have a disabled person with us
+ప్రజలు గుడిలో గుమిగూడుతున్నారు  # 60: people are gathering at the temple
+ప్రజలు పాఠశాలలో గుమిగూడుతున్నారు  # 61: people are gathering at the school
+ప్రజలు పంచాయతీ కార్యాలయంలో గుమిగూడుతున్నారు  # 62: people are gathering at the panchayat office
+అందరినీ తరలించారు  # 63: everyone has been moved out
+వైద్యుడు కావాలి  # 64: we need a doctor
+మందులు కావాలి  # 65: we need medicine
+ఇన్సులిన్ కావాలి  # 66: we need insulin
+పాము కాటుకు చికిత్స కావాలి  # 67: we need snake bite treatment
+తాగునీరు మరియు ఆహారం కావాలి  # 68: we need drinking water and food
+ఇక్కడ జ్వరం వ్యాపిస్తోంది  # 69: there is fever spreading here
+ఇక్కడ వాంతులు విరేచనాలు వ్యాపిస్తున్నాయి  # 70: there is diarrhoea spreading here
+ఒకరికి డయాలసిస్ కావాలి  # 71: someone needs dialysis
+ఒకరికి ఆక్సిజన్ కావాలి  # 72: someone needs oxygen
+కట్టు మరియు యాంటిసెప్టిక్ కావాలి  # 73: we need bandages and antiseptic
+స్ట్రెచర్ తీసుకురండి  # 74: bring a stretcher
+ఆరోగ్య కేంద్రం మూసి ఉంది  # 75: the health centre is closed
+ఆరోగ్య కేంద్రంలో నీరు నిండింది  # 76: the health centre is flooded
+అంబులెన్స్ మా వద్దకు రాలేకపోతోంది  # 77: an ambulance cannot reach us
+ఇక్కడ ప్రథమ చికిత్స ఉంది  # 78: we have first aid here
+వైద్య సహాయం అవసరం లేదు  # 79: no medical help needed
+పడవలు పంపండి  # 80: send boats
+హెలికాప్టర్ పంపండి  # 81: send a helicopter
+సహాయక బృందాన్ని పంపండి  # 82: send a rescue team
+వాహనం పంపండి  # 83: send a vehicle
+తాడు కావాలి  # 84: we need rope
+లైఫ్ జాకెట్లు కావాలి  # 85: we need life jackets
+నిచ్చెన కావాలి  # 86: we need a ladder
+పడవ నిండిపోయింది, మరొకటి పంపండి  # 87: the boat is full, send another
+పడవ వచ్చింది  # 88: the boat has arrived
+సహాయక బృందం వచ్చింది  # 89: the rescue team has arrived
+ప్రధాన రోడ్డు వరకు నడవగలము  # 90: we can walk to the main road
+నీటిని దాటలేము  # 91: we cannot cross the water
+ట్రాక్టర్ మా వద్దకు రాగలదు  # 92: a tractor can reach us
+దారి నడవడానికి పనికొస్తుంది  # 93: the path is passable on foot
+చెట్టు పడి దారి మూసుకుపోయింది  # 94: the path is blocked by a fallen tree
+రక్షణ అవసరం లేదు  # 95: we do not need rescue
+విద్యుత్ లేదు  # 96: there is no electricity
+మొబైల్ సిగ్నల్ లేదు  # 97: there is no mobile network
+ట్రాన్స్‌ఫార్మర్ పాడైంది  # 98: the transformer is damaged
+విద్యుత్ తీగ తెగిపడింది, దూరంగా ఉండండి  # 99: a live wire has fallen, keep away
+రోడ్డు కొట్టుకుపోయింది  # 100: the road is washed away
+చిన్న వంతెన కూలిపోయింది  # 101: the culvert has collapsed
+ఒక భవనం కూలిపోయింది  # 102: a building has collapsed
+పాఠశాల భవనం దెబ్బతింది  # 103: the school building is damaged
+పైకప్పు ఎగిరిపోయింది  # 104: the roof has blown off
+రోడ్డుపై కొండచరియలు విరిగిపడ్డాయి  # 105: there is a landslide on the road
+రైలు మార్గం నీటిలో మునిగింది  # 106: the railway line is under water
+పంపు పని చేయడం లేదు  # 107: the pump is not working
+మా వద్ద జనరేటర్ ఉంది  # 108: we have a generator
+ఇంధనం లేదు  # 109: we have no fuel
+ఒక రోజుకు ఇంధనం ఉంది  # 110: we have fuel for one day
+నీటి సరఫరా ఆగిపోయింది  # 111: the water supply has stopped
+ఆహారం కావాలి  # 112: we need food
+తాగునీరు కావాలి  # 113: we need drinking water
+దుప్పట్లు కావాలి  # 114: we need blankets
+టార్పాలిన్ లేదా టెంట్లు కావాలి  # 115: we need tarpaulin or tents
+పిల్లల ఆహారం కావాలి  # 116: we need baby food
+పశువుల మేత కావాలి  # 117: we need animal feed
+ఒక రోజుకు ఆహారం ఉంది  # 118: we have food for one day
+మూడు రోజులకు ఆహారం ఉంది  # 119: we have food for three days
+మా వద్ద తగినంత సామాను ఉంది  # 120: we have enough supplies
+శిబిరం నిండిపోయింది  # 121: the shelter is full
+శిబిరంలో స్థలం ఉంది  # 122: the shelter has space
+మేము తాత్కాలిక శిబిరంలో ఉన్నాము  # 123: we are in a temporary shelter
+పశువులను తరలించాలి  # 124: cattle need to be moved
+పశువులు పోయాయి  # 125: cattle have been lost
+పంటలు నాశనమయ్యాయి  # 126: crops are destroyed
+ధాన్యం గిడ్డంగి నీటిలో మునిగింది  # 127: the granary is flooded
+ఈ సందేశాన్ని ముందుకు పంపండి  # 128: relay this message onward
+ఈ సందేశం జిల్లా కార్యాలయానికి  # 129: this message is for the district office
+ఈ సందేశం పోలీసులకు  # 130: this message is for the police
+ఈ సందేశం అగ్నిమాపక శాఖకు  # 131: this message is for the fire service
+ఈ సందేశం ఆసుపత్రికి  # 132: this message is for the hospital
+మేము మరో గ్రామం కోసం సందేశం పంపుతున్నాము  # 133: we are relaying for another village
+సిగ్నల్ ఉన్న వారికి ఇది తెలియజేయండి  # 134: pass this to anyone with a network signal
+ఒక గంటలో మళ్లీ సంప్రదిస్తాము  # 135: we will call again in one hour
+తెల్లవారగానే మళ్లీ సంప్రదిస్తాము  # 136: we will call again at first light
+తదుపరి ఛానెల్‌కు మారండి  # 137: change to the next channel
+ఇదే ఛానెల్‌లో ఉండండి  # 138: stay on this channel
+అత్యవసరాల కోసం ఈ లైన్ ఖాళీగా ఉంచండి  # 139: keep this line clear for emergencies
+మీరు ఎంత మందిని తీసుకెళ్లగలరు  # 140: how many people can you take
+మేము ఇంకా పది మందిని తీసుకెళ్లగలము  # 141: we can take ten more people
+ఇంకా ఎవరినీ తీసుకెళ్లలేము  # 142: we cannot take any more people
+పేర్ల జాబితా రాసి పంపండి  # 143: send a written list of names

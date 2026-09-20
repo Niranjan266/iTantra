@@ -84,10 +84,20 @@ fun MeshDiagnosticsScreen(
     // Sampled rather than computed once: memory moves while models load and while speech
     // is synthesised, and a figure frozen at first draw would be the least interesting
     // moment to show.
+    //
+    // The suppression is a false positive: the producer below assigns `value` twice,
+    // once before the loop and once per tick. Checked against lint 8.x with the
+    // assignment written both as `value =` and `this.value =`, and with the first
+    // assignment lifted out of the loop; it is reported either way.
+    @Suppress("ProduceStateDoesNotAssignValue")
     val health by produceState(initialValue = DeviceHealth.EMPTY, context) {
+        // First sample before the loop, then every two seconds. Assigning once up front
+        // is also what makes the intent legible to a reader (and to lint, which cannot
+        // see an assignment that only ever happens inside a loop).
+        value = DeviceHealth.sample(context)
         while (true) {
-            value = DeviceHealth.sample(context)
             delay(2000)
+            value = DeviceHealth.sample(context)
         }
     }
 

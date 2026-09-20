@@ -1,0 +1,159 @@
+# iTantra phrase codebook — ಕನ್ನಡ (Kannada)
+#
+# THIS FILE IS A PARALLEL CORPUS. Line N here must mean exactly what line N of every
+# other language's file means, because the line number is the only thing that crosses
+# the link: id 33 spoken in Telugu and rendered on a Malayalam phone IS the translation.
+#
+#   APPEND ONLY. Never reorder, never delete, never edit an existing line's meaning.
+#   A line containing just "-" means NOT TRANSLATED YET and still holds its id;
+#   removing one shifts every id after it, and a shifted id does not fail — it decodes
+#   to a real but different sentence.
+#
+# Blank lines and lines starting with # are ignored and do not consume an id.
+#
+# Reviewed against the English line by line; a native speaker should confirm the
+# wordings before this codebook is frozen.
+ಸಂದೇಶ ತಲುಪಿದೆ  # 0: message received
+ಅರ್ಥವಾಗಲಿಲ್ಲ, ಪುನಃ ಹೇಳಿ  # 1: message not understood, repeat
+ಕಾಯುತ್ತಿದ್ದೇವೆ  # 2: standing by
+ಕಾಯಿರಿ, ಈಗ ಮುಗಿಸುತ್ತಿದ್ದೇನೆ  # 3: wait, out
+ತಿಳಿಸಲು ಏನೂ ಇಲ್ಲ  # 4: nothing to report
+ಹೌದು  # 5: yes
+ಇಲ್ಲ  # 6: no
+ಗೊತ್ತಿಲ್ಲ  # 7: unknown
+ದೃಢಪಟ್ಟಿದೆ  # 8: confirmed
+ಅದನ್ನು ರದ್ದು ಮಾಡಿ  # 9: cancel that
+ನಿಮ್ಮ ಸ್ಥಳ ತಿಳಿಸಿ  # 10: report your position
+ನಿಮ್ಮ ಸ್ಥಿತಿ ತಿಳಿಸಿ  # 11: report your status
+ಯಾರು ಮಾತನಾಡುತ್ತಿದ್ದೀರಿ  # 12: who is calling
+ನಿಧಾನವಾಗಿ ಮಾತನಾಡಿ  # 13: speak slower
+ಸಂದೇಶ ಮುಗಿಯಿತು  # 14: end of message
+ತಲುಪಿದೆ, ಯಾವುದೇ ಕ್ರಮ ಬೇಕಿಲ್ಲ  # 15: acknowledged, no action needed
+ನಮಗೆ ಕೂಡಲೇ ಸಹಾಯ ಬೇಕು  # 16: we need help immediately
+ಇದು ತುರ್ತು ಪರಿಸ್ಥಿತಿ  # 17: this is an emergency
+ನಾವು ಸಿಕ್ಕಿಕೊಂಡಿದ್ದೇವೆ, ಚಲಿಸಲು ಆಗುತ್ತಿಲ್ಲ  # 18: we are trapped and cannot move
+ನಾವು ಸದ್ಯಕ್ಕೆ ಸುರಕ್ಷಿತವಾಗಿದ್ದೇವೆ  # 19: we are safe for now
+ನಮ್ಮ ಸ್ಥಳಕ್ಕೆ ಸಹಾಯ ಕಳುಹಿಸಿ  # 20: send help to our position
+ನಡೆದು ಸುರಕ್ಷಿತ ಸ್ಥಳಕ್ಕೆ ತಲುಪಲು ಆಗುವುದಿಲ್ಲ  # 21: we cannot reach safety on foot
+ಇಲ್ಲಿ ಯಾರೂ ಇಲ್ಲ  # 22: there is no one here
+ಉಳಿದವರ ಸಂಪರ್ಕ ಕಡಿದುಹೋಗಿದೆ  # 23: we have lost contact with the others
+ಈ ದಾರಿಯಲ್ಲಿ ಬರಬೇಡಿ, ಸುರಕ್ಷಿತವಿಲ್ಲ  # 24: do not come this way, it is not safe
+ನಾವು ಎತ್ತರದ ಜಾಗಕ್ಕೆ ಹೋಗುತ್ತಿದ್ದೇವೆ  # 25: we are moving to higher ground
+ನಾವು ಇಲ್ಲಿಯೇ ಇರುತ್ತೇವೆ  # 26: we will stay where we are
+ನಮ್ಮ ಫೋನ್ ಬ್ಯಾಟರಿ ಮುಗಿಯುತ್ತಿದೆ  # 27: our phone battery is almost finished
+ನಿಮ್ಮ ಮಾತು ಕೇಳುತ್ತಿದೆ ಆದರೆ ಉತ್ತರ ಕಳುಹಿಸಲು ಆಗುತ್ತಿಲ್ಲ  # 28: we can hear you but cannot reply
+ಕೊನೆಯ ಸಂದೇಶ ಕಳುಹಿಸುತ್ತಿದ್ದೇವೆ  # 29: sending one last message
+ಇಲ್ಲಿ ಎಲ್ಲವೂ ಸರಿಯಾಗಿದೆ  # 30: all clear here
+ಪರಿಸ್ಥಿತಿ ಕೆಡುತ್ತಿದೆ  # 31: situation is getting worse
+ಪ್ರವಾಹದ ನೀರು ಏರುತ್ತಿದೆ  # 32: flood water is rising
+ಶಾಲೆಯ ಹತ್ತಿರ ಪ್ರವಾಹದ ನೀರು ಏರುತ್ತಿದೆ, ದೋಣಿಗಳನ್ನು ಕಳುಹಿಸಿ  # 33: flood water is rising near the school, send boats
+ನದಿಯ ದಂಡೆ ಒಡೆದಿದೆ  # 34: the river has broken its bank
+ನೀರು ಸೊಂಟದ ಮೇಲಿದೆ  # 35: the water is above the waist
+ನೀರು ಇನ್ನೂ ಏರುತ್ತಿದೆ  # 36: the water is still rising
+ನೀರು ಇಳಿಯುತ್ತಿದೆ  # 37: the water is going down
+ಸೇತುವೆ ನೀರಿನಲ್ಲಿ ಮುಳುಗಿದೆ  # 38: the bridge is under water
+ರಸ್ತೆ ನೀರಿನಲ್ಲಿ ಮುಳುಗಿದೆ  # 39: the road is under water
+ಅಣೆಕಟ್ಟಿನ ಗೇಟ್ ತೆರೆದಿದ್ದಾರೆ  # 40: the dam has opened its gates
+ಭಾರೀ ಮಳೆ ನಿಂತಿಲ್ಲ  # 41: heavy rain has not stopped
+ಬಾವಿಯ ನೀರು ಕುಡಿಯಲು ಯೋಗ್ಯವಲ್ಲ  # 42: the well water is not safe to drink
+ಶುದ್ಧ ಕುಡಿಯುವ ನೀರು ಇಲ್ಲ  # 43: we have no clean drinking water
+ಕೊಳವೆಬಾವಿ ನೀರಿನಲ್ಲಿ ಮುಳುಗಿದೆ  # 44: the borewell is flooded
+ಚರಂಡಿ ಕಟ್ಟಿಕೊಂಡಿದೆ, ನೀರು ಹಿಂದಕ್ಕೆ ಬರುತ್ತಿದೆ  # 45: the drain is blocked and water is backing up
+ಹೊಲ ಸಂಪೂರ್ಣ ಮುಳುಗಿದೆ  # 46: the field is completely submerged
+ಇಂದು ರಾತ್ರಿ ಎತ್ತರದ ಅಲೆಗಳ ನಿರೀಕ್ಷೆ ಇದೆ  # 47: high tide is expected tonight
+ಇಲ್ಲಿ ಎಲ್ಲರೂ ಸುರಕ್ಷಿತವಾಗಿದ್ದಾರೆ  # 48: everyone here is safe
+ಕೆಲವರು ಕಾಣೆಯಾಗಿದ್ದಾರೆ  # 49: some people are missing
+ಒಂದು ಮಗು ಕಾಣೆಯಾಗಿದೆ  # 50: a child is missing
+ಒಬ್ಬ ವೃದ್ಧರಿಗೆ ಸಹಾಯ ಬೇಕು  # 51: an elderly person needs help
+ಗರ್ಭಿಣಿ ಮಹಿಳೆಗೆ ಆಸ್ಪತ್ರೆ ಬೇಕು  # 52: a pregnant woman needs a hospital
+ಒಬ್ಬರಿಗೆ ತೀವ್ರ ಗಾಯವಾಗಿದೆ  # 53: someone is badly injured
+ಒಬ್ಬರು ನೀರಿನಲ್ಲಿ ಮುಳುಗಿದ್ದಾರೆ  # 54: someone has drowned
+ನಾವು ಹತ್ತು ಜನ  # 55: we are ten people
+ನಾವು ಐವತ್ತಕ್ಕಿಂತ ಹೆಚ್ಚು ಜನ  # 56: we are more than fifty people
+ನಮ್ಮೊಂದಿಗೆ ಮಕ್ಕಳಿದ್ದಾರೆ  # 57: we have children with us
+ನಮ್ಮೊಂದಿಗೆ ವೃದ್ಧರಿದ್ದಾರೆ  # 58: we have elderly people with us
+ನಮ್ಮೊಂದಿಗೆ ಒಬ್ಬ ಅಂಗವಿಕಲರಿದ್ದಾರೆ  # 59: we have a disabled person with us
+ಜನರು ದೇವಸ್ಥಾನದಲ್ಲಿ ಸೇರುತ್ತಿದ್ದಾರೆ  # 60: people are gathering at the temple
+ಜನರು ಶಾಲೆಯಲ್ಲಿ ಸೇರುತ್ತಿದ್ದಾರೆ  # 61: people are gathering at the school
+ಜನರು ಪಂಚಾಯತ್ ಕಚೇರಿಯಲ್ಲಿ ಸೇರುತ್ತಿದ್ದಾರೆ  # 62: people are gathering at the panchayat office
+ಎಲ್ಲರನ್ನೂ ಸ್ಥಳಾಂತರಿಸಲಾಗಿದೆ  # 63: everyone has been moved out
+ವೈದ್ಯರು ಬೇಕು  # 64: we need a doctor
+ಔಷಧಿ ಬೇಕು  # 65: we need medicine
+ಇನ್ಸುಲಿನ್ ಬೇಕು  # 66: we need insulin
+ಹಾವು ಕಡಿತಕ್ಕೆ ಚಿಕಿತ್ಸೆ ಬೇಕು  # 67: we need snake bite treatment
+ಕುಡಿಯುವ ನೀರು ಮತ್ತು ಆಹಾರ ಬೇಕು  # 68: we need drinking water and food
+ಇಲ್ಲಿ ಜ್ವರ ಹರಡುತ್ತಿದೆ  # 69: there is fever spreading here
+ಇಲ್ಲಿ ವಾಂತಿ ಭೇದಿ ಹರಡುತ್ತಿದೆ  # 70: there is diarrhoea spreading here
+ಒಬ್ಬರಿಗೆ ಡಯಾಲಿಸಿಸ್ ಬೇಕು  # 71: someone needs dialysis
+ಒಬ್ಬರಿಗೆ ಆಕ್ಸಿಜನ್ ಬೇಕು  # 72: someone needs oxygen
+ಬ್ಯಾಂಡೇಜ್ ಮತ್ತು ಆಂಟಿಸೆಪ್ಟಿಕ್ ಬೇಕು  # 73: we need bandages and antiseptic
+ಸ್ಟ್ರೆಚರ್ ತರಿ  # 74: bring a stretcher
+ಆರೋಗ್ಯ ಕೇಂದ್ರ ಮುಚ್ಚಿದೆ  # 75: the health centre is closed
+ಆರೋಗ್ಯ ಕೇಂದ್ರಕ್ಕೆ ನೀರು ನುಗ್ಗಿದೆ  # 76: the health centre is flooded
+ಆಂಬ್ಯುಲೆನ್ಸ್ ನಮ್ಮ ಹತ್ತಿರ ಬರಲು ಆಗುತ್ತಿಲ್ಲ  # 77: an ambulance cannot reach us
+ಇಲ್ಲಿ ಪ್ರಥಮ ಚಿಕಿತ್ಸೆ ಇದೆ  # 78: we have first aid here
+ವೈದ್ಯಕೀಯ ಸಹಾಯ ಬೇಕಿಲ್ಲ  # 79: no medical help needed
+ದೋಣಿಗಳನ್ನು ಕಳುಹಿಸಿ  # 80: send boats
+ಹೆಲಿಕಾಪ್ಟರ್ ಕಳುಹಿಸಿ  # 81: send a helicopter
+ರಕ್ಷಣಾ ತಂಡವನ್ನು ಕಳುಹಿಸಿ  # 82: send a rescue team
+ವಾಹನ ಕಳುಹಿಸಿ  # 83: send a vehicle
+ಹಗ್ಗ ಬೇಕು  # 84: we need rope
+ಲೈಫ್ ಜಾಕೆಟ್ ಬೇಕು  # 85: we need life jackets
+ಏಣಿ ಬೇಕು  # 86: we need a ladder
+ದೋಣಿ ತುಂಬಿದೆ, ಇನ್ನೊಂದು ಕಳುಹಿಸಿ  # 87: the boat is full, send another
+ದೋಣಿ ಬಂದಿದೆ  # 88: the boat has arrived
+ರಕ್ಷಣಾ ತಂಡ ಬಂದಿದೆ  # 89: the rescue team has arrived
+ಮುಖ್ಯ ರಸ್ತೆವರೆಗೆ ನಡೆಯಲು ಆಗುತ್ತದೆ  # 90: we can walk to the main road
+ನೀರನ್ನು ದಾಟಲು ಆಗುವುದಿಲ್ಲ  # 91: we cannot cross the water
+ಟ್ರಾಕ್ಟರ್ ನಮ್ಮ ಹತ್ತಿರ ಬರಬಹುದು  # 92: a tractor can reach us
+ದಾರಿ ನಡೆಯಲು ಯೋಗ್ಯವಾಗಿದೆ  # 93: the path is passable on foot
+ಮರ ಬಿದ್ದು ದಾರಿ ಮುಚ್ಚಿದೆ  # 94: the path is blocked by a fallen tree
+ರಕ್ಷಣೆ ಬೇಕಿಲ್ಲ  # 95: we do not need rescue
+ವಿದ್ಯುತ್ ಇಲ್ಲ  # 96: there is no electricity
+ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್ ಇಲ್ಲ  # 97: there is no mobile network
+ಟ್ರಾನ್ಸ್‌ಫಾರ್ಮರ್ ಹಾಳಾಗಿದೆ  # 98: the transformer is damaged
+ವಿದ್ಯುತ್ ತಂತಿ ಬಿದ್ದಿದೆ, ದೂರವಿರಿ  # 99: a live wire has fallen, keep away
+ರಸ್ತೆ ಕೊಚ್ಚಿಹೋಗಿದೆ  # 100: the road is washed away
+ಸಣ್ಣ ಸೇತುವೆ ಕುಸಿದಿದೆ  # 101: the culvert has collapsed
+ಒಂದು ಕಟ್ಟಡ ಕುಸಿದಿದೆ  # 102: a building has collapsed
+ಶಾಲೆಯ ಕಟ್ಟಡಕ್ಕೆ ಹಾನಿಯಾಗಿದೆ  # 103: the school building is damaged
+ಚಾವಣಿ ಹಾರಿಹೋಗಿದೆ  # 104: the roof has blown off
+ರಸ್ತೆಯಲ್ಲಿ ಭೂಕುಸಿತವಾಗಿದೆ  # 105: there is a landslide on the road
+ರೈಲು ಮಾರ್ಗ ನೀರಿನಲ್ಲಿ ಮುಳುಗಿದೆ  # 106: the railway line is under water
+ಪಂಪ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ  # 107: the pump is not working
+ನಮ್ಮಲ್ಲಿ ಜನರೇಟರ್ ಇದೆ  # 108: we have a generator
+ಇಂಧನ ಇಲ್ಲ  # 109: we have no fuel
+ಒಂದು ದಿನಕ್ಕೆ ಇಂಧನ ಇದೆ  # 110: we have fuel for one day
+ನೀರಿನ ಪೂರೈಕೆ ನಿಂತಿದೆ  # 111: the water supply has stopped
+ಆಹಾರ ಬೇಕು  # 112: we need food
+ಕುಡಿಯುವ ನೀರು ಬೇಕು  # 113: we need drinking water
+ಹೊದಿಕೆಗಳು ಬೇಕು  # 114: we need blankets
+ಟಾರ್ಪಾಲ್ ಅಥವಾ ಟೆಂಟ್ ಬೇಕು  # 115: we need tarpaulin or tents
+ಮಕ್ಕಳ ಆಹಾರ ಬೇಕು  # 116: we need baby food
+ಪಶು ಆಹಾರ ಬೇಕು  # 117: we need animal feed
+ಒಂದು ದಿನಕ್ಕೆ ಆಹಾರ ಇದೆ  # 118: we have food for one day
+ಮೂರು ದಿನಕ್ಕೆ ಆಹಾರ ಇದೆ  # 119: we have food for three days
+ನಮ್ಮಲ್ಲಿ ಸಾಕಷ್ಟು ಸಾಮಗ್ರಿ ಇದೆ  # 120: we have enough supplies
+ಶಿಬಿರ ತುಂಬಿದೆ  # 121: the shelter is full
+ಶಿಬಿರದಲ್ಲಿ ಜಾಗ ಇದೆ  # 122: the shelter has space
+ನಾವು ತಾತ್ಕಾಲಿಕ ಶಿಬಿರದಲ್ಲಿದ್ದೇವೆ  # 123: we are in a temporary shelter
+ಜಾನುವಾರುಗಳನ್ನು ಸ್ಥಳಾಂತರಿಸಬೇಕು  # 124: cattle need to be moved
+ಜಾನುವಾರುಗಳು ಕಳೆದುಹೋಗಿವೆ  # 125: cattle have been lost
+ಬೆಳೆ ನಾಶವಾಗಿದೆ  # 126: crops are destroyed
+ಧಾನ್ಯದ ಗೋದಾಮು ನೀರಿನಲ್ಲಿ ಮುಳುಗಿದೆ  # 127: the granary is flooded
+ಈ ಸಂದೇಶವನ್ನು ಮುಂದೆ ಕಳುಹಿಸಿ  # 128: relay this message onward
+ಈ ಸಂದೇಶ ಜಿಲ್ಲಾ ಕಚೇರಿಗೆ  # 129: this message is for the district office
+ಈ ಸಂದೇಶ ಪೊಲೀಸರಿಗೆ  # 130: this message is for the police
+ಈ ಸಂದೇಶ ಅಗ್ನಿಶಾಮಕ ದಳಕ್ಕೆ  # 131: this message is for the fire service
+ಈ ಸಂದೇಶ ಆಸ್ಪತ್ರೆಗೆ  # 132: this message is for the hospital
+ನಾವು ಇನ್ನೊಂದು ಹಳ್ಳಿಗಾಗಿ ಸಂದೇಶ ಕಳುಹಿಸುತ್ತಿದ್ದೇವೆ  # 133: we are relaying for another village
+ನೆಟ್‌ವರ್ಕ್ ಇರುವ ಯಾರಿಗಾದರೂ ಇದನ್ನು ತಿಳಿಸಿ  # 134: pass this to anyone with a network signal
+ಒಂದು ಗಂಟೆಯಲ್ಲಿ ಪುನಃ ಸಂಪರ್ಕಿಸುತ್ತೇವೆ  # 135: we will call again in one hour
+ಬೆಳಗಾಗುತ್ತಲೇ ಪುನಃ ಸಂಪರ್ಕಿಸುತ್ತೇವೆ  # 136: we will call again at first light
+ಮುಂದಿನ ಚಾನೆಲ್‌ಗೆ ಬದಲಾಯಿಸಿ  # 137: change to the next channel
+ಇದೇ ಚಾನೆಲ್‌ನಲ್ಲಿ ಇರಿ  # 138: stay on this channel
+ತುರ್ತು ಸಂದರ್ಭಕ್ಕೆ ಈ ಮಾರ್ಗವನ್ನು ಖಾಲಿ ಇಡಿ  # 139: keep this line clear for emergencies
+ನೀವು ಎಷ್ಟು ಜನರನ್ನು ಕರೆದೊಯ್ಯಬಹುದು  # 140: how many people can you take
+ನಾವು ಇನ್ನೂ ಹತ್ತು ಜನರನ್ನು ಕರೆದೊಯ್ಯಬಹುದು  # 141: we can take ten more people
+ಇನ್ನು ಯಾರನ್ನೂ ಕರೆದೊಯ್ಯಲು ಆಗುವುದಿಲ್ಲ  # 142: we cannot take any more people
+ಹೆಸರುಗಳ ಪಟ್ಟಿ ಬರೆದು ಕಳುಹಿಸಿ  # 143: send a written list of names

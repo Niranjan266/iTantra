@@ -1,0 +1,159 @@
+# iTantra phrase codebook — മലയാളം (Malayalam)
+#
+# THIS FILE IS A PARALLEL CORPUS. Line N here must mean exactly what line N of every
+# other language's file means, because the line number is the only thing that crosses
+# the link: id 33 spoken in Telugu and rendered on a Malayalam phone IS the translation.
+#
+#   APPEND ONLY. Never reorder, never delete, never edit an existing line's meaning.
+#   A line containing just "-" means NOT TRANSLATED YET and still holds its id;
+#   removing one shifts every id after it, and a shifted id does not fail — it decodes
+#   to a real but different sentence.
+#
+# Blank lines and lines starting with # are ignored and do not consume an id.
+#
+# Reviewed against the English line by line; a native speaker should confirm the
+# wordings before this codebook is frozen.
+സന്ദേശം കിട്ടി  # 0: message received
+മനസ്സിലായില്ല, വീണ്ടും പറയൂ  # 1: message not understood, repeat
+കാത്തിരിക്കുന്നു  # 2: standing by
+കാത്തിരിക്കൂ, ഇപ്പോൾ നിർത്തുന്നു  # 3: wait, out
+അറിയിക്കാൻ ഒന്നുമില്ല  # 4: nothing to report
+അതെ  # 5: yes
+അല്ല  # 6: no
+അറിയില്ല  # 7: unknown
+സ്ഥിരീകരിച്ചു  # 8: confirmed
+അത് റദ്ദാക്കൂ  # 9: cancel that
+നിങ്ങളുടെ സ്ഥലം അറിയിക്കൂ  # 10: report your position
+നിങ്ങളുടെ അവസ്ഥ അറിയിക്കൂ  # 11: report your status
+ആരാണ് സംസാരിക്കുന്നത്  # 12: who is calling
+പതുക്കെ സംസാരിക്കൂ  # 13: speak slower
+സന്ദേശം അവസാനിച്ചു  # 14: end of message
+കിട്ടി, നടപടി ആവശ്യമില്ല  # 15: acknowledged, no action needed
+ഞങ്ങൾക്ക് ഉടൻ സഹായം വേണം  # 16: we need help immediately
+ഇത് അത്യാഹിതമാണ്  # 17: this is an emergency
+ഞങ്ങൾ കുടുങ്ങി, നീങ്ങാൻ കഴിയില്ല  # 18: we are trapped and cannot move
+ഞങ്ങൾ ഇപ്പോൾ സുരക്ഷിതരാണ്  # 19: we are safe for now
+ഞങ്ങളുടെ സ്ഥലത്ത് സഹായം എത്തിക്കൂ  # 20: send help to our position
+നടന്ന് സുരക്ഷിത സ്ഥലത്ത് എത്താൻ കഴിയില്ല  # 21: we cannot reach safety on foot
+ഇവിടെ ആരുമില്ല  # 22: there is no one here
+മറ്റുള്ളവരുമായി ബന്ധം നഷ്ടപ്പെട്ടു  # 23: we have lost contact with the others
+ഈ വഴി വരരുത്, സുരക്ഷിതമല്ല  # 24: do not come this way, it is not safe
+ഞങ്ങൾ ഉയർന്ന സ്ഥലത്തേക്ക് നീങ്ങുന്നു  # 25: we are moving to higher ground
+ഞങ്ങൾ ഇവിടെത്തന്നെ നിൽക്കും  # 26: we will stay where we are
+ഞങ്ങളുടെ ഫോൺ ബാറ്ററി തീരാറായി  # 27: our phone battery is almost finished
+നിങ്ങളുടെ ശബ്ദം കേൾക്കുന്നു പക്ഷേ മറുപടി അയക്കാൻ കഴിയില്ല  # 28: we can hear you but cannot reply
+അവസാന സന്ദേശം അയക്കുന്നു  # 29: sending one last message
+ഇവിടെ എല്ലാം ശരിയാണ്  # 30: all clear here
+സ്ഥിതി വഷളാകുന്നു  # 31: situation is getting worse
+വെള്ളം പൊങ്ങുന്നു  # 32: flood water is rising
+സ്കൂളിന് അടുത്ത് വെള്ളം പൊങ്ങുന്നു, വള്ളങ്ങൾ അയക്കൂ  # 33: flood water is rising near the school, send boats
+പുഴയുടെ കര പൊട്ടി  # 34: the river has broken its bank
+വെള്ളം അരയ്ക്ക് മുകളിലാണ്  # 35: the water is above the waist
+വെള്ളം ഇപ്പോഴും പൊങ്ങുന്നു  # 36: the water is still rising
+വെള്ളം താഴുന്നു  # 37: the water is going down
+പാലം വെള്ളത്തിനടിയിലാണ്  # 38: the bridge is under water
+റോഡ് വെള്ളത്തിനടിയിലാണ്  # 39: the road is under water
+അണക്കെട്ടിന്റെ ഷട്ടറുകൾ തുറന്നു  # 40: the dam has opened its gates
+കനത്ത മഴ നിന്നിട്ടില്ല  # 41: heavy rain has not stopped
+കിണറ്റിലെ വെള്ളം കുടിക്കാൻ കൊള്ളില്ല  # 42: the well water is not safe to drink
+ശുദ്ധമായ കുടിവെള്ളം ഇല്ല  # 43: we have no clean drinking water
+കുഴൽക്കിണർ വെള്ളത്തിൽ മുങ്ങി  # 44: the borewell is flooded
+ഓട അടഞ്ഞു, വെള്ളം തിരികെ വരുന്നു  # 45: the drain is blocked and water is backing up
+വയൽ പൂർണമായും മുങ്ങി  # 46: the field is completely submerged
+ഇന്ന് രാത്രി വേലിയേറ്റം പ്രതീക്ഷിക്കുന്നു  # 47: high tide is expected tonight
+ഇവിടെ എല്ലാവരും സുരക്ഷിതരാണ്  # 48: everyone here is safe
+ചിലരെ കാണാനില്ല  # 49: some people are missing
+ഒരു കുട്ടിയെ കാണാനില്ല  # 50: a child is missing
+ഒരു വൃദ്ധന് സഹായം വേണം  # 51: an elderly person needs help
+ഗർഭിണിയായ സ്ത്രീക്ക് ആശുപത്രി വേണം  # 52: a pregnant woman needs a hospital
+ഒരാൾക്ക് ഗുരുതരമായി പരിക്കേറ്റു  # 53: someone is badly injured
+ഒരാൾ മുങ്ങിമരിച്ചു  # 54: someone has drowned
+ഞങ്ങൾ പത്ത് പേരാണ്  # 55: we are ten people
+ഞങ്ങൾ അമ്പതിൽ അധികം പേരാണ്  # 56: we are more than fifty people
+ഞങ്ങളുടെ കൂടെ കുട്ടികളുണ്ട്  # 57: we have children with us
+ഞങ്ങളുടെ കൂടെ വൃദ്ധരുണ്ട്  # 58: we have elderly people with us
+ഞങ്ങളുടെ കൂടെ ഒരു വികലാംഗനുണ്ട്  # 59: we have a disabled person with us
+ആളുകൾ ക്ഷേത്രത്തിൽ ഒത്തുകൂടുന്നു  # 60: people are gathering at the temple
+ആളുകൾ സ്കൂളിൽ ഒത്തുകൂടുന്നു  # 61: people are gathering at the school
+ആളുകൾ പഞ്ചായത്ത് ഓഫീസിൽ ഒത്തുകൂടുന്നു  # 62: people are gathering at the panchayat office
+എല്ലാവരെയും മാറ്റി  # 63: everyone has been moved out
+ഡോക്ടർ വേണം  # 64: we need a doctor
+മരുന്ന് വേണം  # 65: we need medicine
+ഇൻസുലിൻ വേണം  # 66: we need insulin
+പാമ്പുകടിക്ക് ചികിത്സ വേണം  # 67: we need snake bite treatment
+കുടിവെള്ളവും ഭക്ഷണവും വേണം  # 68: we need drinking water and food
+ഇവിടെ പനി പരക്കുന്നു  # 69: there is fever spreading here
+ഇവിടെ വയറിളക്കം പരക്കുന്നു  # 70: there is diarrhoea spreading here
+ഒരാൾക്ക് ഡയാലിസിസ് വേണം  # 71: someone needs dialysis
+ഒരാൾക്ക് ഓക്സിജൻ വേണം  # 72: someone needs oxygen
+ബാൻഡേജും ആന്റിസെപ്റ്റിക്കും വേണം  # 73: we need bandages and antiseptic
+സ്ട്രെച്ചർ കൊണ്ടുവരൂ  # 74: bring a stretcher
+ആരോഗ്യ കേന്ദ്രം അടഞ്ഞിരിക്കുന്നു  # 75: the health centre is closed
+ആരോഗ്യ കേന്ദ്രത്തിൽ വെള്ളം കയറി  # 76: the health centre is flooded
+ആംബുലൻസിന് ഞങ്ങളുടെ അടുത്ത് എത്താൻ കഴിയില്ല  # 77: an ambulance cannot reach us
+ഇവിടെ പ്രാഥമിക ശുശ്രൂഷയുണ്ട്  # 78: we have first aid here
+വൈദ്യസഹായം ആവശ്യമില്ല  # 79: no medical help needed
+വള്ളങ്ങൾ അയക്കൂ  # 80: send boats
+ഹെലികോപ്റ്റർ അയക്കൂ  # 81: send a helicopter
+രക്ഷാസംഘത്തെ അയക്കൂ  # 82: send a rescue team
+വാഹനം അയക്കൂ  # 83: send a vehicle
+കയർ വേണം  # 84: we need rope
+ലൈഫ് ജാക്കറ്റ് വേണം  # 85: we need life jackets
+ഏണി വേണം  # 86: we need a ladder
+വള്ളം നിറഞ്ഞു, മറ്റൊന്ന് അയക്കൂ  # 87: the boat is full, send another
+വള്ളം എത്തി  # 88: the boat has arrived
+രക്ഷാസംഘം എത്തി  # 89: the rescue team has arrived
+പ്രധാന റോഡ് വരെ നടക്കാൻ കഴിയും  # 90: we can walk to the main road
+വെള്ളം കടക്കാൻ കഴിയില്ല  # 91: we cannot cross the water
+ട്രാക്ടറിന് ഞങ്ങളുടെ അടുത്ത് എത്താൻ കഴിയും  # 92: a tractor can reach us
+വഴി നടക്കാൻ പറ്റുന്നതാണ്  # 93: the path is passable on foot
+മരം വീണ് വഴി അടഞ്ഞു  # 94: the path is blocked by a fallen tree
+രക്ഷാപ്രവർത്തനം ആവശ്യമില്ല  # 95: we do not need rescue
+വൈദ്യുതി ഇല്ല  # 96: there is no electricity
+മൊബൈൽ നെറ്റ്‌വർക്ക് ഇല്ല  # 97: there is no mobile network
+ട്രാൻസ്ഫോർമർ തകർന്നു  # 98: the transformer is damaged
+വൈദ്യുതി കമ്പി പൊട്ടി വീണു, അകലം പാലിക്കൂ  # 99: a live wire has fallen, keep away
+റോഡ് ഒലിച്ചുപോയി  # 100: the road is washed away
+ചെറിയ പാലം തകർന്നു  # 101: the culvert has collapsed
+ഒരു കെട്ടിടം തകർന്നു  # 102: a building has collapsed
+സ്കൂൾ കെട്ടിടത്തിന് കേടുപാട് സംഭവിച്ചു  # 103: the school building is damaged
+മേൽക്കൂര പറന്നുപോയി  # 104: the roof has blown off
+റോഡിൽ മണ്ണിടിച്ചിൽ ഉണ്ടായി  # 105: there is a landslide on the road
+റെയിൽ പാത വെള്ളത്തിനടിയിലാണ്  # 106: the railway line is under water
+പമ്പ് പ്രവർത്തിക്കുന്നില്ല  # 107: the pump is not working
+ഞങ്ങളുടെ കൈയിൽ ജനറേറ്റർ ഉണ്ട്  # 108: we have a generator
+ഇന്ധനം ഇല്ല  # 109: we have no fuel
+ഒരു ദിവസത്തേക്ക് ഇന്ധനം ഉണ്ട്  # 110: we have fuel for one day
+ജലവിതരണം നിലച്ചു  # 111: the water supply has stopped
+ഭക്ഷണം വേണം  # 112: we need food
+കുടിവെള്ളം വേണം  # 113: we need drinking water
+പുതപ്പുകൾ വേണം  # 114: we need blankets
+ടാർപോളിൻ അല്ലെങ്കിൽ കൂടാരം വേണം  # 115: we need tarpaulin or tents
+കുഞ്ഞുങ്ങൾക്കുള്ള ഭക്ഷണം വേണം  # 116: we need baby food
+കാലിത്തീറ്റ വേണം  # 117: we need animal feed
+ഒരു ദിവസത്തേക്ക് ഭക്ഷണം ഉണ്ട്  # 118: we have food for one day
+മൂന്ന് ദിവസത്തേക്ക് ഭക്ഷണം ഉണ്ട്  # 119: we have food for three days
+ഞങ്ങളുടെ കൈയിൽ ആവശ്യത്തിന് സാധനങ്ങളുണ്ട്  # 120: we have enough supplies
+ക്യാമ്പ് നിറഞ്ഞു  # 121: the shelter is full
+ക്യാമ്പിൽ സ്ഥലമുണ്ട്  # 122: the shelter has space
+ഞങ്ങൾ താൽക്കാലിക ക്യാമ്പിലാണ്  # 123: we are in a temporary shelter
+കന്നുകാലികളെ മാറ്റണം  # 124: cattle need to be moved
+കന്നുകാലികൾ നഷ്ടപ്പെട്ടു  # 125: cattle have been lost
+വിളകൾ നശിച്ചു  # 126: crops are destroyed
+ധാന്യപ്പുര വെള്ളത്തിൽ മുങ്ങി  # 127: the granary is flooded
+ഈ സന്ദേശം മുന്നോട്ട് കൈമാറൂ  # 128: relay this message onward
+ഈ സന്ദേശം ജില്ലാ ഓഫീസിനുള്ളതാണ്  # 129: this message is for the district office
+ഈ സന്ദേശം പോലീസിനുള്ളതാണ്  # 130: this message is for the police
+ഈ സന്ദേശം അഗ്നിശമന സേനയ്ക്കുള്ളതാണ്  # 131: this message is for the fire service
+ഈ സന്ദേശം ആശുപത്രിക്കുള്ളതാണ്  # 132: this message is for the hospital
+ഞങ്ങൾ മറ്റൊരു ഗ്രാമത്തിനായി സന്ദേശം കൈമാറുന്നു  # 133: we are relaying for another village
+നെറ്റ്‌വർക്ക് ഉള്ള ആരോടെങ്കിലും ഇത് പറയൂ  # 134: pass this to anyone with a network signal
+ഒരു മണിക്കൂറിനുള്ളിൽ വീണ്ടും ബന്ധപ്പെടും  # 135: we will call again in one hour
+നേരം വെളുക്കുമ്പോൾ വീണ്ടും ബന്ധപ്പെടും  # 136: we will call again at first light
+അടുത്ത ചാനലിലേക്ക് മാറൂ  # 137: change to the next channel
+ഇതേ ചാനലിൽ തുടരൂ  # 138: stay on this channel
+അത്യാവശ്യങ്ങൾക്കായി ഈ ലൈൻ ഒഴിവാക്കി വെക്കൂ  # 139: keep this line clear for emergencies
+നിങ്ങൾക്ക് എത്ര പേരെ കൊണ്ടുപോകാൻ കഴിയും  # 140: how many people can you take
+ഞങ്ങൾക്ക് പത്ത് പേരെ കൂടി കൊണ്ടുപോകാൻ കഴിയും  # 141: we can take ten more people
+ഇനി ആരെയും കൊണ്ടുപോകാൻ കഴിയില്ല  # 142: we cannot take any more people
+പേരുകളുടെ പട്ടിക എഴുതി അയക്കൂ  # 143: send a written list of names
